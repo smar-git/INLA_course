@@ -1,0 +1,200 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  ignorenonframetext,
+]{beamer}
+\title{Bayesian Statistics with R-INLA}
+\subtitle{University of Zurich, March, 2022}
+\author{Instructor: Sara Martino}
+\date{}
+
+\usepackage{pgfpages}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+% Prevent slide breaks in the middle of a paragraph
+\widowpenalties 1 10000
+\raggedbottom
+\setbeamertemplate{part page}{
+  \centering
+  \begin{beamercolorbox}[sep=16pt,center]{part title}
+    \usebeamerfont{part title}\insertpart\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{section page}{
+  \centering
+  \begin{beamercolorbox}[sep=12pt,center]{part title}
+    \usebeamerfont{section title}\insertsection\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{subsection page}{
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center]{part title}
+    \usebeamerfont{subsection title}\insertsubsection\par
+  \end{beamercolorbox}
+}
+\AtBeginPart{
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \frame{\subsectionpage}
+}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Bayesian Statistics with R-INLA},
+  pdfauthor={Instructor: Sara Martino},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\newif\ifbibliography
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}[allowframebreaks]
+  \tableofcontents[hideallsubsections]
+\end{frame}
+\begin{frame}
+\end{frame}
+
+\hypertarget{plan-of-the-course}{%
+\section{Plan of the course}\label{plan-of-the-course}}
+
+\begin{frame}{Plan for this 2-day course}
+\protect\hypertarget{plan-for-this-2-day-course}{}
+\begin{block}{Today}
+\protect\hypertarget{today}{}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{9:00-10:45}Introduction and basics concepts of INLA
+\item
+  \textbf{11:00-12:30} Practical session I
+\end{itemize}
+
+\textbf{\textcolor{red}{Lunch}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{13:30-15:00} R-INLA: Basics
+\item
+  \textbf{15:15-17:00} Practical session II
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Plan for this 2-day course}
+\protect\hypertarget{plan-for-this-2-day-course-1}{}
+\begin{block}{Tomorrow}
+\protect\hypertarget{tomorrow}{}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{9:00-10:45}??
+\item
+  \textbf{11:00-12:30} Practical session III
+\end{itemize}
+
+\textbf{\textcolor{red}{Lunch}}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{13:30-15:00} ??
+\item
+  \textbf{15:15-16:00} Practical session IV
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+\begin{frame}[fragile]{What is inla?}
+\protect\hypertarget{what-is-inla}{}
+\textbf{The short answer:}\\
+\strut \\
+
+\begin{quote}
+INLA is a fast method to do Bayesian inference with latent Gaussian
+models and \texttt{INLA} is an \texttt{R}-package that implements this
+method with a flexible and simple interface.
+\end{quote}
+
+\pause
+
+\textbf{The (much) longer answer:}
+
+\begin{itemize}
+\tightlist
+\item
+  Rue, Martino, and Chopin (2009) ``Approximate Bayesian inference for
+  latent Gaussian models by using integrated nested Laplace
+  approximations.'' \emph{JRSSB}
+\item
+  Rue, Riebler, Sørbye, Illian, Simpson, Lindgren (2017) ``Bayesian
+  Computing with INLA: A Review.'' \emph{Annual Review of Statistics and
+  Its Application}
+\item
+  Martino, Riebler ``Integrated Nested Laplace Approximations (INLA)''
+  (2021) \emph{arXiv:1907.01248}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\begin{frame}
+\end{frame}
+
+\end{document}

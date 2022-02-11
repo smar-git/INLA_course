@@ -1,0 +1,98 @@
+---
+title: "Bayesian Statistics with R-INLA"
+subtitle: 'University of Zurich, March, 2022'
+author: "Instructor: Sara Martino"
+#date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  # html_document:
+  #   toc: yes
+  #   toc_float: yes
+  #   code_download: yes
+  #   toc_depth: 3
+  #   number_sections: true
+  beamer_presentation:
+    slide_level: 2
+    toc: true    
+    keep_tex: yes
+    #fig_caption: false
+    #theme: "Berkley"
+  # pdf_document:
+  #   keep_tex: yes
+  #   toc: yes
+  #   toc_depth: 3
+  #   number_sections: true
+# knit: (function(inputFile, encoding) {
+#   rmarkdown::render(inputFile, encoding = encoding,
+#   output_dir = "output", output_format = "all") })
+---
+
+
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","all",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","html_document",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","pdf_document",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","beamer_presentation",encoding="UTF-8") -->
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/INLA_course/Lecture1/")
+
+knitr::opts_chunk$set(echo = FALSE,  message=FALSE, warning=FALSE, strip.white=TRUE, prompt=FALSE)
+
+
+```
+
+# Plan of the course
+
+## Plan for this 2-day course
+### Today
+
+* **9:00-10:45**Introduction and basics concepts of INLA
+* **11:00-12:30** Practical session I
+
+ **\textcolor{red}{Lunch}**
+
+* **13:30-15:00** R-INLA: Basics
+* **15:15-17:00** Practical session II
+
+---
+
+## Plan for this 2-day course
+### Tomorrow
+
+* **9:00-10:45**??
+* **11:00-12:30** Practical session III
+
+ **\textcolor{red}{Lunch}**
+
+* **13:30-15:00** ??
+* **15:15-16:00** Practical session IV
+
+---
+
+
+# Introduction
+
+## What is inla?
+
+**The short answer:**\
+\
+
+> INLA is a fast method to do Bayesian inference with
+latent Gaussian models and `INLA` is an `R`-package that
+implements this method with a flexible and simple interface.
+
+\pause
+
+**The (much) longer answer:**
+
+* Rue, Martino, and Chopin (2009) "Approximate Bayesian inference for latent Gaussian models by using integrated nested Laplace approximations." *JRSSB*
+* Rue, Riebler, Sørbye, Illian, Simpson, Lindgren (2017) "Bayesian Computing with INLA: A Review." *Annual Review of Statistics and Its Application*
+* Martino, Riebler "Integrated Nested Laplace Approximations (INLA)" (2021) *arXiv:1907.01248*
+
+---
+
+---
+
+
+
+
