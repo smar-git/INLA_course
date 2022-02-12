@@ -13,7 +13,7 @@ output:
   beamer_presentation:
     slide_level: 2
     toc: true    
-    keep_tex: yes
+    #keep_tex: yes
     #fig_caption: false
     #theme: "Berkley"
     theme: "Singapore"
@@ -39,7 +39,7 @@ output:
 
 
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "~/INLA_course/Lecture1/")
+knitr::opts_knit$set(root.dir = "~/INLA_course/Day1.1/")
 
 knitr::opts_chunk$set(echo = FALSE,  
                       message=FALSE, 
@@ -865,7 +865,6 @@ Find approximations for:
  
 ## Approximating $\pi(\theta|\bf{y})$
 
-
 We have that
 $$
     \pi(\bf{x},\theta,\bf{y}) = \pi(\bf{x}|\theta,\bf{y})\pi(\theta|\bf{y})\pi(\bf{y})
@@ -1366,13 +1365,15 @@ hyperparameters $\Rightarrow$ tool for full Bayesian inference
 
 ##
 
+\Large
 Thank you for your attention!
 
+\normalsize
 If you have any doubts or questions, please write :
 	\url{sara.martino@math.ntnu.no} 
 
 	
-```{r, out.width = "50%"}
+```{r, out.width = "30%"}
 # All defaults
 include_graphics("graphics/smiley_small.jpg")
 ```
