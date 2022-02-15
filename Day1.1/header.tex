@@ -1,3 +1,10 @@
+% smaller space in between lines in toc
+\makeatletter
+\patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.5em}{}{}
+\makeatother
+
+
+% two columns environmnt
 \newenvironment{cols}[1][]{}{}
 
 \newenvironment{col}[1]{\begin{minipage}{#1}\ignorespaces}{%
@@ -15,3 +22,6 @@
     {}%
 }
 \makeatother
+
+%% logo on first page
+\titlegraphic{\centering \includegraphics[width=6cm]{log_ntnu.jpg}}

@@ -1,0 +1,46 @@
+\frametitle{Control statements\}}
+\protect\hypertarget{control-statements-1}{}
+\texttt{control.xxx} statements control computations
+
+\begin{itemize}
+\item
+  \texttt{control.fixed}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{prec}: Default precision for all fixed effects except the
+    intercept.
+  \item
+    \texttt{prec.intercept}: Precision for intercept (Default: 0.0)
+  \end{itemize}
+\item
+  `control.predictor
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{compute}: Compute posterior marginals of linear predictors
+  \end{itemize}
+\item
+  \texttt{control.compute}
+
+  \begin{itemize}
+  \item
+    \texttt{dic}, \texttt{mlik}, \texttt{cpo}: Compute measures of fit?
+
+    \begin{itemize}
+    \tightlist
+    \item
+      \texttt{config}: Save internal GMRF approximations? (needed to use
+      \texttt{inla.posterior.sample()})
+    \end{itemize}
+  \end{itemize}
+\item
+  \texttt{control.inla}
+
+  \texttt{strategy} and \texttt{int.strategy} contain useful advanced
+  features
+\item
+  There are various others as well; see help.
+\end{itemize}

@@ -12,15 +12,13 @@ output:
   #   number_sections: true
   beamer_presentation:
     slide_level: 2
-    toc: true    
-    #keep_tex: yes
-    #fig_caption: false
-    #theme: "Berkley"
+    toc: true  
+    keep_tex: yes  
     theme: "Singapore"
     colortheme: "default"
     font: "serif"
     includes:
-      in_header: columns.tex
+      in_header: header.tex
   # pdf_document:
   #   keep_tex: yes
   #   toc: yes

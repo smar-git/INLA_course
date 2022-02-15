@@ -1,0 +1,43 @@
+---
+title: "Bayesian Statistics with R-INLA"
+subtitle: ''
+author: "Sara Martino"
+institute: Department of Mathematical Science (NTNU)
+output:
+  beamer_presentation:
+    keep_tex: yes
+
+classoption: "handout"
+---
+
+```{r setup, include=FALSE}
+#knitr::opts_knit$set(root.dir = "~/INLA_course/Day1.2/")
+
+knitr::opts_chunk$set(echo = FALSE,  
+                      message=FALSE, 
+                      warning=FALSE, 
+                      strip.white=TRUE, 
+                      prompt=FALSE,
+                      fig.align="center",
+                       out.width = "60%")
+
+
+
+```
+
+##  Good News!
+\
+\
+\centering
+ All the theory we have seen is wrapped up in the R-package 
+    `INLA` which is easy to use.
+
+# Getting `INLA`
+
+## Getting `INLA`
+
+* The web page \textcolor{red}{\url{www.r-inla.org}} contains source-code, worked-through examples,	reports and instructions for installing the package. 
+
+## Getting `INLA`
+
+* The R-package `INLA` works on Linux,  Windows and Mac and can be installed within R  by
