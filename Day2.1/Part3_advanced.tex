@@ -625,7 +625,7 @@ All these models (and my more) can be fitted with \texttt{R-INLA} and
 \protect\hypertarget{example-meuse-data}{}
 Measures of zinc concentration.
 
-\begin{center}\includegraphics[width=0.6\linewidth,height=0.9\textheight]{Part3_advanced_files/figure-beamer/unnamed-chunk-9-1} \end{center}
+\begin{center}\includegraphics[width=0.8\linewidth,height=0.8\textheight]{Part3_advanced_files/figure-beamer/unnamed-chunk-9-1} \end{center}
 \end{frame}
 
 \begin{frame}{The model}
@@ -898,8 +898,10 @@ PC-priors for the range \(\rho\) and the standard deviarion \(\sigma\)
 \end{Highlighting}
 \end{Shaded}
 
-Note: We still have not compute predictions\ldots and this is not too
-easy in plain \texttt{INLA}!
+\normalsize
+
+\textbf{Note}: We still have not compute predictions\ldots and this is
+not too easy in plain \texttt{INLA}!!
 \end{frame}
 
 \begin{frame}[fragile]{When is \texttt{inlabru} easier to use}
@@ -931,21 +933,7 @@ easy in plain \texttt{INLA}!
 \end{itemize}
 \end{frame}
 
-\hypertarget{several-likelihood}{%
-\section{Several likelihood}\label{several-likelihood}}
-
-\begin{frame}{Example: Coregionalization model}
-\protect\hypertarget{example-coregionalization-model}{}
-\[
-\begin{aligned}
-y_1(s) & =\alpha_1 + u(s) +e_1(s)\\
-y_2(s) & =\alpha_2+\lambda u(s) + e_2(s)
-\end{aligned}
-\]
-
-where the \(\alpha_k\) are intercepts, \(u(s)\) is the spatial effect,
-\(\lambda\) is a weights for spatial effects and \(e_k(s)\) are
-uncorrelated error terms, with \(k=1,2,3\).
-\end{frame}
+\hypertarget{space-time-modeling}{%
+\section{Space-time Modeling}\label{space-time-modeling}}
 
 \end{document}

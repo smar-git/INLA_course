@@ -419,7 +419,7 @@ All these models (and my more) can be fitted with `R-INLA` and `inlabru`
 
 Measures of zinc concentration.
 
-```{r, out.height="90%"}
+```{r, out.height="80%", out.width="80%"}
 data = readRDS("Data/meuseData")
 meuse  = data$meuse
 
