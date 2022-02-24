@@ -3,10 +3,9 @@
 \PassOptionsToPackage{hyphens}{url}
 %
 \documentclass[
-  handout]{beamer}
-%\usepackage{handoutWithNotes}
-
-%\usepackage{pgfpages}
+  ignorenonframetext,
+]{beamer}
+\usepackage{pgfpages}
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
 \setbeamercolor{caption name}{fg=normal text.fg}
@@ -128,6 +127,12 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+% handouts
+\usepackage{handoutWithNotes} 
+% put 3 slides on 1 page with space for notes
+%\pgfpagesuselayout{3 on 1 with notes}[a4paper, border shrink=5mm]
+
+
 % smaller space in between lines in toc
 \makeatletter
 \patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.5em}{}{}
@@ -172,6 +177,22 @@
   \tableofcontents[hideallsubsections]
 \end{frame}
 \begin{frame}
+\end{frame}
+
+\begin{frame}{What have we learned in the morning\ldots{}}
+\protect\hypertarget{what-have-we-learned-in-the-morning}{}
+\begin{itemize}
+\item
+  What is a LGM
+\item
+  Which kind of models are amenable to INLA
+\item
+  How does INLA work\ldots.
+\end{itemize}
+
+\pause
+
+*..you have even implemented it yourself! :-)
 \end{frame}
 
 \begin{frame}[fragile]{Good News!}
@@ -264,8 +285,8 @@ license to use it!
 \end{Shaded}
 
 \begin{verbatim}
-##  R-INLA version ..........: 22.01.25
-##  Date ....................: Tue Jan 25 08:26:03 PM +03 2022 (Version_22.01.25)
+##  R-INLA version ..........: 22.02.16-2
+##  Date ....................: Wed Feb 16 02:22:38 PM +03 2022 (Version_22.02.16-2)
 ##  Maintainers .............: Havard Rue <hrue@r-inla.org>
 ##                           : Finn Lindgren <finn.lindgren@gmail.com>
 ##                           : Elias Teixeira Krainski <elias@r-inla.org>
@@ -672,12 +693,12 @@ for example
 \end{Shaded}
 
 \begin{verbatim}
-##                 mean         sd 0.025quant  0.5quant 0.975quant     mode
-## (Intercept) 0.998189 0.02724618   0.944587 0.9981882   1.051745 0.998189
-## x           2.011824 0.04765814   1.918065 2.0118226   2.105502 2.011824
-##                      kld
-## (Intercept) 3.087429e-06
-## x           3.087245e-06
+##                 mean         sd 0.025quant 0.5quant 0.975quant     mode
+## (Intercept) 1.006556 0.01678705  0.9735303 1.006555   1.039553 1.006556
+## x           1.981128 0.03881546  1.9047647 1.981126   2.057424 1.981128
+##                     kld
+## (Intercept) 3.08322e-06
+## x           3.08333e-06
 \end{verbatim}
 
 \normalsize
@@ -709,12 +730,12 @@ Each object is thereby a list. Get the marginal for intercept:
 
 \begin{verbatim}
 ##              x            y
-## [1,] 0.7252481 1.560719e-17
-## [2,] 0.7798363 2.508686e-11
-## [3,] 0.8344244 1.413692e-06
-## [4,] 0.8487663 1.665664e-05
-## [5,] 0.8617185 1.338179e-04
-## [6,] 0.8628470 1.594073e-04
+## [1,] 0.8383904 2.535015e-17
+## [2,] 0.8720235 4.073441e-11
+## [3,] 0.9056566 2.294869e-06
+## [4,] 0.9144923 2.703357e-05
+## [5,] 0.9224731 2.172120e-04
+## [6,] 0.9231681 2.587286e-04
 \end{verbatim}
 
 \normalsize
@@ -744,10 +765,10 @@ Further general information
 \end{Shaded}
 
 \begin{verbatim}
-##           x        y
-## 1 0.4979424 1.859431
-## 2 0.1780295 1.324177
-## 3 0.7881542 2.700296
+##             x         y
+## 1 0.003393484 0.9627981
+## 2 0.115929286 1.2044419
+## 3 0.203226526 1.6256426
 \end{verbatim}
 
 \begin{Shaded}
@@ -807,7 +828,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.9533034
+## [1] 0.9789007
 \end{verbatim}
 
 \begin{Shaded}
@@ -818,7 +839,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.1971282
+## [1] 0.03046564
 \end{verbatim}
 
 \begin{Shaded}
@@ -829,7 +850,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 14.716
+## [1] 22.13279
 \end{verbatim}
 
 \begin{Shaded}
@@ -840,7 +861,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 1.0200040 1.0019901 0.9926437 0.9555379
+## [1] 0.988493 1.022675 1.015211 1.035757
 \end{verbatim}
 
 \normalsize
@@ -1038,7 +1059,7 @@ Estimates of the hyperparameters \footnotesize
 \protect\hypertarget{prediction-1}{}
 The distribution of the linear predictor at an unobserved location can
 be computed by specifying the value of the covariate \(x\) and the
-desired time index \(t\) and set \(y\) to \texttt{NA}.
+desired time index \(t\) and set \(y\) to \texttt{NA}. \small
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1049,18 +1070,18 @@ desired time index \(t\) and set \(y\) to \texttt{NA}.
 \NormalTok{y }\OtherTok{=} \FunctionTok{c}\NormalTok{(y, }\FunctionTok{rep}\NormalTok{(}\ConstantTok{NA}\NormalTok{,n))}
 
 \CommentTok{\# Re{-}compute}
-
 \NormalTok{result.pred }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
     \AttributeTok{data =} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{t =}\NormalTok{ t, }\AttributeTok{y =}\NormalTok{ y),}
     \AttributeTok{family=}\StringTok{"gaussian"}\NormalTok{,}
     \AttributeTok{control.inla =} \FunctionTok{list}\NormalTok{(}\AttributeTok{int.strategy =} \StringTok{"grid"}\NormalTok{),}
     \AttributeTok{control.compute =} \FunctionTok{list}\NormalTok{(}\AttributeTok{config =} \ConstantTok{TRUE}\NormalTok{, }
-                           \AttributeTok{return.marginals.predictor=}\ConstantTok{TRUE}\NormalTok{), }\CommentTok{\# tell inla to }
-                                                            \CommentTok{\# return the marginals for }
-                                                            \CommentTok{\# eta!  }
+                           \AttributeTok{return.marginals.predictor=}\ConstantTok{TRUE}\NormalTok{), }
+    \CommentTok{\# tell inla to return the marginals for eta!  }
     \AttributeTok{control.predictor =} \FunctionTok{list}\NormalTok{(}\AttributeTok{compute =} \ConstantTok{TRUE}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
+
+\normalsize
 \end{frame}
 
 \begin{frame}[fragile]{Prediction}
@@ -1153,7 +1174,7 @@ Each observation consists of
   \(y_t \in \{0, 1, 2\}\)
 \end{itemize}
 
-\small
+\footnotesize
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1685,8 +1706,10 @@ Running time of INLA \(<0.5\) seconds \normalsize
 \hypertarget{control-statements}{%
 \section{Control statements}\label{control-statements}}
 
-\begin{frame}[fragile]{Control statements\}}
+\begin{frame}[fragile]{Control statements}
 \protect\hypertarget{control-statements-1}{}
+\small
+
 \texttt{control.xxx} statements control computations
 
 \begin{itemize}
@@ -1731,6 +1754,8 @@ Running time of INLA \(<0.5\) seconds \normalsize
 \item
   There are various others as well; see help.
 \end{itemize}
+
+\normalsize
 \end{frame}
 
 \begin{frame}{}

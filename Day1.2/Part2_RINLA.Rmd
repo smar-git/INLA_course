@@ -7,14 +7,21 @@ institute: Department of Mathematical Science (NTNU)
 output:
   beamer_presentation:
     slide_level: 2
-    toc: true    
+    toc: true
     keep_tex: yes
     theme: "Singapore"
     colortheme: "default"
     font: "serif"
     includes:
       in_header: header.tex
-classoption: "handout"
+#classoption: "handout"
+  # pdf_document:
+  #   keep_tex: yes
+  #   toc: yes
+  #   toc_depth: 2
+  #   number_sections: true
+  #   includes:
+  #     in_header: header.tex
 ---
 
 
@@ -43,6 +50,17 @@ library(INLA)
 library(patchwork)
 
 ```
+## What have we learned in the morning...
+
+* What is a LGM
+
+* Which kind of models are amenable to INLA
+
+* How does INLA work....
+
+\pause
+
+*..you have even implemented it yourself! :-)
 
 ##  Good News!
 \
@@ -619,6 +637,7 @@ p1+p2
 
 ## Prediction
 The distribution of the linear predictor at an unobserved location can be computed by specifying the value of the covariate $x$ and the desired time index $t$ and set $y$ to `NA`.
+\small
 ```{r, echo = TRUE}
 # Add one new location
 n = 1
@@ -627,19 +646,17 @@ t = c(t, 101:(100+n))
 y = c(y, rep(NA,n))
 
 # Re-compute
-
 result.pred = inla(formula,
     data = data.frame(x = x, t = t, y = y),
     family="gaussian",
     control.inla = list(int.strategy = "grid"),
     control.compute = list(config = TRUE, 
-                           return.marginals.predictor=TRUE), # tell inla to 
-                                                            # return the marginals for 
-                                                            # eta!  
+                           return.marginals.predictor=TRUE), 
+    # tell inla to return the marginals for eta!  
     control.predictor = list(compute = TRUE))
 
 ```
-
+\normalsize
 ## Prediction
 
 Predicted marginal of the linear predictor $\eta_{101}$
@@ -722,7 +739,7 @@ Each observation consists of
 * $y_t$:	Number of days with rain out of $n_t$ days for day $t$;
 			$y_t \in \{0, 1, 2\}$
 
-\small
+\footnotesize
 ```{r, echo = T}
  data(Tokyo)
 head(Tokyo,3)
@@ -1147,8 +1164,8 @@ Running time of INLA $<0.5$ seconds
 # Control statements
 
 
-## Control statements}
-
+## Control statements
+\small
 `control.xxx` statements control computations
 
 * `control.fixed`
@@ -1172,6 +1189,7 @@ Running time of INLA $<0.5$ seconds
      
 * 	There are various others as well; see help.
 
+\normalsize
 
 
 ##

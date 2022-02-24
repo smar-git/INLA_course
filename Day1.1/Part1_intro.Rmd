@@ -516,7 +516,7 @@ $$
 >- \textcolor{red}{Hyperparameters} account for variability and length/strength	of dependence
 
 
-## Flexibility through \(f\)-functions}
+## Flexibility through \(f\)-functions
 
 The functions \(\{f_\gamma\}\) in the linear predictor make it possible	to capture very different types of random effects in the same framework:
 
@@ -875,9 +875,10 @@ $$
   \pi(\bf{y}, \bf{x}|\theta)\  \pi(\theta)
     }{\pi(\bf{x}|\theta,\bf{y})}
 $$
-$
-  Since the likelihood is Gaussian, then $\pi(\bf{y}, \bf{x}|\theta)$
-  is also Gaussian. We have then:
+
+Since the likelihood is Gaussian, then $\pi(\bf{y}, \bf{x}|\theta)$
+is also Gaussian. We have then:
+
 $$
    \pi(\theta|\bf{y})  \propto \frac{
   \overbrace{\pi(\bf{y}, \bf{x}|\theta)}^{\text{Gaussian}}\  \pi(\theta)}
@@ -944,7 +945,7 @@ p1+p2
 $$
     \bf{x},\bf{y}|\theta\sim\mathbf{N}(\cdot,\cdot)
 $$
-  so also $\pi(x_i|\theta,\bf{y})$ is Gaussian!!\\
+  so also $\pi(x_i|\theta,\bf{y})$ is Gaussian!!\
   
   We compute
 \begin{align*}

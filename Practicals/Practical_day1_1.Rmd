@@ -1,5 +1,5 @@
 ---
-title: "Practical 2"
+title: "Day 1, Morning, Practical 1"
 subtitle: 'Implementing INLA for a simple Gaussian model'
 author: "Instructor: Sara Martino"
 #date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -11,26 +11,11 @@ output:
     code_download: yes
     toc_depth: 2
     number_sections: true
-  # beamer_presentation:
-  #   slide_level: 2
-  #   toc: true    
-  #   keep_tex: yes
-  #   #fig_caption: false
-  #   #theme: "Berkley"
-  #   theme: "Singapore"
-  #   colortheme: "default"
-  #   font: "serif"
-  #   includes:
-  #     in_header: columns.tex
-  # pdf_document:
-  #   keep_tex: yes
-  #   toc: yes
-  #   toc_depth: 3
-  #   number_sections: true
-# knit: (function(inputFile, encoding) {
-#   rmarkdown::render(inputFile, encoding = encoding,
-#   output_dir = "output", output_format = "all") })
+
 ---
+
+
+
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = "~/INLA_course/Practicals/")
 
@@ -110,12 +95,12 @@ $$
 $$
 
 Random walk models are a popular choice for modeling smooth effects of
-covariates or, as in this case, temporal effects . Here, we choose a second order
-random walk model as prior distribution for the vector ${\mathbf f} =
+covariates or, as in this case, temporal effects . Here, we choose a first order
+random walk model (RW1) as prior distribution for the vector ${\mathbf f} =
 (f_1, \dots,f_T)$, so that:
 $$
-\pi({\mathbf f}|\theta)\propto \theta^{(T-2)/2}\exp\left\{
--\frac{\theta}{2}\sum_{t=3}^T[f_t - 2f_{t-1} + f_{t-2}]^2
+\pi({\mathbf f}|\theta)\propto \theta^{(T-1)/2}\exp\left\{
+-\frac{\theta}{2}\sum_{t=2}^T[f_t - f_{t-1} ]^2
 \right\} = \mathcal{N}(\mathbf{0},\mathbf{Q}({\theta})^{-1}).
 $$
 Thus, ${\mathbf f}|\theta$ is Gaussian distributed with mean $\mathbf{0}$ and
@@ -286,7 +271,7 @@ p1 = df %>%
 
 Here we compute the posterior for the 10th element of vector $\bf{x}$, $x_{10}$.
 
-We have now computed both $\pi(\theta_k|y) $ and $\Delta_k$ so what is left is to compute $\pi(x_{10}|\theta, y)$ for each value of $\theta_k$ in out grid.
+We have now computed both $\pi(\theta_k|y)$ and $\Delta_k$ so what is left is to compute $\pi(x_{10}|\theta, y)$ for each value of $\theta_k$ in out grid.
 
 
 
