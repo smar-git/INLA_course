@@ -1,0 +1,128 @@
+---
+title: "Fitting very simple models with R-INLA"
+subtitle: 'Day 1, Afternoon'
+author: "Instructor: Sara Martino"
+#date: "`r format(Sys.time(), '%d %B, %Y')`"
+bibliography: biblio.bib  
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    #code_download: yes
+    toc_depth: 3
+    number_sections: true
+
+---
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/INLA_course/Practicals/")
+
+knitr::opts_chunk$set(echo = TRUE,  
+                      message=FALSE, 
+                      warning=FALSE, 
+                      strip.white=TRUE, 
+                      prompt=FALSE,
+                      fig.align="center",
+                       out.width = "60%")
+
+library(knitr)    # For knitting document and include_graphics function
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(position = c('top', 'right'),
+               color = 'darkred',
+               tooltip_message = 'Click to copy', tooltip_success = 'Done')
+```
+
+---
+\
+\
+\
+
+
+
+
+Start by loading usefull libraries:
+```{r}
+library(INLA)
+library(ggplot2)
+library(patchwork)
+library(spam)     
+# load some libraries to generate nice map plots
+library(fields)
+library(colorspace)
+library(inlabru)
+library(raster)
+
+```
+
+
+
+
+
+
+Load the data
+```{r}
+# read shape of Italy
+italy = readRDS("Data/Temp_Italia/italia")
+# Read temperatures
+temp = read.table("Data/Temp_Italia/tmax_january_sara_1961_2020.csv", sep = ";",
+                  header = T)
+# select only data for 2020
+temp = temp[temp$yy==2020,]
+
+# plot the data
+ggplot() + geom_point(data = temp, aes(x,y,col = Tmax)) +
+  scale_color_viridis_b() +
+  gg(italy) +
+  coord_equal() + xlab("")+ylab("")
+
+```
+
+Create the mesh
+```{r}
+mesh = inla.mesh.2d(loc = cbind(temp$x, temp$y),
+                    offset = c(70,300),
+                    cutoff = 25,
+                    max.edge = c(50,200))
+
+ggplot() + 
+  gg(mesh) +
+  geom_point(data = temp, aes(x,y)) +
+  coord_equal() + xlab("")+ylab("")
+
+
+spde = inla.spde2.pcmatern(mesh = mesh,
+                           prior.range=c(300,0.5), 
+                           prior.sigma=c(1,0.1))
+
+temp$lat = temp$x
+coordinates(temp) =c("x","y")
+cmp = ~ Intercept(1) + dem(Elevation, model = "linear") +
+  lat(lat, model = "linear") + SPDE(coordinates, model = spde)
+  
+lik = like(formula = Tmax ~ Intercept + dem + lat + SPDE,
+           family = "gaussian",
+           data = temp)
+
+fit = bru(cmp, lik)
+
+```
+
+
+```{r}
+dem = raster("Data/Temp_Italia/dem_italia.tif")
+dem <- projectRaster(dem,
+                                       crs = mycrs)
+lat = raster("Data/Temp_Italia/latitudine.tif")
+
+
+pxl  = pixels(mesh, nx = 300, ny = 300, mask = as(italy, "Spatial"))
+
+
+```
+
+

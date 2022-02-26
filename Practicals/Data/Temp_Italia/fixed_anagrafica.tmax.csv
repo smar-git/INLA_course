@@ -1,0 +1,525 @@
+id;SiteName;regione;Longitude;Latitude;Elevation;regione2
+abruzzo_1112;Catignano;abruzzo;13.94527778;42.34611111;323;Abruzzo
+abruzzo_1940;Lanciano;abruzzo;14.38444444;42.22583333;273;Abruzzo
+abruzzo_1966;Casoli Diga;abruzzo;14.25805556;42.09555556;302;Abruzzo
+abruzzo_2073;Ponte Vomano;abruzzo;13.76861111;42.60888889;136;Abruzzo
+abruzzo_2137;Giulianova;abruzzo;13.95277778;42.74805556;55;Abruzzo
+abruzzo_2159;L'aquila;abruzzo;13.42861111;42.33416667;618;Abruzzo
+abruzzo_2177;Aterno Sagittario A Allogg.idr;abruzzo;13.82972222;42.15638889;248;Abruzzo
+basilicata_136;Ferrandina;basilicata;16.4518417679;40.4979110602;492;Basilicata
+basilicata_39;Tramutola;basilicata;15.7867;40.2986;875;Basilicata
+basilicata_42;Matera;basilicata;16.6017;40.6694;389;Basilicata
+basilicata_44;Irsina;basilicata;16.2461;40.7417;453;Basilicata
+calabria_10;Montalto Uffugo;calabria;16.13055556;39.40111111;436;Calabria
+calabria_7;San Pietro In Guarano;calabria;16.31361111;39.34555556;766;Calabria
+calabria_95;Cerenzia;calabria;16.78333333;39.2425;596;Calabria
+campania_23;Castelluccio;campania;15.33777778;40.58166667;283.8472900390625;Campania
+campania_43;Montella;campania;15.05027778;40.84777778;499.6351928710938;Campania
+friuliveneziagiulia_20;Fossalon;friuliveneziagiulia;13.458865;45.714768;0;Friuli Venezia Giulia
+lazio_274;Montefiascone;lazio;12.0228;42.53;516;Lazio
+lazio_282;Posticciola;lazio;12.9419;42.2336;626;Lazio
+lazio_329;Barbarano;lazio;12.0444;42.2542;313;Lazio
+lazio_380;Licenza;lazio;12.8997;42.075;553;Lazio
+lazio_382;Morlupo;lazio;12.5067;42.1436;223;Lazio
+lazio_383;Palestrina;lazio;12.8814;41.8381;428;Lazio
+lazio_453;Bolsena;lazio;11.9722;42.6533;352;Lazio
+liguria_5924;S. Margherita Vara;liguria;9.661111;44.275833;200;Liguria
+marche_108;Pergola;marche;12.844062;43.568672;242;Marche
+marche_110;Jesi;marche;13.229972;43.531944;100;Marche
+marche_112;Villa Fastiggi;marche;12.86939;43.89061;22;Marche
+marche_701;Ancona Torrette;marche;13.449807;43.610954;5;Marche
+puglia_109;Pietramontecorvino;puglia;15.11722;41.53389;464;Puglia
+puglia_123;Sannicandro_garganico;puglia;15.58417;41.83361;228;Puglia
+puglia_135;Spinazzola;puglia;16.08417;40.95056;458;Puglia
+puglia_143;Troia;puglia;15.30056;41.35056;436;Puglia
+puglia_3;Altamura;puglia;16.55278;40.82389;458;Puglia
+puglia_32;Castel_del_monte;puglia;16.31694;41.06722;470;Puglia
+puglia_33;Castellana_grotte;puglia;17.20056;40.8675;300;Puglia
+puglia_44;Crispiano;puglia;17.23472;40.58444;264;Puglia
+puglia_59;Gioia_del_colle;puglia;16.91694;40.8;377;Puglia
+puglia_71;Locorotondo;puglia;17.33333;40.75;397;Puglia
+puglia_8;Ascoli_satriano;puglia;15.55056;41.20083;435;Puglia
+puglia_89;Minervino_murge;puglia;16.08333;41.06694;502;Puglia
+puglia_94;Monticchio_bagni;puglia;15.6;40.93333;713;Puglia
+sicilia_11835;Diga Platani (Fanaco);sicilia;13.552996;37.670208;667;Sicilia
+sicilia_11867;Ragusa;sicilia;14.723773;36.922496;532;Sicilia
+toscana_15;Cortona;toscana;11.996447999999999;43.268995;485;Toscana
+toscana_232;Lucca;toscana;10.5127;43.842185;17;Toscana
+toscana_349;Pontremoli Depuratore;toscana;9.883168;44.369246;290;Toscana
+toscana_464;Lucca (Orto Botanico);toscana;10.510888;43.841806;17;Toscana
+toscana_55;Prato Universita';toscana;11.099213;43.885556;64;Toscana
+toscana_57;S. Giusto;toscana;11.193765;43.759952;39;Toscana
+toscana_58;Case Passerini;toscana;11.17746;43.814406;35;Toscana
+toscana_72;S. Miniato (Cimitero);toscana;10.831479;43.684031;42;Toscana
+toscana_76;Castelmartini;toscana;10.829129;43.817839;22;Toscana
+toscana_78;Volterra;toscana;10.862233;43.408995;372;Toscana
+umbria_1482;Perugia_sede;umbria;12.376;43.106;352;Umbria
+umbria_1520;Foligno;umbria;12.679;42.953;222;Umbria
+umbria_1522;Piediluco;umbria;12.767;42.534;389;Umbria
+umbria_1652;Narni_scalo;umbria;12.545;42.552;108;Umbria
+umbria_1653;Cerbara;umbria;12.218;43.509;318;Umbria
+umbria_2001;Umbertide;umbria;12.35;43.313;322;Umbria
+umbria_2002;Spoleto;umbria;12.739;42.756;323;Umbria
+umbria_2005;Orvieto;umbria;12.11;42.719;264;Umbria
+umbria_252;Ponte_santa_maria;umbria;12.021;42.896;241;Umbria
+umbria_265;Citta_di_castello;umbria;12.251;43.462;306;Umbria
+umbria_266;Petrelle;umbria;12.16;43.35;400;Umbria
+umbria_268;Todi;umbria;12.41;42.787;211;Umbria
+umbria_269;Compignano;umbria;12.283;42.948;211;Umbria
+umbria_270;Bastia_umbra;umbria;12.561;43.054;204;Umbria
+umbria_3537;San_gemini;umbria;12.54;42.609;255;Umbria
+umbria_3539;Perugia_santa_giuliana;umbria;12.387;43.105;412;Umbria
+umbria_3549;Terni;umbria;12.65;42.56;129;Umbria
+umbria_453;Ponte_nuovo;umbria;12.429;43.01;176;Umbria
+umbria_738;Petrignano_del_lago_-_Sp_302;umbria;11.953;43.161;301;Umbria
+umbria_742;Isola_polvese_1;umbria;12.143;43.115;263;Umbria
+umbria_748;Passignano;umbria;12.142;43.187;308;Umbria
+umbria_773;Petrignano_d'assisi;umbria;12.537;43.103;212;Umbria
+umbria_796;Bastardo;umbria;12.558;42.865;321;Umbria
+umbria_799;San_silvestro;umbria;12.674;42.756;369;Umbria
+umbria_804;Ponte_buggianino;umbria;12.926;42.843;535;Umbria
+umbria_807;Marsciano;umbria;12.337;42.916;168;Umbria
+umbria_813;Orvieto_scalo;umbria;12.136;42.725;127;Umbria
+abruzzo_1707;Pescocostanzo;abruzzo;14.05888889;41.88805556;1371;Abruzzo
+abruzzo_2213;Goriano Sicoli;abruzzo;13.79888889;42.08222222;904;Abruzzo
+bolzano_102;S.maddalena In Casies;bolzano;12.24271916;46.83526049;1456;Bolzano
+bolzano_110;Predoi;bolzano;12.09912721;47.03658867;1515;Bolzano
+bolzano_135;La Villa In Badia Osservatore;bolzano;11.90707588;46.5836304;1398;Bolzano
+bolzano_149;Terento;bolzano;11.78557637;46.83445756;1437;Bolzano
+bolzano_150;Fundres;bolzano;11.7029428;46.88718005;1151;Bolzano
+bolzano_166;Selva Gardena;bolzano;11.76842971;46.54555526;1713;Bolzano
+bolzano_197;Sarentino;bolzano;11.3550613;46.64063165;976;Bolzano
+bolzano_206;Nova Ponente;bolzano;11.42685821;46.42048615;1416;Bolzano
+bolzano_223;Sesto;bolzano;12.34996391;46.70305366;1490;Bolzano
+bolzano_28;Vernago;bolzano;10.84927965;46.73565796;1823;Bolzano
+bolzano_39;Plata;bolzano;11.17808117;46.82249293;1118;Bolzano
+bolzano_5;Monte Maria;bolzano;10.5212676;46.70568911;1256;Bolzano
+bolzano_58;Diga Di Zoccolo-S.valburga;bolzano;10.99013577;46.54187189;1282;Bolzano
+bolzano_83;Ridanna;bolzano;11.30677415;46.90908292;1337;Bolzano
+bolzano_94;Dobbiaco;bolzano;12.21915906;46.72997843;1219;Bolzano
+calabria_14;Camigliatello - Monte Curcio;calabria;16.42305556;39.31611111;1711;Calabria
+friuliveneziagiulia_47;Tarvisio;friuliveneziagiulia;13.551886;46.510775;794;Friuli Venezia Giulia
+lazio_388;Monte Terminillo;lazio;12.9928;42.4556;1594;Lazio
+liguria_5849;Colle Belenda;liguria;7.7;43.98;1357;Liguria
+piemonte_5607;Chiusa Pesio;piemonte;7.661;44.234;924;Piemonte
+piemonte_5608;Pontechianale;piemonte;7.054;44.613;1650;Piemonte
+piemonte_5620;Salbertrand;piemonte;6.895;45.072;1150;Piemonte
+piemonte_5629;Coazze;piemonte;7.245;45.043;1110;Piemonte
+piemonte_5632;Ala Di Stura;piemonte;7.311;45.313;1063;Piemonte
+piemonte_5639;Piedicavallo;piemonte;7.957;45.69;1108;Piemonte
+piemonte_5640;Oropa;piemonte;7.982;45.628;1222;Piemonte
+piemonte_5644;Alpe Cheggio;piemonte;8.117;46.086;1661;Piemonte
+piemonte_5651;Alpe Devero;piemonte;8.261;46.317;1700;Piemonte
+toscana_10;La Verna;toscana;11.931335;43.706911;1053;Toscana
+toscana_25;Vallombrosa;toscana;11.556821;43.731367;1050;Toscana
+toscana_39;Consuma;toscana;11.585201;43.784466;908;Toscana
+trentino_6511;Pontarso;trentino;11.494414;46.115589;925;Trentino
+trentino_6516;Passo Cereda;trentino;11.906843;46.194016;1375;Trentino
+trentino_6521;Lavarone;trentino;11.254037;45.939893;1155;Trentino
+trentino_6533;Passo Mendola;trentino;11.189417;46.419238;1320;Trentino
+trentino_6541;Pezze' Di Moena (Diga);trentino;11.664561;46.383662;1205;Trentino
+trentino_6591;Torrente Arno';trentino;10.640512;46.032072;1148;Trentino
+trentino_6636;Tremalzo;trentino;10.683719;45.84185;1520;Trentino
+trentino_6638;Passo Tonale T0360;trentino;10.635572;46.261915;1880;Trentino
+trentino_6639;Pejo Frana;trentino;10.678177;46.364472;1580;Trentino
+trentino_6644;Malga Bissina;trentino;10.514022;46.053933;1750;Trentino
+umbria_1683;Monte_cucco;umbria;12.729;43.375;1155;Umbria
+valledaosta_111;La Thuile - Les Granges;valledaosta;6.96684;45.7297;1637;Valle D'aosta
+valledaosta_113;Etroubles - Chevrière;valledaosta;7.23278;45.8167;1339;Valle D'aosta
+valledaosta_31;Issime - Capoluogo;valledaosta;7.85621;45.6873;960;Valle D'aosta
+valledaosta_57;Valgrisenche - Menthieu;valledaosta;7.0525;45.6137;1859;Valle D'aosta
+veneto_5675;Arabba;veneto;11.87637;46.49926;1653;Veneto
+veneto_5699;Recoaro 1000;veneto;11.22594;45.67982;913;Veneto
+abruzzo_1975;Montazzoli;abruzzo;14.42805556;41.94222222;792;Abruzzo
+abruzzo_1982;Vasto;abruzzo;14.69833333;42.09972222;187;Abruzzo
+abruzzo_2168;Aterno A Fagnano;abruzzo;13.56722222;42.24805556;620;Abruzzo
+abruzzo_2176;Assergi;abruzzo;13.51805556;42.41972222;1038;Abruzzo
+abruzzo_2256;Santo Stefano;abruzzo;13.60277778;42.6475;734;Abruzzo
+abruzzo_2274;Barisciano;abruzzo;13.57388889;42.32361111;932;Abruzzo
+abruzzo_606;Chieti;abruzzo;14.18305556;42.37694444;244;Abruzzo
+basilicata_41;Noepoli;basilicata;16.3306;40.0894;575;Basilicata
+basilicata_48;Potenza;basilicata;15.8108;40.6328;669;Basilicata
+basilicata_6;Albano Di Lucania;basilicata;16.0378;40.5894;794;Basilicata
+bolzano_203;Bolzano;bolzano;11.31283145;46.49768516;246;Bolzano
+bolzano_49;Merano - Quarazze;bolzano;11.13656021;46.68805798;369;Bolzano
+calabria_157;Palermiti;calabria;16.45286111;38.74919444;525;Calabria
+calabria_160;Chiaravalle Centrale;calabria;16.40888889;38.67138889;551;Calabria
+calabria_17;Acri;calabria;16.3935;39.48252778;746;Calabria
+calabria_327;Nicastro - Bella;calabria;16.29944444;38.98555556;597;Calabria
+calabria_338;Rogliano;calabria;16.32583333;39.18361111;665;Calabria
+campania_84;Senerchia;campania;15.20555556;40.73861111;613.12469482421875;Campania
+emiliaromagna_12702;Bologna Urbana;emiliaromagna;11.328789;44.500754;44;Emilia Romagna
+emiliaromagna_14246;Ferrara Urbana;emiliaromagna;11.62114;44.8325;9;Emilia Romagna
+emiliaromagna_14354;Parma Urbana;emiliaromagna;10.33049;44.808;49;Emilia Romagna
+emiliaromagna_9163;Forliurb;emiliaromagna;12.04086;44.21942;32;Emilia Romagna
+emiliaromagna_9224;Modenaurb;emiliaromagna;10.91571;44.65191;35;Emilia Romagna
+emiliaromagna_9320;Reggioemiliaurb;emiliaromagna;10.63239;44.69007;59;Emilia Romagna
+friuliveneziagiulia_14;Cividale Del Friuli;friuliveneziagiulia;13.420014;46.080442;127;Friuli Venezia Giulia
+friuliveneziagiulia_21;Gemona Del Friuli;friuliveneziagiulia;13.122088;46.261297;184;Friuli Venezia Giulia
+friuliveneziagiulia_27;Lignano Sabbiadoro;friuliveneziagiulia;13.147078;45.701909;7;Friuli Venezia Giulia
+friuliveneziagiulia_39;Pordenone;friuliveneziagiulia;12.681257;45.953618;23;Friuli Venezia Giulia
+friuliveneziagiulia_5;Bordano;friuliveneziagiulia;13.081196;46.332764;230;Friuli Venezia Giulia
+friuliveneziagiulia_51;Trieste Molo F.lli Bandiera;friuliveneziagiulia;13.752242;45.649996;1;Friuli Venezia Giulia
+friuliveneziagiulia_52;Udine S.o.;friuliveneziagiulia;13.226672;46.035212;91;Friuli Venezia Giulia
+friuliveneziagiulia_6;Borgo Grotta Gigante;friuliveneziagiulia;13.764681;45.709385;275;Friuli Venezia Giulia
+lazio_275;Allumiere;lazio;11.9086;42.1578;568;Lazio
+liguria_6933;Borzone;liguria;9.41;44.4243;370;Liguria
+lombardia_5963;Sondrio;lombardia;9.848611;46.165556;301;Lombardia
+lombardia_5981;Milano - Parco Nord;lombardia;9.207222;45.543333;150;Lombardia
+lombardia_5999;Sermide;lombardia;11.290278;45.00722;12;Lombardia
+lombardia_6013;Monzambano;lombardia;10.711111;45.390278;93;Lombardia
+lombardia_6032;Voghera;lombardia;9.0175;44.990278000000004;99;Lombardia
+marche_101;Sant'angelo In Vado;marche;12.410222;43.666889;352;Marche
+marche_152;Fano;marche;13.053796;43.826328;7;Marche
+marche_605;Fabriano;marche;12.904034;43.330273;354;Marche
+piemonte_5598;Isola S. Antonio;piemonte;8.855;45.022;76;Piemonte
+piemonte_5600;Alessandria Lobbi;piemonte;8.705;44.938;88;Piemonte
+piemonte_5602;Casale Monferrato;piemonte;8.505;45.133;105;Piemonte
+piemonte_5603;Asti Tanaro;piemonte;8.213;44.886;116;Piemonte
+piemonte_5609;Mondovi';piemonte;7.812;44.397;414;Piemonte
+piemonte_5612;Bra;piemonte;7.853;44.702;327;Piemonte
+piemonte_5616;Borgomanero;piemonte;8.461;45.689;299;Piemonte
+piemonte_5628;Cumiana;piemonte;7.392;44.965;305;Piemonte
+piemonte_5634;Vercelli;piemonte;8.391;45.326;132;Piemonte
+piemonte_5647;Pallanza;piemonte;8.55;45.925;214;Piemonte
+piemonte_5649;Domodossola;piemonte;8.303;46.104;255;Piemonte
+puglia_121;San_giovanni_rotondo;puglia;15.75028;41.70111;572;Puglia
+puglia_15;Biccari;puglia;15.18389;41.40056;590;Puglia
+puglia_86;Melfi;puglia;15.61694;40.98389;569;Puglia
+sicilia_11827;Piano Del Leone;sicilia;13.465549;37.670792;876;Sicilia
+sicilia_11850;Enna;sicilia;14.272487;37.56782;804;Sicilia
+sicilia_11885;San Fratello;sicilia;14.598359;38.016142;654;Sicilia
+toscana_23;Pian Di Sco';toscana;11.55515;43.649965;470;Toscana
+toscana_30;Le Croci (Barberino);toscana;11.271917;44.009686;387;Toscana
+toscana_37;Villore;toscana;11.546251;43.966733;513;Toscana
+trentino_6561;Trento (Roncafort);trentino;11.101279;46.095667;194;Trentino
+trentino_6569;Aldeno;trentino;11.091715;45.967849;182;Trentino
+trentino_6570;Rovereto;trentino;11.043954;45.896097;203;Trentino
+trentino_6574;Loppio;trentino;10.931337;45.855358;230;Trentino
+trentino_6598;Santa Massenza (Centrale);trentino;10.980894;46.065821;245;Trentino
+trentino_6601;Torbole;trentino;10.882485;45.881852;70;Trentino
+umbria_2011;Norcia;umbria;13.105;42.799;678;Umbria
+umbria_264;Montelovesco;umbria;12.418;43.308;590;Umbria
+umbria_267;Nocera_umbra;umbria;12.791;43.119;517;Umbria
+umbria_301;Gubbio;umbria;12.563;43.341;449;Umbria
+valledaosta_109;Aosta - Piazza Plouves;valledaosta;7.32372;45.7369;580;Valle D'aosta
+veneto_5717;Montagnana;veneto;11.46828;45.24286;15;Veneto
+veneto_5718;Salizzole;veneto;11.08626;45.23885;22;Veneto
+veneto_5719;Cittadella;veneto;11.79122;45.66574;57;Veneto
+veneto_5731;Trebaseleghe;veneto;12.02654;45.6068;23;Veneto
+abruzzo_1999;Campotosto;abruzzo;13.40638889;42.53611111;1392;Abruzzo
+abruzzo_2094;Arsita;abruzzo;13.79805556;42.5;510;Abruzzo
+abruzzo_2135;Montereale;abruzzo;13.24138889;42.52611111;825;Abruzzo
+abruzzo_2142;Tornimparte;abruzzo;13.30166667;42.28861111;880;Abruzzo
+abruzzo_2263;Villa S.lucia;abruzzo;13.77944444;42.33361111;1119;Abruzzo
+abruzzo_2280;Caramanico Meteo;abruzzo;14.01916667;42.15083333;785;Abruzzo
+basilicata_195;San_nicola_d__avigliano;basilicata;15.802501;40.733056;859;Basilicata
+bolzano_129;Brunico;bolzano;11.93148052;46.8042795;824;Bolzano
+bolzano_176;Fi� Allo Sciliar;bolzano;11.50595194;46.51340578;804;Bolzano
+bolzano_18;Silandro;bolzano;10.78026981;46.62375473;684;Bolzano
+bolzano_30;Naturno;bolzano;10.99117805;46.64766321;561;Bolzano
+calabria_156;Cenadi - Serralta;calabria;16.36833333;38.74916667;949;Calabria
+calabria_164;Serra San Bruno;calabria;16.31972222;38.56527778;926;Calabria
+calabria_184;Mongiana;calabria;16.31672222;38.51630556;885;Calabria
+calabria_186;Fabrizia;calabria;16.30027778;38.486;880;Calabria
+calabria_194;Fabrizia - Cassari;calabria;16.29333333;38.44222222;999;Calabria
+calabria_220;Roccaforte Del Greco;calabria;15.90083333;38.04527778;719;Calabria
+calabria_239;Cardeto;calabria;15.79955556;38.10336111;1230;Calabria
+calabria_286;Mammola - Limina C.c.;calabria;16.18916667;38.37133333;674;Calabria
+calabria_317;Tiriolo;calabria;16.50994444;38.93955556;523;Calabria
+calabria_376;Albidona;calabria;16.46833333;39.92472222;675;Calabria
+calabria_85;Nocelle - Arvo;calabria;16.545;39.24333333;1307;Calabria
+campania_46;Montemarano;campania;15.00361111;40.91416667;815.46923828125;Campania
+campania_92;Torriello;campania;14.62583333;40.8475;839.5303344726564;Campania
+friuliveneziagiulia_13;Chievolis;friuliveneziagiulia;12.734044;46.254523;345;Friuli Venezia Giulia
+friuliveneziagiulia_2;Barcis;friuliveneziagiulia;12.571028;46.193202;468;Friuli Venezia Giulia
+lazio_281;Leonessa;lazio;12.9536;42.5786;929;Lazio
+liguria_5813;Busalla;liguria;8.948889;44.57277;358;Liguria
+liguria_5816;Diga Del Brugneto;liguria;9.208333;44.53055;777;Liguria
+liguria_5817;Torriglia;liguria;9.1555;44.5158;769;Liguria
+liguria_5818;S. Stefano D'aveto;liguria;9.451944;44.54958;1014;Liguria
+liguria_5868;Giacopiane;liguria;9.39525;44.46268;1009;Liguria
+liguria_5888;Mignanego;liguria;8.940611;44.540806;250;Liguria
+liguria_5937;Statale;liguria;9.483389;44.348694;570;Liguria
+lombardia_5962;Varzi;lombardia;9.195;44.823889;419;Lombardia
+lombardia_5970;Cornalita;lombardia;9.646944;45.882222;481;Lombardia
+marche_104;Urbino;marche;12.636861;43.723278;471;Marche
+marche_109;Fonte Avellana;marche;12.726417;43.471085;690;Marche
+marche_123;Arcevia;marche;12.936685;43.497452;535;Marche
+marche_608;Cingoli;marche;13.19233;43.36224;790;Marche
+marche_616;Apiro;marche;13.07954;43.36842;580;Marche
+marche_703;Amatrice;marche;13.296259;42.625565;954;Marche
+piemonte_5599;Ovada;piemonte;8.637;44.648;193;Piemonte
+piemonte_5611;Brossasco;piemonte;7.374;44.569;675;Piemonte
+piemonte_5613;Boves;piemonte;7.563;44.336;573;Piemonte
+piemonte_5617;Pietrastretta;piemonte;7.055;45.143;732;Piemonte
+piemonte_5621;Luserna S. Giovanni;piemonte;7.242;44.814;468;Piemonte
+piemonte_5627;Lanzo;piemonte;7.494;45.29;565;Piemonte
+piemonte_5642;Cicogna;piemonte;8.493;46.004;597;Piemonte
+piemonte_5646;Crodo;piemonte;8.325;46.228;571;Piemonte
+puglia_100;Nusco;puglia;15.08333;40.88333;863;Puglia
+puglia_108;Pescopagano;puglia;15.36806;40.81778;920;Puglia
+puglia_20;Bosco_umbra;puglia;16.03389;41.81667;780;Puglia
+puglia_4;Andretta;puglia;15.3175;40.91722;890;Puglia
+puglia_49;Faeto;puglia;15.18389;41.30083;809;Puglia
+puglia_54;Forenza;puglia;15.85028;40.83472;753;Puglia
+puglia_64;Lagopesole;puglia;15.73333;40.8;769;Puglia
+puglia_90;Monteleone_di_puglia;puglia;15.25028;41.15056;828;Puglia
+sicilia_11891;Floresta;sicilia;14.908035;37.986395;1266;Sicilia
+toscana_204;Vallelunga;toscana;10.337689;43.971328;688;Toscana
+toscana_27;Monte Di Fo';toscana;11.280845;44.079632;792;Toscana
+toscana_28;Mangona;toscana;11.197975;44.051395;552;Toscana
+trentino_6509;Centa;trentino;11.234123;45.970184;815;Trentino
+trentino_6512;Bieno;trentino;11.553742;46.079537;806;Trentino
+trentino_6528;Mezzana;trentino;10.795807;46.313429;905;Trentino
+trentino_6529;Male';trentino;10.916104;46.355098;735;Trentino
+trentino_6564;Sant'orsola;trentino;11.3022;46.107105;930;Trentino
+trentino_6576;Ronchi Di Ala;trentino;11.065345;45.739264;692;Trentino
+trentino_6603;Forte D'ampola;trentino;10.646264;45.863908;725;Trentino
+trentino_6609;Spormaggiore;trentino;11.047544;46.212402;655;Trentino
+trentino_6615;Romeno;trentino;11.118834;46.390724;958;Trentino
+trentino_6640;Cavalese (Meteotrentino);trentino;11.451794;46.284762;958;Trentino
+trentino_6954;San Lorenzo In Banale (Pergole;trentino;10.911055;46.066522;690;Trentino
+umbria_1090;Armenzano;umbria;12.702;43.072;614;Umbria
+umbria_1480;Carestello;umbria;12.534;43.286;494;Umbria
+umbria_4510;La_cima;umbria;12.122;43.234;694;Umbria
+umbria_792;Casa_castalda;umbria;12.659;43.18;663;Umbria
+umbria_794;San_benedetto_vecchio;umbria;12.464;43.437;679;Umbria
+valledaosta_110;Aosta - Mont-Fleury;valledaosta;7.29903;45.7305;577;Valle D'aosta
+valledaosta_115;Donnas - Clapey;valledaosta;7.76643;45.5966;341;Valle D'aosta
+veneto_5680;Agordo;veneto;12.03251;46.27609;588;Veneto
+veneto_5683;Sospirolo;veneto;12.07977;46.14025;363;Veneto
+abruzzo_2;Teramo;abruzzo;13.71722222;42.65472222;264;Abruzzo
+abruzzo_2258;Sulmona;abruzzo;13.91444444;42.06861111;365;Abruzzo
+basilicata_2;Torre Accio;basilicata;16.6539;40.3925;21;Basilicata
+calabria_107;Crotone - Papanice;calabria;17.02777778;39.0725;118;Calabria
+calabria_108;Crotone;calabria;17.13111111;39.08694444;1;Calabria
+calabria_111;Crotone - Salica;calabria;17.12611111;39.01222222;145;Calabria
+calabria_112;Isola Di Capo Rizzuto - Campolongo;calabria;17.0088;38.94305556;151;Calabria
+calabria_121;San Mauro Marchesato;calabria;16.92888889;39.10444444;212;Calabria
+calabria_140;Catanzaro;calabria;16.58583333;38.91083333;315;Calabria
+calabria_177;Monasterace - Punta Stilo;calabria;16.55222222;38.45361111;64;Calabria
+calabria_18;Torano Scalo;calabria;16.21;39.49388889;93;Calabria
+calabria_196;Gioiosa Ionica;calabria;16.32972222;38.30111111;18;Calabria
+calabria_2;Cosenza;calabria;16.26527778;39.28694444;269;Calabria
+calabria_20;Tarsia;calabria;16.27277778;39.61722222;203;Calabria
+calabria_202;Antonimina;calabria;16.18055556;38.25972222;126;Calabria
+calabria_208;Plati';calabria;16.04444444;38.22222222;329;Calabria
+calabria_213;Sant'agata Del Bianco;calabria;16.08533333;38.10075;310;Calabria
+calabria_215;Staiti;calabria;16.0355;37.99986111;369;Calabria
+calabria_217;Capo Spartivento;calabria;16.05613889;37.92727778;61;Calabria
+calabria_233;Reggio Calabria;calabria;15.65094444;38.10786111;72;Calabria
+calabria_246;Scilla;calabria;15.71972222;38.25166667;60;Calabria
+calabria_255;Santa Cristina D'aspromonte;calabria;15.96472222;38.25694444;448;Calabria
+calabria_26;Castrovillari;calabria;16.25416667;39.76555556;199;Calabria
+calabria_265;Cittanova;calabria;16.0775;38.35222222;407;Calabria
+calabria_28;Castrovillari - Camerata;calabria;16.27191667;39.73308333;63;Calabria
+calabria_284;Feroleto Della Chiesa;calabria;16.06833333;38.46805556;180;Calabria
+calabria_290;Mileto;calabria;16.064808;38.613861;328;Calabria
+calabria_34;San Sosti;calabria;16.02805556;39.66444444;384;Calabria
+calabria_345;Paola;calabria;16.04208333;39.36727778;282;Calabria
+calabria_348;Cetraro Superiore;calabria;15.96408333;39.535055560000004;417;Calabria
+calabria_380;Villapiana Scalo;calabria;16.49861111;39.795;0;Calabria
+calabria_60;Cropalati;calabria;16.72444444;39.51583333;321;Calabria
+calabria_71;Ciro' Marina - Punta Alice;calabria;17.12611111;39.38416667;8;Calabria
+campania_14;Benevento;campania;14.76222222;41.14194444;117.5702285766602;Campania
+campania_33;Grazzanise;campania;14.10527778;41.0925;12.9779176712036;Campania
+campania_54;Paduli;campania;14.83472222;41.14805556;139.4526672363281;Campania
+campania_56;Persano Sele;campania;15.0325;40.54416667;20.1688442230225;Campania
+campania_76;S.mauro;campania;14.63222222;40.76388889;40.6466827392578;Campania
+campania_77;S.pietro;campania;14.78694444;40.81833333;204.2464141845703;Campania
+campania_9;Auletta;campania;15.42805556;40.55166667;245.9533996582031;Campania
+lazio_240;Roma Macao;lazio;12.5072;41.9039;56;Lazio
+lazio_273;Marta A Tarquinia;lazio;11.7425;42.2569;50;Lazio
+lazio_276;Civitavecchia;lazio;11.7853;42.0967;7;Lazio
+lazio_278;Bracciano;lazio;12.175;42.1019;214;Lazio
+lazio_283;Poggio Mirteto;lazio;12.6953;42.27;353;Lazio
+lazio_285;Ardea;lazio;12.5369;41.6117;22;Lazio
+lazio_289;Latina;lazio;12.9058;41.4714;17;Lazio
+lazio_330;Rocca Respampani;lazio;11.9289;42.3839;149;Lazio
+lazio_333;Collegio Romano;lazio;12.4806;41.8986;19;Lazio
+lazio_334;Frascati;lazio;12.6714;41.8097;245;Lazio
+lazio_375;Roma Monte Mario;lazio;12.4356;41.9356;111;Lazio
+lazio_384;Riano;lazio;12.5039;42.1014;171;Lazio
+liguria_5870;Imperia;liguria;8.01694;43.8789;60;Liguria
+liguria_5889;Molino Branca;liguria;8.21083;44.0481;6;Liguria
+liguria_5926;Sanremo;liguria;7.78625;43.822694;45;Liguria
+liguria_5933;Sarzana;liguria;9.965278;44.114722;26;Liguria
+liguria_5934;Savona Istituto Nautico;liguria;8.484083;44.307111;28;Liguria
+marche_19;Servigliano;marche;13.498032;43.085857;197;Marche
+marche_25;Ascoli Piceno;marche;13.651516;42.852242;78;Marche
+puglia_10;Avetrana;puglia;17.71722;40.33389;80;Puglia
+puglia_102;Ortanova;puglia;15.70028;41.31722;84;Puglia
+puglia_104;Ostuni;puglia;17.56694;40.73389;115;Puglia
+puglia_105;Otranto;puglia;18.48417;40.15028;27;Puglia
+puglia_11;Bari_(Facolta_dingegneria);puglia;16.87778;41.10639;23;Puglia
+puglia_111;Polignano_a_mare;puglia;17.21667;40.98361;50;Puglia
+puglia_112;Presicce;puglia;18.26667;39.88389;105;Puglia
+puglia_118;Ruvo_di_puglia;puglia;16.48361;41.10083;274;Puglia
+puglia_12;Bari_(Osservatorio);puglia;16.87167;41.11722;34;Puglia
+puglia_120;San_giorgio_jonico;puglia;17.3675;40.45028;86;Puglia
+puglia_126;San_pietro_vernotico;puglia;18.00083;40.4675;49;Puglia
+puglia_127;San_samuele_di_cafiero;puglia;16.05917;41.26889;45;Puglia
+puglia_128;San_severo;puglia;15.38333;41.68389;99;Puglia
+puglia_13;Bari_(Ufficio_idrografico);puglia;16.88194;41.11972;17;Puglia
+puglia_130;Santa_maria_di_leuca;puglia;18.35;39.78417;26;Puglia
+puglia_133;San_vito_dei_normanni;puglia;17.70028;40.65028;121;Puglia
+puglia_137;Talsano;puglia;17.26694;40.40056;37;Puglia
+puglia_138;Taranto;puglia;17.25028;40.46417;27;Puglia
+puglia_139;Taviano;puglia;18.08361;39.9675;65;Puglia
+puglia_14;Barletta;puglia;16.20028;41.30056;30;Puglia
+puglia_144;Turi;puglia;17.01667;40.90083;268;Puglia
+puglia_147;Vieste;puglia;16.16694;41.8675;33;Puglia
+puglia_148;Vignacastrisi;puglia;18.4;40.00056;99;Puglia
+puglia_22;Brindisi;puglia;17.91722;40.63389;22;Puglia
+puglia_23;Cagnano_varano;puglia;15.80028;41.83361;181;Puglia
+puglia_27;Canosa_di_puglia;puglia;16.10056;41.21694;116;Puglia
+puglia_30;Casamassima;puglia;16.91667;40.95028;229;Puglia
+puglia_31;Cassano_murge;puglia;16.76667;40.88361;380;Puglia
+puglia_34;Castellaneta;puglia;16.9175;40.61722;236;Puglia
+puglia_38;Cerignola;puglia;15.90028;41.25056;134;Puglia
+puglia_42;Corato;puglia;16.40056;41.15;249;Puglia
+puglia_5;Andria;puglia;16.28417;41.21806;162;Puglia
+puglia_50;Fasano;puglia;17.35028;40.83361;118;Puglia
+puglia_51;Foggia_(Ist._Sper.le_colture_foragg.);puglia;15.46806;41.46667;85;Puglia
+puglia_52;Foggia_(Osservatorio);puglia;15.54306;41.46167;94;Puglia
+puglia_56;Gallipoli;puglia;17.99444;40.05444;31;Puglia
+puglia_58;Ginosa_marina;puglia;16.88472;40.43361;15;Puglia
+puglia_61;Grottaglie;puglia;17.43361;40.53361;165;Puglia
+puglia_62;Grumo_appula;puglia;16.71806;40.98472;202;Puglia
+puglia_65;Latiano;puglia;17.70056;40.55;114;Puglia
+puglia_66;Lavello;puglia;15.795;41.05056;328;Puglia
+puglia_67;Lecce;puglia;18.16667;40.35028;51;Puglia
+puglia_68;Lesina;puglia;15.35;41.85056;17;Puglia
+puglia_69;Lizzano;puglia;17.43417;40.38389;71;Puglia
+puglia_72;Lucera;puglia;15.33333;41.50056;224;Puglia
+puglia_73;Maglie;puglia;18.28389;40.10083;102;Puglia
+puglia_74;Manduria;puglia;17.63444;40.36806;81;Puglia
+puglia_75;Manfredonia-Bonifica_sipontina;puglia;15.88;41.58306;2;Puglia
+puglia_77;Massafra;puglia;17.10056;40.58361;113;Puglia
+puglia_82;Masseria_monteruga;puglia;17.81722;40.33389;92;Puglia
+puglia_84;Masseria_s._Chiara;puglia;16.13333;41.33361;10;Puglia
+puglia_87;Mercadante;puglia;16.7;40.88389;395;Puglia
+puglia_88;Minervino_di_lecce;puglia;18.41667;40.08361;104;Puglia
+puglia_97;Nardo;puglia;18.03333;40.16694;54;Puglia
+sicilia_11805;Trapani;sicilia;12.506774;38.013603;2;Sicilia
+sicilia_11810;Birgi Nuovo;sicilia;12.495327;37.883963;21;Sicilia
+sicilia_11812;Marsala;sicilia;12.456187;37.810158;5;Sicilia
+sicilia_11813;Mazara Del Vallo;sicilia;12.599055;37.656656;8;Sicilia
+sicilia_11825;Sciacca;sicilia;13.126871;37.511873;110;Sicilia
+sicilia_11831;Diga Castello;sicilia;13.408301;37.580671;264;Sicilia
+sicilia_11832;Bivona;sicilia;13.438949;37.61914;554;Sicilia
+sicilia_11843;Agrigento;sicilia;13.588111;37.303537;212;Sicilia
+sicilia_11845;Canicattã¬;sicilia;13.849812;37.357789;456;Sicilia
+sicilia_11858;Licata;sicilia;13.932402;37.098433;48;Sicilia
+sicilia_11860;Comunelli Diga;sicilia;14.150239;37.155767;78;Sicilia
+sicilia_11882;Caltagirone;sicilia;14.517966;37.239686;428;Sicilia
+sicilia_11883;Mineo;sicilia;14.690246;37.264436;459;Sicilia
+sicilia_11887;Linguaglossa;sicilia;15.144488;37.839333;512;Sicilia
+sicilia_11888;Acireale;sicilia;15.165228;37.620461;184;Sicilia
+sicilia_11889;Catania Istituto Dagraria;sicilia;15.071749;37.517405;102;Sicilia
+sicilia_11898;Messina Istituto Geofisico;sicilia;15.554106;38.200472;31;Sicilia
+sicilia_11933;Ciminna;sicilia;13.559357;37.891796;467;Sicilia
+sicilia_11942;Palermo Osservatorio Astronomico;sicilia;13.350685;38.109161;27;Sicilia
+toscana_238;Seravezza 2;toscana;10.223503;43.992815;127;Toscana
+toscana_239;Ponte Tavole;toscana;10.18483;43.972565;7;Toscana
+bolzano_23;Diga Di Gioveretto Osservatore;bolzano;10.72507183;46.50906285;1896;Bolzano
+piemonte_5630;Lago Agnel;piemonte;7.14;45.469;2326;Piemonte
+trentino_6525;Careser (Diga);trentino;10.699326;46.42264;2600;Trentino
+trentino_6543;Paganella;trentino;11.037444;46.143291;2125;Trentino
+trentino_6546;Passo Rolle;trentino;11.787638;46.297214;1995;Trentino
+trentino_6547;Passo Valles;trentino;11.799764;46.338417;2032;Trentino
+trentino_6585;Pradalago Rifugio Agostini;trentino;10.813874;46.249712;2084;Trentino
+valledaosta_20;Courmayeur - Mont De La Saxe;valledaosta;6.98204;45.817;2076;Valle D'aosta
+valledaosta_47;Pré-Saint-Didier - Plan Praz;valledaosta;6.95245;45.7549;2044;Valle D'aosta
+aeronautica_6810;Pescara;abruzzo;14.199999999999998;42.43299999999999;11;Abruzzo
+aeronautica_6865;Monte Scuro;calabria;16.4;39.33299999999999;1720;Calabria
+aeronautica_6863;Bonifati;calabria;15.882999999999997;39.583;485;Calabria
+aeronautica_6867;Crotone;calabria;17.067000000000004;38.99999999999999;161;Calabria
+aeronautica_6870;Lamezia Terme;calabria;16.25;38.900000000000006;15;Calabria
+aeronautica_6882;Reggio Calabria;calabria;15.649999999999993;38.066999999999986;21;Calabria
+aeronautica_6836;Trevico;campania;15.233000000000002;41.05;1093;Campania
+aeronautica_6827;Grazzanise;campania;14.067;41.05;10;Campania
+aeronautica_6844;Napoli/Capodichino;campania;14.3;40.85;72;Campania
+aeronautica_6847;Capri;campania;14.199999999999998;40.550000000000004;161;Campania
+aeronautica_6850;Capo Palinuro;campania;15.283;40.016999999999996;185;Campania
+aeronautica_6720;Piacenza;emilia-romagna;9.733;44.917;138;Emilia Romagna
+aeronautica_6762;Ferrara;emilia-romagna;11.617;44.83299999999999;10;Emilia Romagna
+aeronautica_6763;Bologna/Borgo Panig;emilia-romagna;11.300000000000002;44.532999999999994;49;Emilia Romagna
+aeronautica_6766;Punta Marina;emilia-romagna;12.3;44.45;6;Emilia Romagna
+aeronautica_6768;Cervia;emilia-romagna;12.3;44.21699999999999;10;Emilia Romagna
+aeronautica_6769;Rimini;emilia-romagna;12.617;44.033;13;Emilia Romagna
+aeronautica_6735;Ronchi Dei Legionar;friuli venezia giulia;13.483;45.817;12;Friuli Venezia Giulia
+aeronautica_6736;Trieste;friuli venezia giulia;13.75;45.65;20;Friuli Venezia Giulia
+aeronautica_6697;Tarvisio;friuli venezia giulia;13.582999999999998;46.499999999999986;778;Friuli Venezia Giulia
+aeronautica_6694;Aviano;friuli venezia giulia;12.6;46.033;128;Friuli Venezia Giulia
+aeronautica_6700;Udine/Rivolto;friuli venezia giulia;13.033;45.98299999999999;53;Friuli Venezia Giulia
+aeronautica_6797;Viterbo;lazio;12.05;42.43299999999999;308;Lazio
+aeronautica_6803;Vigna Di Valle;lazio;12.217;42.083;266;Lazio
+aeronautica_6795;Civitavecchia;lazio;11.833;42.033;4;Lazio
+aeronautica_6814;Guidonia;lazio;12.733000000000002;42.00000000000001;89;Lazio
+aeronautica_6815;Roma/Urbe;lazio;12.5;41.949999999999996;24;Lazio
+aeronautica_6817;Roma/Ciampino;lazio;12.582999999999998;41.783;105;Lazio
+aeronautica_6819;Roma Fiumicino;lazio;12.233;41.79999999999999;3;Lazio
+aeronautica_6820;Latina;lazio;12.9;41.54999999999998;26;Lazio
+aeronautica_6821;Frosinone;lazio;13.3;41.63299999999999;185;Lazio
+aeronautica_6822;Pratica Di Mare;lazio;12.45;41.64999999999999;21;Lazio
+aeronautica_6841;Ponza;lazio;12.949999999999996;40.91700000000001;185;Lazio
+aeronautica_6747;Albenga;liguria;8.117;44.04999999999998;49;Liguria
+aeronautica_6750;Sarzana/Luni;liguria;9.983;44.08299999999999;10;Liguria
+aeronautica_6771;Capo Mele;liguria;8.167;43.95;221;Liguria
+aeronautica_6711;Milano/Malpensa;lombardia;8.733;45.61699999999999;211;Lombardia
+aeronautica_6717;Bergamo/Orio Al Ser;lombardia;9.7;45.667;237;Lombardia
+aeronautica_6718;Milano/Linate;lombardia;9.283;45.433;103;Lombardia
+aeronautica_6721;Brescia/Ghedi;lombardia;10.282999999999998;45.417;97;Lombardia
+aeronautica_6787;Falconara;marche;13.367;43.617;10;Marche
+aeronautica_6782;Frontone;marche;12.732999999999999;43.517;574;Marche
+aeronautica_6826;Campobasso;molise;14.650000000000002;41.56699999999999;807;Molise
+aeronautica_6812;Termoli;molise;14.999999999999996;41.99999999999999;44;Molise
+aeronautica_6707;Torino/Caselle;piemonte;7.650000000000001;45.21699999999999;287;Piemonte
+aeronautica_6710;Novara/Cameri;piemonte;8.667;45.516999999999996;169;Piemonte
+aeronautica_6709;Torino/Bric Della C;piemonte;7.733;45.033;710;Piemonte
+aeronautica_6851;Gioia Del Colle;puglia;16.933;40.766999999999996;350;Puglia
+aeronautica_6828;Monte S. Angelo;puglia;15.950000000000001;41.7;844;Puglia
+aeronautica_6834;Amendola;puglia;15.716999999999997;41.533;60;Puglia
+aeronautica_6839;Bari/Palese Macchie;puglia;16.783;41.133;49;Puglia
+aeronautica_6856;Brindisi;puglia;17.95;40.650000000000006;10;Puglia
+aeronautica_6857;Grottaglie;puglia;17.4;40.517;69;Puglia
+aeronautica_6858;Marina Di Ginosa;puglia;16.882999999999996;40.433;12;Puglia
+aeronautica_6859;Lecce;puglia;18.15;40.23299999999999;61;Puglia
+aeronautica_6869;S. Maria Di Leuca;puglia;18.35;39.81699999999999;112;Puglia
+aeronautica_6906;Alghero;sardegna;8.283;40.632999999999996;40;Sardegna
+aeronautica_6910;Olbia/Costa Smerald;sardegna;9.517;40.900000000000006;13;Sardegna
+aeronautica_6914;Capo Frasca;sardegna;8.467;39.75;95;Sardegna
+aeronautica_6919;Decimomannu;sardegna;8.967;39.349999999999994;28;Sardegna
+aeronautica_6922;Capo Bellavista;sardegna;9.717;39.93299999999999;150;Sardegna
+aeronautica_6923;Cagliari/Elmas;sardegna;9.067;39.249999999999986;5;Sardegna
+aeronautica_6925;Capo Carbonara;sardegna;9.517;39.099999999999994;118;Sardegna
+aeronautica_6884;Prizzi;sicilia;13.433;37.717;1035;Sicilia
+aeronautica_6874;Ustica;sicilia;13.183;38.7;251;Sicilia
+aeronautica_6876;Palermo/Punta Raisi;sicilia;13.1;38.183;21;Sicilia
+aeronautica_6881;Messina;sicilia;15.549999999999997;38.199999999999996;51;Sicilia
+aeronautica_6883;Trapani/Birgi;sicilia;12.500000000000002;37.917;14;Sicilia
+aeronautica_6889;Gela;sicilia;14.216999999999999;37.083;65;Sicilia
+aeronautica_6891;Catania/Sigonella;sicilia;14.916999999999996;37.4;22;Sicilia
+aeronautica_6893;Catania/Fontanaross;sicilia;15.050000000000002;37.467;17;Sicilia
+aeronautica_6897;Pantelleria;sicilia;11.966999999999999;36.81699999999999;170;Sicilia
+aeronautica_6901;Cozzo Spadaro;sicilia;15.133;36.683;51;Sicilia
+aeronautica_6777;Firenze/Peretola;toscana;11.2;43.8;38;Toscana
+aeronautica_6779;Arezzo;toscana;11.849999999999998;43.467;249;Toscana
+aeronautica_6776;Monte Argentario;toscana;11.167;42.382999999999996;631;Toscana
+aeronautica_6790;M. Calamita;toscana;10.400000000000002;42.733;397;Toscana
+aeronautica_6773;Pisa/S. Giusto;toscana;10.383;43.68299999999999;6;Toscana
+aeronautica_6794;Grosseto;toscana;11.067;42.75;7;Toscana
+aeronautica_6686;S. Valentino Alla M;trentino-alto adige;10.533;46.75000000000001;1461;Trentino-Alto Adige
+aeronautica_6687;Resia Pass;trentino-alto adige;10.5;46.833;1800;Trentino-Alto Adige
+aeronautica_6693;Dobbiaco;trentino-alto adige;12.217000000000002;46.73299999999999;1226;Trentino-Alto Adige
+aeronautica_6690;Bolzano;trentino-alto adige;11.333;46.467;241;Trentino-Alto Adige
+aeronautica_6691;Passo Rolle;trentino-alto adige;11.782999999999998;46.29999999999998;2006;Trentino-Alto Adige
+aeronautica_6692;Paganella;trentino-alto adige;11.032999999999998;46.14999999999999;2129;Trentino-Alto Adige
+aeronautica_6784;Perugia;umbria;12.5;43.083000000000006;205;Umbria
+aeronautica_6703;Pian Rosa;valle d'aosta;7.699999999999999;45.933;3488;Valle D'aosta
+aeronautica_6723;Verona/Villafranca;veneto;10.867;45.38300000000001;68;Veneto
+aeronautica_6729;Treviso/Istrana;veneto;12.099999999999998;45.682999999999986;46;Veneto
+aeronautica_6730;Treviso/S. Angelo;veneto;12.182999999999998;45.65;23;Veneto
+aeronautica_6733;Venezia/Tessera;veneto;12.332999999999998;45.49999999999999;6;Veneto

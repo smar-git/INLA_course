@@ -1,0 +1,1380 @@
+---
+title: "Bayesian Statistics with R-INLA"
+subtitle: 'University of Zurich, March, 2022'
+author: "Instructor: Sara Martino"
+#date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  # html_document:
+  #   toc: yes
+  #   toc_float: yes
+  #   code_download: yes
+  #   toc_depth: 3
+  #   number_sections: true
+  beamer_presentation:
+    slide_level: 2
+    toc: true  
+    keep_tex: yes  
+    theme: "Singapore"
+    colortheme: "default"
+    font: "serif"
+    includes:
+      in_header: header.tex
+  # pdf_document:
+  #   keep_tex: yes
+  #   toc: yes
+  #   toc_depth: 3
+  #   number_sections: true
+# knit: (function(inputFile, encoding) {
+#   rmarkdown::render(inputFile, encoding = encoding,
+#   output_dir = "output", output_format = "all") })
+---
+
+
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","all",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","html_document",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","pdf_document",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","beamer_presentation",encoding="UTF-8") -->
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/INLA_course/Day1.1/")
+
+knitr::opts_chunk$set(echo = FALSE,  
+                      message=FALSE, 
+                      warning=FALSE, 
+                      strip.white=TRUE, 
+                      prompt=FALSE,
+                      fig.align="center",
+                       out.width = "60%")
+
+library(knitr)    # For knitting document and include_graphics function
+library(ggplot2)  # For plotting
+library(png) 
+library(tidyverse)
+library(INLA)
+library(BAS)
+library(patchwork)
+
+```
+
+
+## Plan for this 2-day course
+
+**Today**
+
+* **9:00-10:45**Introduction and basics concepts of INLA
+* **11:00-12:30** Practical session I
+
+ **\textcolor{red}{Lunch}**
+
+* **13:30-15:00** R-INLA: Basics
+* **15:15-17:00** Practical session II
+
+## Plan for this 2-day course
+**Tomorrow**
+
+* **9:00-10:45**??
+* **11:00-12:30** Practical session III
+
+ **\textcolor{red}{Lunch}**
+
+* **13:30-15:00** ??
+* **15:15-16:00** Practical session IV
+
+# Introduction
+
+## What is inla?
+
+**The short answer:**\
+\
+
+> INLA is a fast method to do Bayesian inference with
+latent Gaussian models and `INLA` is an `R`-package that
+implements this method with a flexible and simple interface.
+
+\pause
+
+**The (much) longer answer:**
+
+* Rue, Martino, and Chopin (2009) "Approximate Bayesian inference for latent Gaussian models by using integrated nested Laplace approximations." *JRSSB*
+* Rue, Riebler, Sørbye, Illian, Simpson, Lindgren (2017) "Bayesian Computing with INLA: A Review." *Annual Review of Statistics and Its Application*
+* Martino, Riebler "Integrated Nested Laplace Approximations (INLA)" (2021) *arXiv:1907.01248*
+
+## Where?
+
+The software, information, examples and help can be found at `http://www.r-inla.org`
+	
+```{r, out.width = "50%"}
+# All defaults
+include_graphics("graphics/rinla.png")
+```
+
+* paper
+* tutorials
+* discussion group
+* ...
+
+## So... Why should you use `R-INLA`?
+
+* What type of problems can we solve?
+* What type of models can we use?
+* When can we use it?\
+\
+\
+
+>To give proper answers to these questions, we 
+need to start at the very beginning
+
+## The core
+* We have observed something.
+```{r}
+data("bodyfat")
+p1 = bodyfat %>% ggplot() + geom_point(aes(Abdomen,Bodyfat)) 
+p1
+```
+
+## The core
+* We have observed something.
+* We have questions. 
+
+```{r}
+my_image <- readPNG("graphics/question.png", native = TRUE)
+p1  +
+  annotate("text", x=120, y=10, label="Does bodyfat vary\n with abdomen circunference??", size = 6,
+              color="red")+ 
+  inset_element(p = my_image,
+                left = 0.5,
+                bottom = 0.55,
+                right = 0.95,
+                top = 0.95)
+```
+
+## The core
+
+* We have observed something.
+* We have questions. 
+* We want answers!
+
+## How do we find answers?
+We need to make choices:
+
+>- Bayesian or frequentist?
+>- How do we model the data?
+>- \textcolor{red}{How do we compute the answer?}
+
+\pause
+
+These questions are **not** independent.
+
+## A simple example
+
+Assume a simple linear regression model with Gaussian observations $y = (y_1 , \ldots, y_n)$, where
+$$
+		\text{E}(y_i) = \alpha + \beta x_i,  \text{Var}(y_i) = \tau^{-1}, \quad i=1,\ldots, n
+$$
+
+:::::: {.cols data-latex=""}
+
+::: {.col data-latex="{0.55\textwidth}"}
+```{r,  out.width = "90%"}
+p1 + geom_smooth(aes(Abdomen, Bodyfat), method = "lm")
+mod = lm(Bodyfat~ Abdomen, data = bodyfat)
+```
+:::
+
+::: {.col data-latex="{0.05\textwidth}"}
+\ 
+<!-- an empty Div (with a white space), serving as
+a column separator -->
+:::
+
+::: {.col data-latex="{0.4\textwidth}"}
+Estimates:
+\tiny
+```{r}
+ss = summary(mod)
+aa = data.frame(Estimate = round(c(ss$coefficients[,1],ss$sigma),3),
+           Std.Error = c(round(c(ss$coefficients[,2]),3),""))
+rownames(aa)[3] = "Residual sd"
+knitr::kable(aa)
+```
+\normalsize
+:::
+::::::
+
+
+## A Bayesian hyerarchical model
+
+* Observation model
+
+$$
+y \mid \underbrace{\mu,
+            \beta}_{{x}}, \underbrace{\tau}_\theta
+$$
+Encodes information about observed data
+
+* Latent model $x$: The unobserved process
+
+* Hyperprior for $\theta$
+
+\pause
+
+From this we can compute the \textcolor{red}{posterior distribution}
+$$
+\pi(x, \theta | y) \propto \pi(y | x,
+     \theta) \pi(x) \pi(\theta)
+$$
+and then the corresponding \textcolor{red}{posterior marginal distributions}.
+
+
+
+## Results
+
+* Assign priors to $\alpha,\beta,\tau$
+* Use Bayes theorem to compute posterior distributions
+```{r}
+out = inla(Bodyfat~Abdomen, data  = bodyfat)
+```
+
+```{r}
+p1 = ggplot(data = data.frame(out$marginals.fixed$`(Intercept)`), aes(x,y))+geom_line() + xlab("") + ylab("") + ggtitle("Intercept")
+p2 = ggplot(data = data.frame(out$marginals.fixed$Abdomen), aes(x,y))+geom_line()+ xlab("") + ylab("") + ggtitle("Abdomen")
+marg = out$marginals.hyperpar$`Precision for the Gaussian observations`
+d1 = inla.tmarginal(function(x) 1/sqrt(x), marg)
+p3 = ggplot(data = data.frame(d1), aes(x,y))+geom_line()+ xlab("") + ylab("") + ggtitle("Sd")
+(p1 | p2 ) /
+      p3
+```
+
+
+# Bayesian hierarchical models
+
+## Real-world datasets are usually much more complicated!
+Using a Bayesian framework:
+
+* Build (hierarchical) models to account for potentially
+		complicated dependency structures in the data.
+* Attribute uncertainty to model parameters and latent variables
+		using priors.
+
+**Two main challenges:**
+
+1. Need computationally efficient methods to calculate posteriors.
+2. Select priors in a sensible way (see tomorrow)
+
+
+
+
+## Bayesian hierarchical models
+
+INLA can be used with Bayesian hierarchical models where
+we model in different stages or levels:
+	
+* **Stage 1:** What is the distribution of the responses?\
+\
+* **Stage 2:** What is the distribution of the underlying
+			unobserved (latent) components?\
+\
+* **Stage 3:** What are our prior beliefs about the parameters
+			controlling the components in the model?
+
+
+## Stage 1: The data generating process
+
+How is our \textcolor{red}{data (\(\boldsymbol{y}\))} generated from the \textcolor{red}{underlying components	(\(\boldsymbol{x}\))} and \textcolor{red}{hyperparameters (\(\boldsymbol{\theta}\))}	in the model:
+	
+>- Gaussian response?  (temperature, rainfall,
+                        fish weight ...)
+>- Count data? (people infected with a disease in each area)
+>- Point pattern? (locations of trees in a forest)
+>- Binary data? (yes/no response, binary image)
+>- Survival data? (recovery time, time to death)
+
+It is also important how data are collected!\
+\
+
+This information is placed into our \textcolor{red}{\textcolor{red}{likelihood}
+	\(\pi(\boldsymbol{y} | \boldsymbol{x}, \boldsymbol{\theta})\)}
+
+
+## Stage 1: The data generating process
+
+We assume that *given* the \textcolor{red}{underlying components	(\(\boldsymbol{x}\))} and \textcolor{red}{hyperparameters (\(\boldsymbol{\theta}\))}	the data are independent on each other
+
+$$
+\pi(y|x,\theta) = \prod_{i\in\cal{I}}\pi(y_i|x_{\cal{I}_i},\theta)
+$$
+\pause
+
+\textcolor{blue}{This implies that all the dependence structure in the data is explained in Stage II !!}
+
+## Stage 2: The dependence structure
+
+The underlying \textcolor{red}{unobserved components \(\boldsymbol{x}\)} are called \textcolor{red}{\bf{latent} components} and can be:
+	
+* Fixed effects for covariates
+* Unstructured random effects (individual effects, group effects)
+* Structured random effects (AR(1), regional effects, \ldots)
+
+These are linked to the responses in the likelihood through linear
+predictors.
+
+
+## Stage 3: The hyperparameters
+
+The likelihood and the latent model typically have
+hyperparameters that control their behavior.
+
+The \textcolor{red}{hyperparameters \(\boldsymbol{\theta}\)} can include:
+
+\pause
+
+\textcolor{red}{Examples likelihood:}
+
+* Variance of observation noise
+* Dispersion parameter in the negative binomial model
+* Probability of a zero (zero-inflated models)
+
+\pause
+
+\textcolor{red}{Examples latent model:}
+
+* Variance of unstructured effects
+* Correlation of multivariate effects
+* Range and variance of spatial effects
+*	Autocorrelation parameter
+
+## Example: Tokyo rainfall data
+
+Rainfall over 1 mm in the Tokyo area for each calendar day during two
+years (1983-84) are registered.
+```{r}
+data("Tokyo")
+pTokyo = ggplot() + geom_point(data = Tokyo, aes(time, y)) +
+  ylab("") + xlab("")
+pTokyo
+
+mod_tokyo = inla(y~f(time,model = "rw2"), data = Tokyo, 
+                 family = "binomial", 
+                 Ntrials = Tokyo$n)
+```
+
+## Tokyo rainfall data
+
+Rainfall over 1 mm in the Tokyo area for each calendar day during two
+years (1983-84) are registered.
+
+```{r}
+
+dd = data.frame(ii = 1:366,mod_tokyo$summary.fitted.values[,c(1,3,5)])
+pTokyo +
+   # Custom the Y scales:
+  scale_y_continuous(
+    # Features of the first axis
+    name = "",
+    # Add a second axis and specify its features
+    sec.axis = sec_axis( trans=~./2, name="Probability")
+  )  + geom_line(data = dd, aes(ii, mean*2)) +
+  geom_ribbon(data = dd, aes(ii, ymin = X0.025quant*2, 
+                             ymax = 2 *X0.975quant), alpha = 0.5)
+```
+
+
+## Stage 1: The data
+
+\textcolor{red}{
+$$
+y_i\mid p_i \sim \text{Binomial}(n_i, p_i),
+$$}
+for $i=1,2,...,366$
+
+$$
+n_{i} = \left\{
+ \begin{array}{lr}
+1, & \text{for}\; 29\; \text{February}\\
+2, & \text{other days}
+\end{array}\right.
+$$
+$$
+y_{i} =
+\begin{cases}
+\{0,1\}, & \text{for}\; 29\; \text{February}\\
+\{0,1,2\}, & \text{other days}
+ \end{cases}       
+$$
+
+
+
+
+Linear predictor
+$$
+logit(p_i) = x_i \quad \Leftrightarrow \quad p_i = \frac{1}{1+exp(-x_i)}
+$$
+
+* probability of rain on day $i$ depends on $x_i$
+* the likelihood has no hyperparameters $\theta$
+
+
+
+## Stage 2: The latent model
+
+It seems natural  borrow strength over time and assume a cyclic smooth
+random effect, e.g. a \textcolor{red}{cyclic random walk of first or second  order}. A random walk of first order (CRW1) is defined as:
+
+
+$$
+\begin{aligned}
+\pi(x|{\theta})  &\propto 
+  \exp\left\{-\frac{\theta}{2}\left[(x_1-x_{366})^2 +
+\sum_{i=2}^{366}(x_i-x_{i-1})^2 \right] \right\} \\
+ & =  \exp\left\{-\frac{\theta}{2} x^{T}{R}x\right\}
+\end{aligned}
+$$
+\pause
+\scriptsize
+$$
+R = \left[\begin{array}
+{rrrrrrrrrr}
+2 & -1 & & & &  & & & & -1\\
+-1 & 2 & -1 & & & & & & \\
+& -1 & 2 & -1 & & & & & \\
+& & &  & \ddots & & &  & \\
+& & & & & -1 & 2 & -1 &\\
+& & & &  & & -1 & 2 & -1 \\
+-1 & & & & & & & -1 & 2 \\
+\end{array}
+\right]
+$$
+\normalsize
+
+
+## Stage 3: Hyperparameters
+
+The structured time effect is controlled by one \textcolor{red}{precision (inverse variance) parameter $\theta$}.
+
+* \textcolor{red}{A larger value of $\theta$ means less variation in $x$}, i.e. a smoother effect.
+* $\theta$ is related to the variation in $p_i$.
+* $\theta > 0$: people commonly assume
+$$
+\theta \sim \text{Ga}(\text{shape} = a, \text{rate} = b)
+$$
+* However,  $\theta$ depends on ${R}$, so it is hard to define values for $a$ and $b$. You could do this by defining reasonable lower and upper quantiles. (We talk about this tomorrow)
+
+
+# Latent Gaussian models
+
+## Latent Gaussian models
+This was just one example of a very useful
+	class of models called \textcolor{red}{\bf Latent Gaussian models}.
+
+* The characteristic property is that the \textcolor{red}{latent part} of the hierarchical	model is \textcolor{red}{Gaussian,	\(\boldsymbol{x} | \boldsymbol{\theta} \sim N(0, {Q}^{-1})\)} 
+* The expected value is \(\boldsymbol{0}\) 
+* The *precision* matrix (inverse covariance matrix) is
+			\({Q}\)
+
+
+## The general set-up
+The set up contains GLMs, GLMMs, GAMs, GAMMs, and more.
+The mean of the observation \(i\), \(\mu_i\), is connected to the linear predictor, \(\eta_i\), through a link function \(g\),
+$$
+\eta_i = g(\mu_i) = \mu + \boldsymbol{z}_i^\top \boldsymbol{\beta}+\sum_{\gamma} w_{\gamma, i} f_\gamma(c_{\gamma,i})+v_i, \quad i = 1,2,\ldots,n
+$$
+
+where
+$$
+\begin{aligned}
+\mu &: \text{Intercept}\\
+		\boldsymbol{\beta} &: \text{Fixed effects of covariates \(\boldsymbol{z}\)}\\
+		\{f_\gamma(\cdot)\} &: \text{Non-linear/smooth effects of covariates \(\boldsymbol{c}\)}\\
+		\{w_{\gamma,i}\} &: \text{Known weights defined for each observed data point}\\
+		\boldsymbol{v} &: \text{Unstructured error terms}
+\end{aligned}
+$$
+
+## Loads of examples
+
+* Generalized linear and additive (mixed) models
+* Disease mapping
+*	Survival analysis
+* Log-Gaussian Cox-processes
+* Geostatistics
+* Spatio and spatio-temporal models
+* Stochastic volatility models
+* Measurement error models
+* And more!
+
+
+
+## Specification of the latent field
+
+>- Collect all parameters (random variables) in the \textcolor{red}{latent field}
+			${x} =\{\mu, {\beta}, \{f_\gamma(\cdot)\}, {\eta}\}$.
+>- A latent Gaussian model is obtained by assigning Gaussian
+			priors to all elements of ${x}$.
+>- Very flexible due to many different forms of the unknown
+			functions $\{f_\gamma(\cdot)\}$:
+>- \textcolor{red}{Hyperparameters} account for variability and length/strength	of dependence
+
+
+## Flexibility through \(f\)-functions
+
+The functions \(\{f_\gamma\}\) in the linear predictor make it possible	to capture very different types of random effects in the same framework:
+
+* \(f(\texttt{time})\):\, For example, an AR(1) process,
+			RW1 or RW2
+* \(f(\texttt{spatial location})\):\, For example, a
+			Mat\'ern field
+* \(f(\texttt{covariate})\):\, For example, a RW1 or RW2 on
+			the covariate values
+* \(f(\texttt{time}, \texttt{spatial location})\) can be a
+			spatio-temporal effect
+*	And much more
+
+## Additivity
+
+* One of the most useful features of the framework is the additivity.
+* Effects can easily be removed and added without difficulty.
+* Each component might add a new latent part and might add new hyperparameters, but the modelling framework and computations stay the same.
+
+\pause
+\textcolor{red}{OBS:} The *linear* predictor needs to stay linear!! So effects can be added but not multiplied (will say more tomorrow..)
+
+
+## A small point to think about
+From a Bayesian point of view fixed effects and random effects
+	are all the same.
+	
+* Fixed effects are also random
+* They only differ in the prior we put on them
+
+
+## Example: disease mapping
+
+We observed larynx cancer mortality counts for males
+in 544 district of Germany from 1986 to 1990
+and want to make a model. 
+
+:::::: {.cols data-latex=""}
+
+::: {.col data-latex="{0.55\textwidth}"}
+* \(y_i\):	The count at location \(i\).
+* \(E_i\): An offset; expected number of cases in district $i$.
+*	\(c_i\): A covariate (level of smoking consumption) at  \(i\)
+* \(\boldsymbol{s}_i\):	spatial location \(i\) .
+:::
+
+::: {.col data-latex="{0.05\textwidth}"}
+\ 
+<!-- an empty Div (with a white space), serving as
+a column separator -->
+:::
+
+::: {.col data-latex="{0.4\textwidth}"}
+```{r, out.width = "110%"}
+source(system.file("demodata/Bym-map.R", package="INLA"))
+source("../Rfunctions.R")
+data(Germany)
+# Load data
+Germany$region.struct = Germany$region
+g <- system.file("demodata/germany.graph" , package = "INLA")
+my.germany.map(Germany$Y/Germany$E, autoscale = F)
+```
+:::
+::::::
+
+
+## Bayesian disease mapping
+
+>- **Stage 1:**
+			We choose a Poisson distribution for the responses, so that
+$$
+				y_i \mid \eta_i \sim \text{Poisson}(E_i\exp(\eta_i)))
+$$
+>-	 **Stage 2:**  \(\eta_i\) is a linear function of the latent
+                        components: a covariate $c_i$, a spatially
+                        structured effect $f_u$, an unstructured effect ${v}$
+			likelihood by
+$$
+				\eta_i = \mu+ \beta c_i + f_u(s_i) + v_i
+$$
+>- **Stage 3:**
+>   - $\tau_f$:	Precision parameter for the structured effect
+> 	- $\tau_v$:	Precision parameter for the unstructured effect
+\pause
+\
+
+The latent field is \textcolor{red}{$\boldsymbol{x} = (\mu, \beta,
+        \{f_u(\cdot)\}, v_1, v_2,\ldots, v_n)$}, the hyperparameters are \textcolor{red}{ $\boldsymbol{\theta} = (\tau_f,\tau_v)$}, and must be given a prior.
+
+
+<!-- ## What are we interested in? -->
+
+<!-- ```{r} -->
+<!-- formula = Y ~ x + f (region.struct, model="besag", graph=g,  -->
+<!--                  hyper = list(prec=list(param=c(1 ,0.01))), -->
+<!--                  constr = TRUE ) + -->
+<!--   f( region,model="iid",hyper=list(prec=list(param=c(1 ,0.01)))) -->
+
+<!--  # Run INLA -->
+<!-- res.ger = inla(formula=formula, -->
+<!--                 family="poisson", -->
+<!--                 E=E, -->
+<!--                 data=Germany ) -->
+
+<!-- ``` -->
+
+<!-- 1. The effect of the covariate -->
+<!-- ```{r} -->
+<!-- data.frame(res.ger$marginals.fixed$x) %>% -->
+<!--   ggplot() + geom_line(aes(x,y)) + xlab("") + ylab("") -->
+<!-- ``` -->
+
+<!-- ## What are we interested in? -->
+
+<!-- 2. The spatial effect $f_u(s_i)$ -->
+<!-- ```{r} -->
+<!-- my.germany.map((res.ger$summary.random$region.struct$`0.5quant`)) -->
+
+<!-- ``` -->
+
+
+<!-- ## What are we interested in? -->
+
+<!-- 3. The predicted mean number of cases $\eta_i$ -->
+<!-- ```{r} -->
+
+<!-- my.germany.map((res.ger$summary.fitted.values$`0.5quant`)) -->
+
+<!-- ``` -->
+
+
+## So...which model fit the INLA framework??
+
+1. Latent **Gaussian** model
+2. The latent field has a sparse precision matrix (Markov properties)
+3. The data are conditionally independente given the latent field
+4. The predictor is linear
+
+## Quiz!
+Assume that, given $\eta = (\eta_1,\dots,\eta_n)$ the observations $y = (y_1,\dots,y_n)$  are independent and Poisson  distributed with parameter $\lambda_ i = \exp(\eta_i)$ i.e.
+$$
+y_i|\eta_i =\text{Poisson}(\lambda_i); i = 1,\dots,n 
+$$
+\
+\small
+ 1. $\eta_i=\alpha+\beta x_i+U_i$ where 
+$$
+\begin{aligned}
+\alpha,\beta & \sim\mathcal{N}(0,1)\\
+U_i & \sim \mathcal{N}(0,1) \text{ for } i = 1,\dots,n
+\end{aligned}
+$$
+2. $\eta_i=\alpha+\beta x_i+V_i$ where 
+$$
+\begin{aligned}
+\alpha,\beta & \sim\mathcal{N}(0,1)\\
+U_i & \sim \text{Bernoulli}(0.4) \text{ for } i = 1,\dots,n
+\end{aligned}
+$$ 
+3. $\eta_i=\alpha+\beta x_i$ where 
+$$
+\begin{aligned}
+\alpha,\beta & \sim\mathcal{N}(0,1)\\
+\end{aligned}
+$$ 
+4.  $\eta_i=\alpha+\beta x_i + U_iV_i$ where 
+$$
+\begin{aligned}
+\alpha,\beta & \sim\mathcal{N}(0,1)\\
+U_i & \sim \mathcal{N}(0,1) \text{ for } i = 1,\dots,n\\
+V_i & \sim \mathcal{N}(0,1) \text{ for } i = 1,\dots,n
+\end{aligned}
+$$ 
+\normalsize
+
+
+
+# Deterministic inference
+
+## Computations
+\Large
+\
+\
+So...\
+\
+Now we have a modelling framework...\
+\
+But how do we get our answers?
+\normalsize
+	
+
+
+## What do we care about?
+
+\textcolor{red}{It depends on the problem!}
+
+>- A single element of the latent field (e.g.the sign or quantiles of a fixed effect)
+>- A linear combination of elements from the latent field (the average over an	area of a spatial effect, the difference of two effects)
+>- A single hyperparameter (the correlation)
+>- A non-linear combination of hyper parameters (animal models)
+>- Predictions at unobserved locations
+
+
+## What do we care about?
+
+The most important quantity in Bayesian statistics is \textcolor{red}{the posterior distribution}:
+$$
+\begin{aligned}
+\overbrace{\pi({x}, {\theta}\mid{y})}^{{\text{Posterior}}} &\propto \overbrace{\pi({\theta}) \pi({x}\mid{\theta})}^{{\text{Prior}}} \overbrace{\prod_{i \in \mathcal{I}}\pi(y_i \mid x_i, {\theta})}^{{\text{Likelihood}}}
+\end{aligned}
+$$
+	from which we can derive the quantities of interest, such as
+$$
+	\begin{aligned}
+		{\pi(x_i \mid {y})} &\propto \int \int \pi({x}, {\theta}\mid{y}) d{x}_{-i} d{\theta}\\
+		&= {\int \pi(x_i \mid {\theta}, {y}) \pi({\theta} \mid {y}) d{\theta}}
+	\end{aligned}
+$$
+or $\pi(\theta_j\mid {y})$.
+
+These are very high dimensional integrals and are typically not
+analytically tractable.
+
+
+
+## Traditional approach: MCMC
+
+MCMC is based on sampling with the goal to \textcolor{red}{construct a Markov chain with the target posterior as stationary distribution}.
+
+* Extensively used within Bayesian inference since the 1980's.
+* Flexible and general, sometimes the only thing we can do!
+* A generic tool is available with \texttt{JAGS}/\texttt{OpenBUGS}.
+* Tools for specific models are of course available, e.g.~\texttt{BayesX} and \texttt{stan}.
+* Standard MCMC sampler are generally easy-ish to program and are in fact implemented in readily available software
+*  However, depending on the complexity of the problem, their efficiency might 	be limited.
+
+
+## Approximate inference
+
+Bayesian inference can (almost) never be done exactly. Some form of
+approximation must always be done.
+
+* MCMC ``works'' for everything, but it can be incredibly
+			slow
+* Is it possible to make a quicker, more specialized	inference scheme which only needs to work for this limited		class of models? (specifically LGM)
+
+
+
+## Recall: What is our model framework?
+
+Latent Gaussian models
+
+$$
+\begin{aligned}
+y| x, \theta & \sim \prod  \pi(y_i|x_i,\theta) & \\
+x|\theta & \sim\mathcal{N}(0,Q(\theta)) & \text{\textcolor{red}{Gaussian!!!}}\\
+\theta & \sim\pi(\theta)& \text{Not Gaussian}
+\end{aligned}
+$$
+
+where the precision matrix $Q(\theta)$ is sparse. Generally
+these ``sparse'' Gaussian distributions are called \textcolor{red}{Gaussian Markov random fields} (GMRFs).
+
+The sparseness can be exploited for very quick computations for the Gaussian	part of the model through numerical algorithms for sparse matrices.
+
+## The INLA idea
+
+Use the properties of the LGM we have defined to 
+approximate the posterior \textcolor{red}{marginals}
+
+$$
+\begin{aligned}
+		\pi(x_i \mid \boldsymbol{y})\quad \text{and} \quad \pi(\theta_j \mid \boldsymbol{y})
+	\end{aligned}
+$$	
+directly. \
+\
+Let us consider a \textcolor{red}{toy example to illustrate the ideas}.
+
+
+
+## How does INLA work? A toy example  
+
+Smoothing noisy observations - Data
+
+We observe some smooth function but our measures are noisy (but we know the size of such noise!)
+
+```{r}
+n = 50
+idx = 1:50
+x = idx
+func = 100 * ((idx-n/2)/n)^3
+y = func + rnorm(n,0,1)
+data.frame(x = x, y = y, f = func) %>% ggplot() + geom_point(aes(x,y)) +
+  geom_line(aes(x,f), color = "red")
+```
+
+**Goal:** Recover the smooth function observed with noise!
+
+## Smoothing noisy observations - Model
+
+Assume:
+\begin{align*}
+y_i &= f(i) + \epsilon_i; i = 1,\dots,n \\\nonumber
+\epsilon_i&\sim N(0,1) \\\nonumber
+f(i) &= x_i\text{ smooth function of } i\nonumber
+\end{align*}
+
+-  Only one hyperparameter
+
+- Gaussian likelihood
+
+\textcolor{red}{Is this a Latent Gaussian model?}
+
+## Smoothing noisy observations - LGM
+
+- **Data** Gaussian Observations with known precision
+$$
+    y_i|x_i\sim\mathcal{N}(x_i,1)
+$$
+
+- **Latent Model**: A Gaussian model for the smooth function (RW2 model)
+$$
+    \pi({\bf x}|\theta)\propto \theta^{(n-2)/n}\exp\left\{
+    -\frac{\theta}{2}\sum_{i=2}^n(x_i-2x_{i-1}+x_{i-2})^2
+    \right\}
+$$
+
+- **Hyperparameter** The precision of the smooth function $\theta$. We assign a Gamma prior
+
+$$
+    \pi(\theta)\propto\theta^{a-1}\exp(-b\theta)
+$$
+
+
+## Smoothing noisy observations - Goal
+
+Find approximations for:
+
+1. The posterior marginal for the hyperparameter $\pi(\theta|\bf{y})$ 
+1. The posterior marginals for the elements of the latent field $\pi(x_i|\bf{y})$ 
+
+
+ 
+## Approximating $\pi(\theta|\bf{y})$
+
+We have that
+$$
+    \pi(\bf{x},\theta,\bf{y}) = \pi(\bf{x}|\theta,\bf{y})\pi(\theta|\bf{y})\pi(\bf{y})
+$$
+
+so
+
+$$
+    \pi(\theta|\bf{y}) = \frac{\pi(\bf{x},\theta,\bf{y})}{\pi(\bf{x}|\theta,\bf{y})\pi(\bf{y})} \propto\frac{
+  \pi(\bf{y}, \bf{x}|\theta)\  \pi(\theta)
+    }{\pi(\bf{x}|\theta,\bf{y})}
+$$
+
+Since the likelihood is Gaussian, then $\pi(\bf{y}, \bf{x}|\theta)$
+is also Gaussian. We have then:
+
+$$
+   \pi(\theta|\bf{y})  \propto \frac{
+  \overbrace{\pi(\bf{y}, \bf{x}|\theta)}^{\text{Gaussian}}\  \pi(\theta)}
+  {\underbrace{\pi(\bf{x}|\theta,\bf{y})}_{\text{Gaussian}}}
+$$
+This is valid for any $\bf{x}$
+
+
+## Posterior marginal for the hyperparameter
+
+Select a grid of points to represent the density $\pi(\theta|\bf{x})$
+```{r}
+library(patchwork)
+R = matrix(0,n,n)
+diag(R) = c(1,rep(2,n-2),1)
+for(i in 2:n)
+  R[i-1,i] =R[i,i-1] = -1
+
+llik = function(y,x)
+  return(0.5*(y-x)^2)
+
+lpriorX = function(x,theta)
+  return(-theta/2*t(x)%*%R%*%x)
+
+lpriorTheta = function(theta)
+  {
+    a = 10
+    b = 10
+    return((a-1)*log(theta)-b*theta)
+}
+
+lfullcond = function(y,theta,x)
+{
+  Q = theta * R + diag(n)
+  b = t(y) %*% diag(n)
+  return(-0.5*t(x)%*%Q%*%x+b%*%x)
+}
+
+theta = seq(0.01,2,length.out = 15)
+lpost = numeric(length(theta))
+for(i in 1:length(theta))
+  lpost[i] = sum(llik(y,x)) + 
+    lpriorX(x,theta[i]) + 
+    lpriorTheta(theta[i]) - 
+  lfullcond(y,theta[i],x)
+lpost= lpost-max(lpost)
+p1 = data.frame(theta=theta, f=exp(lpost)) %>%
+  ggplot(aes(theta,f)) + geom_point() +
+  scale_x_continuous(name = expression(theta)) +
+  scale_y_continuous(name = "density")  + 
+  ggtitle(bquote('Posterior marginals for'~theta ))
+p2 = data.frame(theta=theta, f=exp(lpost)) %>%
+  ggplot(aes(theta,f)) + geom_point() + geom_line() +
+  scale_x_continuous(name = expression(theta)) +
+  scale_y_continuous(name = "density")  + 
+  ggtitle(bquote('Posterior marginals for'~theta ))
+
+p1+p2
+```
+
+
+## Approximating $\pi(x_i|y,\theta)$
+ Again we have that
+$$
+    \bf{x},\bf{y}|\theta\sim\mathbf{N}(\cdot,\cdot)
+$$
+  so also $\pi(x_i|\theta,\bf{y})$ is Gaussian!!\
+  
+  We compute
+\begin{align*}
+\pi(x_i|{\bf y}) &= \int \pi(x_i|\theta,{\bf y})\pi(\theta|{\bf y})d\theta\\
+      &\approx \sum_k\pi(x_i|\theta_k,{\bf y})\pi(\theta_k|{\bf y}) \Delta_k
+\end{align*}
+where $\theta_k,k=1,\dots,K$ are the representative points of 
+  $\pi(\theta|\bf{y})$ and $\Delta_k$ are the corresponding weights
+
+
+## Posterior marginals for latent field I
+
+Compute the conditional posterior marginal for $x_i$ given each $\theta_k$\
+```{r}
+xval = seq(1,9,0.01)
+densX = matrix(0,length(xval), length(theta))
+
+for(j in 1:length(theta))
+{
+  for(i in 1:length(xval))
+  {
+    x[10] = xval[i]
+    densX[i,j] = lfullcond(y,theta[j],x)
+  }
+  densX[,j] =exp(densX[,j]-max(densX[,j]))
+}
+
+c = apply(densX,2,sum)*0.1
+for(i in 1:length(theta))
+  densX[,i] = densX[,i]/c[i]
+data.frame(x = xval, f = densX[,-c(1:4)]) %>% 
+   gather("name","val",-x) %>%
+   ggplot() +  geom_line(aes(x,val, group=name)) +
+   scale_x_continuous(name = "x") +
+   scale_y_continuous(name = "density")  + 
+   ggtitle(bquote('Posterior marginals forv'~x[10] ~' for each' ~theta ~'(unweighted)'))
+```
+
+## Posterior marginals for latent field II
+Weight the conditional posterior marginal for
+    $\pi(x_i|\theta_k, \bf{y})$ by
+    $\pi(\theta_k|\bf{y})\Delta_k$
+```{r}
+
+
+densX_weight = densX
+for(i in 1:length(theta))
+  densX_weight[,i] = densX[,i]*exp(lpost[i])*diff(theta)[1]
+
+data.frame(x = xval, f = densX_weight) %>%
+   gather("name","val",-x) %>%
+   ggplot(aes(x,val, group=name)) +  geom_line() +
+   scale_x_continuous(name = "x") +
+   scale_y_continuous(name = "density")  +
+   ggtitle(bquote('Posterior marginals forv'~x[10] ~' for each' ~theta ~'(weighted)'))
+```
+
+## Posterior marginals for latent field III
+
+ Sum to get the posterior marginal for $x_i|\bf{y}$
+```{r}
+  data.frame(x = xval, f = densX_weight) %>%
+  mutate(tot.1 = rowSums(.[-1])) %>%
+  gather("name","val",-x) %>% 
+  separate(name, c("A", "B"), remove=FALSE) %>%
+  ggplot(aes(x,val, group=name, color = A)) +  geom_line() +
+  scale_x_continuous(name = "x") +
+  scale_y_continuous(name = "density")  + 
+  ggtitle(bquote('Posterior marginals for '~x[10] )) +
+  theme(legend.position="none")
+
+```
+
+
+## Fitted Spline
+  The posterior marginals are used to calculate summary statistics, like means, variances and credible intervals:
+  
+```{r, out.width="60%"}
+data = data.frame(y = y, idx=idx)
+hyper1 = list(prec=list(initial=0, fixed=T))
+#hyper2 = list(prec =list(param=c(10,10)))
+res = inla(y~f(idx, model = "rw2"), 
+           data = data,
+           control.family = list(hyper = hyper1))
+           
+
+data.frame(res$summary.random$idx) %>%
+  dplyr::select("ID", "mean", "X0.025quant", "X0.975quant") %>%
+  ggplot(aes(ID,mean)) + geom_line( color="red") +
+  ggtitle("Posterior mean and quantiles of the smooth effect") +
+  geom_point(data = data.frame(id=1:n,y=y), 
+             mapping = aes(x = id, y = y))
+```
+
+## `R-INLA` code
+
+\small
+
+```{r, echo = T, eval=FALSE}
+
+formula = y ~ -1 + f(idx, model="rw2", constr=FALSE,
+   hyper=list(prec=list(prior="loggamma", param=c(a,b))))
+
+result = inla(formula,
+      data = data.frame(y=y, idx=idx),
+      control.family = list(initial = log(tau_0), fixed=TRUE))
+```
+\normalsize
+
+## Extending the method
+
+This is the basic idea behind INLA. It is quite simple.
+
+However, we need to extend this basic idea so we can deal with
+  
+1 Non-Gaussian observations
+2 More than one hyperparameter
+
+## 1. More than one hyperparameter
+
+\textcolor{red}{Main use:} Select good evaluation points ${\theta}_k$ for the numerical integration when approximating $\widetilde{\pi}(x_i|{y})$
+
+- Locate the mode
+  \includegraphics[width=5cm]{./graphics/ellipse1}
+
+## 1. More than one hyperparameter
+
+\textcolor{red}{Main use:} Select good evaluation points ${\theta}_k$ for the numerical integration when approximating $\widetilde{\pi}(x_i|{y})$
+
+- Locate the mode
+- Compute the Hessian to construct principal components
+  \includegraphics[width=5cm]{./graphics/ellipse2}
+
+
+## 1. More than one hyperparameter
+
+\textcolor{red}{Main use:} Select good evaluation points ${\theta}_k$ for the numerical integration when approximating $\widetilde{\pi}(x_i|{y})$
+
+- Locate the mode 
+
+- Compute the Hessian to construct principal components
+
+- Grid-search to locate bulk  of the probability mass
+  \includegraphics[width=5cm]{./graphics/ellipse3}
+
+
+## 1. More than one hyperparameter
+
+
+- Locate the mode 
+
+- Compute the Hessian to construct principal components
+
+- Grid-search to locate bulk  of the probability mass
+
+- For each point $k$ in the grid compute:
+
+    - $\widetilde{\pi}(\theta^k|y)$
+    - $\widetilde{\pi}(x_i|\theta^k,y)$
+    - $\Delta_k$
+    
+
+## 2. Non-Gaussian observations
+
+In application we may choose likelihoods other than a
+Gaussian. How does this change things?
+
+$$
+\pi(\bf{\theta} \mid \bf{y}) \propto \frac{
+            \overbrace{\pi(\bf{x}, \bf{y}\mid \bf{\theta})}^{\text{Non-Gaussian, BUT KNOWN}}
+        \; \pi(\bf{\theta})}{\underbrace{\pi(\bf{x} \mid \bf{y},
+            \bf{\theta})}_{\text{Non-Gaussian and UNKNOWN}}}
+$$
+
+* In many cases	\(\pi(\boldsymbol{x} \mid \boldsymbol{y}, \boldsymbol{\theta})\)is very close to a Gaussian distribution, and can be replaced	with a \textcolor{red}{Laplace approximation}.
+       
+
+
+## The GMRF (Laplace) approximation
+
+Let $\bf{x}$ denote a GMRF with precision matrix $\bf{Q}$ and mean $\bf{\mu}$.
+
+Approximate
+$$
+\begin{aligned}
+\pi(\bf{x}|\theta,\bf{y}) &\propto
+            \exp\left(-\frac{1}{2}\bf{x}^\top \bf{Q}\bf{x} + \sum_{i=1}^n \log \pi (y_i|x_i)\right)
+\end{aligned}
+$$
+by using a second-order Taylor expansion of $\log \pi (y_i|x_i)$ around $\bf{\mu}_0$, say.
+
+* Recall
+
+$$
+\begin{aligned}
+        f(x) \approx f(x_0) + f'(x_0)(x-x_0)+ \frac{1}{2} f''(x_0)(x-x_0)^2
+        = a+ bx - \frac{1}{2}cx^2
+\end{aligned}
+$$
+with $b=f'(x_0) - f''(x_0)x_0$ and $c = -f''(x_0)$. (Note: $a$ is not relevant).
+ 
+## The GMRF approximation (II)
+
+Thus,
+$$
+\begin{aligned}
+        \widetilde{\pi}(\bf{x}|\bf{\theta}, \bf{y}) &\propto
+            \exp\left(-\frac{1}{2}\bf{x}^\top \bf{Q}\bf{x}  +
+            \sum_{i=1}^n (a_i + b_i x_i - 0.5 c_i x_i^2)\right)\\
+        &{\propto \exp\left(-\frac{1}{2}\bf{x}^T(\bf{Q} + \text{diag}(\bf{c})) \bf{x} + \bf{b}^T\bf{x}\right)}
+\end{aligned}
+$$
+
+which is Gaussian with precision matrix $\bf{Q} + \text{diag}(\bf{c})$ and mean given by the solution of $(\bf{Q} + \text{diag}(\bf{c}))\bf{\mu} = \bf{b}$
+
+\textcolor{red}{The canonical parameterisation} is
+$$
+\textcolor{red}{\mathcal{N}_C(\mathbf{b}, \bf{Q} + \text{diag}(\bf{c}))}
+$$
+which corresponds to
+$$
+\mathcal{N}((\bf{Q} + \text{diag}(\bf{c}))^{-1}\mathbf{b}, (\bf{Q} + \text{diag}(\bf{c}))^{-1}).
+$$
+
+## The GMFR approximation - One dimensional example
+
+Assume
+$$
+\begin{aligned}
+  y|\lambda \sim\text{Poisson}(\lambda)  & \text{ Likelihood}\\
+  \lambda = \exp(x)  & \text{ Likelihood}\\
+  x\sim\mathcal{N}(0,1) & \text{ Latent Model}
+\end{aligned}
+$$
+  we have that
+$$
+  \pi(x|y)\propto\pi(y|x)\pi(x)\propto\exp\{ -\frac{1}{2}x^2+
+  \underbrace{xy-\exp(x)}_{\text{non-gaussian part}}
+  \}
+$$
+ 
+## The GMRF approximation
+
+```{r}
+source("GMRF_approx.R")
+ 
+df = data.frame(x = xi,
+                  true = fc(xi, y, eta,delta)/nominator,
+                  app1  = NA,
+                  app2 = NA,
+                  app3 = NA,
+                  app4 = NA
+                  )
+mode =  xi[which.max(fc(xi, y, eta,delta)/nominator)]
+   xi_0 = c(0,0.5,1,1.5)
+
+exp.points = data.frame(mode =  rep(mode,4),
+                          exp.point = xi_0)
+
+for(i in 1:4)
+  {
+    gmrf <- GMRF_approx(xi, xi_0[i], y, eta, delta)
+    df[,i+2] = dnorm(xi, gmrf$b/gmrf$c, sqrt(1/gmrf$c))
+  }
+  
+p1 = ggplot() + geom_line(data  = df, aes(x,true))  +
+   geom_line(data = df, aes(x, app1), color = "red") +
+   xlab("") + ylab("") + ggtitle(paste("Expansion around", xi_0[1])) +
+  geom_point(aes(x=exp.points[1,1], y=0), size = 2) +
+   geom_point(aes(x=exp.points[1,2], y=0), color = "red", size = 2)
+p2 = ggplot() + geom_line(data  = df, aes(x,true))  +
+   geom_line(data = df, aes(x, app2), color = "red") +
+   xlab("") + ylab("") + ggtitle(paste("Expansion around", xi_0[2])) +
+  geom_point(aes(x=exp.points[2,1], y=0), size = 2) +
+   geom_point(aes(x=exp.points[2,2], y=0), color = "red", size = 2)
+p3 = ggplot() + geom_line(data  = df, aes(x,true))  +
+   geom_line(data = df, aes(x, app3), color = "red") +
+   xlab("") + ylab("") + ggtitle(paste("Expansion around", xi_0[3])) +
+  geom_point(aes(x=exp.points[3,1], y=0), size = 2) +
+   geom_point(aes(x=exp.points[3,2], y=0), color = "red", size = 2)
+p4 = ggplot() + geom_line(data  = df, aes(x,true))  +
+   geom_line(data = df, aes(x, app4), color = "red") +
+   xlab("") + ylab("") + ggtitle(paste("Expansion around", xi_0[4])) +
+  geom_point(aes(x=exp.points[4,1], y=0), size = 2) +
+   geom_point(aes(x=exp.points[4,2], y=0), color = "red", size = 2)
+ 
+p1+p2+p3+p4
+```
+ \textcolor{red}{If $\bf{y} \mid \bf{x}, \bf{\theta}$ is Gaussian "the approximation" is exact!}
+}
+
+
+## What do we get ...
+
+$$
+\widetilde{\pi}(\bf{\theta} \mid \bf{y}) \propto  \frac{
+           \pi(\bf{x}, \bf{y}\mid \bf{\theta})
+        \; \pi(\bf{\theta})}{\widetilde{\pi}_G(\bf{x} \mid \bf{y},
+            \bf{\theta})} \: \Bigg|_{\bf{x} = \bf{x}^\star(\bf{\theta})}
+$$
+* find the mode of $\widetilde{\pi}(\bf{\theta}\mid \bf{y})$
+        (optimization)
+* explore $\widetilde{\pi}(\bf{\theta}\mid \bf{y})$ to find
+        grid points $t_k$ for numerical integration.\
+\
+\
+
+\pause
+However, why is it called \textcolor{red}{integrated nested Laplace
+      approximation}?
+
+\pause
+There is another step that changes:
+
+$$
+\pi(x_{i} \mid \bf{y}) \approx \sum_k \underbrace{\pi(x_{i} \mid \bf{y}, \theta^k)}_{{\text{Not Gaussian!}}}{\widetilde{\pi}_G(\theta^k\mid\bf{y})} \Delta_k
+$$
+
+
+## Approximating $\pi(x_i|\bf{y}, \bf{\theta})$
+
+Three possible approximations:
+
+>- 1. \textcolor{red}{Gaussian distribution}  derived from $\widetilde{\pi}_G(\bf{x}|\bf{\theta}, \bf{y})$, i.e.
+$$
+\widetilde{\pi}(x_i|\bf{\theta}, \bf{y}) = \mathcal{N}(x_i; \mu_i(\bf{\theta}), \sigma_i^2(\bf{\theta}))
+$$
+with mean $\mu_i(\bf{\theta})$ and marginal variance $\sigma_i^2(\bf{\theta})$.
+
+However, errors in location and/or lack of skewness possible
+
+>- 2. \textcolor{red}{Laplace approximation}
+>- 3. \textcolor{red}{Simplified Laplace approximation}
+
+## Laplace approximation of $\pi(x_i|\bf{\theta}, \bf{y})$
+$$
+\widetilde{\pi}_\text{LA}(x_i|\bf{\theta}, \bf{y}) \propto
+			\frac{\pi(\bf{x}, \bf{\theta},\bf{y})}
+			{\widetilde{\pi}_\text{GG}(\bf{x}_{-i}|x_i, \bf{\theta}, \bf{y})}
+			\Biggr|_{\bf{x}_{-i}=\bf{x^\star}_{-i}(x_i, \bf{\theta})}
+$$
+
+The approximation is very good but expensive as $n$ factorizations
+of $(n-1) \times (n-1)$ matrices are required to get the $n$
+        marginals.
+
+\pause
+\textcolor{blue}{Computational modifications exist:}
+
+1.  Approximate the modal configuration of the GMRF
+                  approximation. 
+2.		\item Reduce the size $n$ by only involving the ``neighbors''.
+
+## Simplified Laplace approximation
+Faster alternative to the Laplace approximation \
+
+*  based on a \textcolor{red}{series
+	expansion up to third order of the numerator and denominator of $\widetilde{\pi}_\text{LA}(x_i|\bf{\theta}, \bf{y})$}
+*  corrects the Gaussian approximation for error in
+                  location and lack of skewness.
+
+\pause
+This is \textcolor{red}{default option when using INLA} but this choice can be modified.
+
+
+
+
+## INLA: Overview
+
+- **Step I** Approximate $\pi({\theta}|y)$ using the Laplace approximation and select good evaluation points ${\theta}_k$. 
+
+- **Step II** For each ${\theta}_k$ and $i$ approximate $\pi(x_i|{\theta}_k, {y})$  using the Laplace or simplified Laplace approximation for selected values of $x_i$
+       
+- **Step III** For each $i$, sum out ${\theta}_k$
+$$                
+\widetilde{\pi}(x_i|{y}) = \sum_k \widetilde{\pi}(x_i|{\theta}_k, {y}) \times
+                    \widetilde{\pi}({\theta}_k|{y}) \times \Delta_k.
+$$
+Build a log spline corrected Gaussian to represent $\widetilde{\pi}(x_i|{y})$.
+
+## INLA: Why does it work?
+
+- The full conditional $\pi(x|y,\theta)$ is "almost" Gaussian
+
+- The latent field $x$ is  a GMRF
+
+  - GMRF $\rightarrow$ sparse precision matrix!!
+  - Easy to solve and store
+  
+- Smart numerical methods
+
+- Parallel implementation 
+
+
+
+
+
+## Limitations
+
+ - The dimension of the latent field $x$ can be large ($10^2-10^6$)
+ 
+ -  The dimension of the hyperparameters $\theta$ must be small
+($\leq 9$)
+
+In other words, each random effect can be big, but there cannot be too many random effects unless they share parameters.
+
+
+## INLA features 
+INLA fully incorporates posterior uncertainty with respect to
+hyperparameters $\Rightarrow$ tool for full Bayesian inference
+
+*  Marginal posterior densities of all (hyper-)parameters
+* Posterior mean, median, quantiles, std.~deviation, etc.
+* The approach can be used for predictions, model assessment, \ldots
+* Joint posterior marginal not available...but it is possible to sample from $\widetilde{\pi}(x,\theta|y)$
+
+##
+
+\Large
+Thank you for your attention!
+
+\normalsize
+If you have any doubts or questions, please write :
+	\url{sara.martino@math.ntnu.no} 
+
+	
+```{r, out.width = "30%"}
+# All defaults
+include_graphics("graphics/smiley_small.jpg")
+```
+
+	
