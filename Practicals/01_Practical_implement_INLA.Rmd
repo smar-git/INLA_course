@@ -1,0 +1,548 @@
+---
+title: "Day 1, Morning, Practical 1"
+subtitle: 'Implementing INLA for a simple Gaussian model'
+author: "Instructor: Sara Martino"
+#date: "`r format(Sys.time(), '%d %B, %Y')`"
+bibliography: biblio.bib  
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    code_download: yes
+    toc_depth: 2
+    number_sections: true
+
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/INLA_course/Practicals/")
+
+knitr::opts_chunk$set(echo = TRUE,  
+                      message=FALSE, 
+                      warning=FALSE, 
+                      strip.white=TRUE, 
+                      prompt=FALSE,
+                      fig.align="center",
+                       out.width = "60%")
+
+library(knitr)    # For knitting document and include_graphics function
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(position = c('top', 'right'),
+               color = 'darkred',
+               tooltip_message = 'Click to copy', tooltip_success = 'Done')
+```
+
+<font size="5"> **Aim of this practical:** </font> In this exercise we are going to implement the INLA algorithm for a simple Gaussian model.
+
+
+# Introduction
+
+Start by loading the necessary libraries
+
+```{r}
+library(ggplot2)  
+library(tidyverse)
+library(patchwork)
+```
+
+
+We then define a smooth function:
+
+```{r}
+n = 50
+idx = 1:50
+x = idx
+func = 100 * ((idx-n/2)/n)^3
+df = data.frame(x = x,  f = func)
+ggplot(data = df) +   geom_line(aes(x,f), color = "red")
+```
+
+and simulate some data by adding noise. The noise is Gaussian distributed with variance 1
+$$
+\epsilon_i\sim\mathcal{N}(0,1)
+$$
+
+```{r}
+y = func + rnorm(n, mean = 0, sd = 1)
+df$y = y
+ggplot(data = df) +   
+  geom_line(aes(x,f), color = "red") +
+  geom_point(aes(x,y))
+
+obs = data.frame(x = x, y = y)
+```
+
+---
+
+# The model
+
+
+Assume that, given  $\mathbf{\eta} = (\eta_1,\dots,\eta_T)$, the
+observations $y_t$ are independent and Gaussian distributed with mean
+$\eta_t$ and known unit variance:
+$$
+y_t|\eta_t = \mathcal{N}(\eta_t,1);\ t = 1,\dots,T
+$$
+
+The linear predictor $\eta_t$ is linked to a smooth effect of time $t$
+as:
+$$
+\eta_t = f_t
+$$
+
+Random walk models are a popular choice for modeling smooth effects of
+covariates or, as in this case, temporal effects . Here, we choose a first order
+random walk model (RW1) as prior distribution for the vector ${\mathbf f} =
+(f_1, \dots,f_T)$, so that:
+$$
+\pi({\mathbf f}|\theta)\propto \theta^{(T-1)/2}\exp\left\{
+-\frac{\theta}{2}\sum_{t=2}^T[f_t - f_{t-1} ]^2
+\right\} = \mathcal{N}(\mathbf{0},\mathbf{Q}({\theta})^{-1}).
+$$
+Thus, ${\mathbf f}|\theta$ is Gaussian distributed with mean $\mathbf{0}$ and
+precision (inverse covariance) matrix $\mathbf{Q}({\theta})$. The
+precision parameter
+$\theta$ controls the smoothness of the vector $\mathbf{f}$. 
+
+Note that the
+precision matrix $\mathbf{Q}(\theta)$ is a band matrix with bandwidth $2$ and
+therefore it is sparse.
+We complete the model by assigning $\theta$ a prior
+distribution. Here, we choose a Gamma distribution with parameters 10 and 10
+
+$$
+\pi(\theta)\propto \theta^{a-1}\exp(-b\theta)
+$$
+
+
+
+<font size="5"> **Question 1:** </font> Write down the model as a LGM. What is the latent field $\bf{x}$ and what is the hyperparameter $\theta$ [Solution](#Solution1)
+
+
+<font size="5"> **Question 2:** </font> Can you explicitly write down the elements of the precision matrix $\mathbf{Q}(\theta)$ [Solution](#Solution2)
+
+---
+
+# The INLA scheme
+
+
+- **Step I** Compute  $\pi({\theta}|y)$ for a regular grid series of points ${\theta}_k$, $k = 1,\dots,K$. 
+
+- **Step II** For each ${\theta}_k$ and $i$ compute 
+     - $\pi(x_i|{\theta}_k, {y})$ 
+     - $\pi(\theta_k|y)$ 
+     - $\Delta_k$
+       
+- **Step III** For each $i$, sum out ${\theta}_k$
+$$                
+\widetilde{\pi}(x_i|{y}) = \sum_k \widetilde{\pi}(x_i|{\theta}_k, {y}) \times
+                    \widetilde{\pi}({\theta}_k|{y}) \times \Delta_k.
+$$
+
+## Step I
+
+We want to compute
+$$
+\pi({\theta}|y) \propto \frac{\pi(y|x)\pi(x|\theta)}{\pi(x|y,\theta)}
+$$
+
+for each value of $\theta$ in the grid
+```{r}
+theta = seq(0.01,2.5,length.out = 25)
+Delta = diff(theta)[1]
+```
+
+Try to complete the following code in ordet to achieve this. You can look at the solution [here](#Solution3) if you have problems.
+
+
+
+
+
+
+```{r hidden, echo = TRUE, eval = FALSE}
+# define the adjacency matrix
+R = matrix(0,n,n)
+diag(R) = c(1,rep(2,n-2),1)
+for(i in 2:n)
+  R[i-1,i] =R[i,i-1] = -1
+
+# write a function that 
+# computes the log-likelihood
+# y are the data
+# x is the latent field
+llik = function(y, x )
+  ???
+
+# write a function that computes the log prior
+# for the latent field x
+# x is the latent field
+# theta the gridded values for the hyperpar
+lprior_latent = function(x,theta)
+  ???
+
+# function that computes the log prior
+# for the hyperpar
+# a,b are the parameters in the Gamma hyperprior
+lprior_theta = function(theta,a=1,b=1)
+  ???
+
+# function that computes the log 
+# full conditional \pi(x|t,\theta)
+lfullcond = function(y,theta,x)
+  ???
+
+
+
+# compute the posterior for each
+# \theta value in the grid 
+lposterior = numeric(length(theta))
+for(i in 1:length(theta))
+  lposterior[i] = llik(y,x) + 
+    lpriorX(x,theta[i]) + 
+    lpriorTheta(theta[i]) - 
+  lfullcond(y,theta[i],x)
+
+# normalize the density
+lposterior = lpost-max(lpost)
+posterior = exp(lposterior)
+norm_const = sum(posterior * Delta)
+posterior = posterior/norm_const
+
+plot(theta, posterior/norm_const)
+```
+
+
+
+```{r, echo = FALSE, eval=TRUE}
+
+R = matrix(0,n,n)
+diag(R) = c(1,rep(2,n-2),1)
+for(i in 2:n)
+  R[i-1,i] =R[i,i-1] = -1
+
+llik = function(y,x)
+  return(0.5*(y-x)^2)
+
+lpriorX = function(x,theta)
+  return(-theta/2*t(x)%*%R%*%x)
+
+lpriorTheta = function(theta)
+  {
+    a = 10
+    b = 10
+    return((a-1)*log(theta)-b*theta)
+}
+
+lfullcond = function(y,theta,x)
+{
+  Q = theta * R + diag(n)
+  b = t(y) %*% diag(n)
+  return(-0.5*t(x)%*%Q%*%x+b%*%x)
+}
+
+lpost = numeric(length(theta))
+for(i in 1:length(theta))
+  lpost[i] = sum(llik(y,x)) + 
+    lpriorX(x,theta[i]) + 
+    lpriorTheta(theta[i]) - 
+  lfullcond(y,theta[i],x)
+
+lpost= lpost-max(lpost)
+
+dens = exp(lpost)
+norm = sum(dens * Delta)
+
+df = data.frame(theta = theta,
+                dens = dens/norm)
+p1 = df %>%
+  ggplot(aes(theta,dens)) + geom_point() +
+  scale_x_continuous(name = expression(theta)) +
+  scale_y_continuous(name = "density")  + 
+  ggtitle(bquote('Posterior marginals for'~theta ))
+
+  
+```
+
+## Step II 
+
+Here we compute the posterior for the 10th element of vector $\bf{x}$, $x_{10}$.
+
+We have now computed both $\pi(\theta_k|y)$ and $\Delta_k$ so what is left is to compute $\pi(x_{10}|\theta, y)$ for each value of $\theta_k$ in out grid.
+
+
+
+There are several ways to solve this, here we follow the most straight forward method:
+
+For each value $\theta_k$
+- compute 
+- 
+
+Consider the values for $x_{10}$
+```{r}
+xval = seq(-5,2,0.01)
+```
+
+Here we write a function that outputs $E(\eta_{10}|\theta_k,y)$ and 
+$\text{Var}(\eta_{10}|\theta_k,y)$. If you have trouble you can find the answer [here](#Solution4):
+
+```{r, echo=T, eval=FALSE}
+
+# function that computes pi(\eta|theta,y) for a  
+# given value of theta
+dens_eta_i_giventheta = function(xval, ii, theta_j, y) { 
+
+  Qprior = theta_j * R
+  Qpost  = ??
+  Sigma_post = solve(Qpost)
+  mean_post = ??
+  pi = dnorm(xval, mean = mean_post[ii], 
+             sd= sqrt(Sigma_post[ii,ii]))
+  return(pi) 
+}
+
+# Compute the densities for each value of theta and plot them
+eta_val = matrix(NA, length(xval), length(theta))
+for(j in 1:length(theta))
+  eta_val[,j] = dens_eta_i_giventheta(xval, i = 10, theta[j], y)
+
+data.frame(x = xval, eta_val) %>%
+  pivot_longer(-x) %>%
+  ggplot() + geom_line(aes(x,value, group = name))
+
+```
+
+```{r, echo = F, eval = T}
+dens_eta_i_giventheta = function(xval, ii, theta_j, y) { 
+
+  Qprior = theta_j * R
+  Qpost  = Qprior + diag(n)
+  Sigma_post = solve(Qpost)
+  mean_post = (Sigma_post %*% y)
+  pi = dnorm(xval, mean = mean_post[ii], 
+             sd= sqrt(Sigma_post[ii,ii]))
+  return(pi) 
+}
+
+eta_val = matrix(NA, length(xval), length(theta))
+for(j in 1:length(theta))
+  eta_val[,j] = dens_eta_i_giventheta(xval, i = 10, theta[j], y)
+
+data.frame(x = xval, eta_val) %>%
+  pivot_longer(-x) %>%
+  ggplot() + geom_line(aes(x,value, group = name))
+
+```
+
+## Step III
+The next step is to weight each of the computed densities as:
+$$
+\pi(\eta_{10}|\theta_k,y)\pi(\theta_k)\Delta_k 
+$$
+and then compute the sum as
+
+$$
+\pi(\eta_{10}|y) = \sum_k\pi(\eta_{10}|\theta_k,y)\pi(\theta_k)\Delta_k 
+$$
+Complete the following code, [here](#Solution5) you find the complete
+```{r, echo= T, eval=FALSE}
+for(j in 1:length(theta))
+  eta_val[,j] = ???
+
+
+# plot the weighted densities     
+p1 = data.frame(x = xval, eta_val) %>%
+  pivot_longer(-x) %>%
+  ggplot() + geom_line(aes(x,value, group = name)) +
+  ggtitle("weighted marginal full conditionals")
+p1
+
+dens_eta = apply(eta_val,1,sum)
+norm_cons = ???
+dens_eta = dens_eta/norm_cons
+
+sol = data.frame(eta = xval, dens = dens_eta)
+p2 = ggplot() + geom_line(data = sol, aes(eta, dens), color = "red") + ggtitle("posterior distribution")
+p2
+```
+
+```{r, echo = FALSE, eval = TRUE}
+for(j in 1:length(theta))
+  eta_val[,j] = eta_val[,j] * dens[j] * Delta
+
+
+# plot the weighted densities     
+p1 = data.frame(x = xval, eta_val) %>%
+  pivot_longer(-x) %>%
+  ggplot() + geom_line(aes(x,value, group = name)) +
+  ggtitle("weighted marginal full conditionals")
+p1
+
+dens_eta = apply(eta_val,1,sum)
+norm_cons = sum(dens_eta * diff(xval)[1])
+dens_eta = dens_eta/norm_cons
+
+sol = data.frame(eta = xval, dens = dens_eta)
+p2 = ggplot() + geom_line(data = sol, aes(eta, dens), color = "red") + ggtitle("posterior distribution")
+p2
+```
+Finally  you can compare your answer with what the `inla()` function does:
+
+```{r}
+library(INLA)
+formula = y ~ -1 + f(idx, model="rw1", constr=FALSE,
+   hyper=list(prec=list(prior="loggamma", param=c(10,10))))
+
+result = inla(formula,
+      data = data.frame(y=y, idx=idx),
+      control.family = list(initial = log(1), fixed=TRUE))
+
+ggplot() +
+  geom_line(data= data.frame(result$marginals.random$idx[[10]]),
+            aes(x,y)) +
+  geom_line(data = sol, aes(eta, dens), color = "red", linetype = "dashed") + xlim(-5,2)
+  
+```
+
+<font size="5"> **Question:** </font>
+In step II we have computed the density $\pi(\eta_{10}|\theta,y)$ in the most naive way, do you see any problem in our algorithm that could make it unefficient if the model (or specifically if the latent field) is large? [Solution](#Solution6)
+
+
+
+
+---
+
+# Solutions
+## Question 1{#Solution1}
+The latent field is $x = \{\eta_1,\dots,\eta_n\}$ and the hyperparameter is the precision parameter $\theta$
+
+## Question 2{#Solution2}
+The precision matrix is  $n\times n$ symmetrical matrix 
+$$
+Q(\theta) = \theta \ R
+$$
+with 
+$$
+R = \left[\begin{array}
+{rrrrrrrrrr}
+2 & -1 & & & &  & & & & \\
+-1 & 2 & -1 & & & & & & \\
+& -1 & 2 & -1 & & & & & \\
+& & &  & \ddots & & &  & \\
+& & & & & -1 & 2 & -1 &\\
+& & & &  & & -1 & 2 & -1 \\
+ & & & & & & & -1 & 2 \\
+\end{array}
+\right]
+$$
+
+
+
+## Question 3{#Solution3}
+```{r, echo=T, eval = F}
+# define the adjacency matrix
+R = matrix(0,n,n)
+diag(R) = c(1,rep(2,n-2),1)
+for(i in 2:n)
+  R[i-1,i] =R[i,i-1] = -1
+
+# function that computes the log-likelihood
+llik = function(y,x)
+  return(sum(0.5*(y-x)^2))
+
+# function that computes the log prior
+# for the latent field x
+lprior_latent = function(x,theta)
+  return(-theta/2*t(x)%*%R%*%x)
+
+# function that computes the log prior
+# for the hyperpar
+lprior_theta = function(theta,a = 10,b = 10)
+{
+    return((a-1)*log(theta)-b*theta)
+}
+
+# function that computes the log 
+# full conditional \pi(x|t,\theta)
+lfullcond = function(y,theta,x)
+{
+  Q = theta * R + diag(n)
+  b = t(y) %*% diag(n)
+  return(-0.5*t(x)%*%Q%*%x+b%*%x)
+}
+
+
+# compute the posterior for each
+# \theta value in the grid 
+lposterior = numeric(length(theta))
+for(i in 1:length(theta))
+  lposterior[i] = sum(llik(y,x)) + 
+    lpriorX(x,theta[i]) + 
+    lpriorTheta(theta[i]) - 
+  lfullcond(y,theta[i],x)
+
+
+
+# normalize the density
+lposterior = lpost-max(lpost)
+posterior = exp(lposterior)
+norm_const = sum(posterior * Delta)
+posterior = posterior/norm_const
+
+p1 = data.frame(theta=theta, f=posterior) %>%
+  ggplot(aes(theta,f)) + geom_point() +
+  scale_x_continuous(name = expression(theta)) +
+  scale_y_continuous(name = "density")  + 
+  ggtitle(bquote('Posterior marginals for'~theta ))
+
+p1
+```
+
+## Question 4{#Solution4}
+```{r, echo = T, eval = F}
+# function that computes pi(\eta|theta,y) for a  
+# given value of theta
+# 
+dens_eta_i_giventheta = function(xval, ii, theta_j, y) { 
+
+  Qprior = theta_j * R
+  Qpost  = Qprior + diag(n)
+  Sigma_post = solve(Qpost)
+  mean_post = (Sigma_post %*% y)
+  pi = dnorm(xval, mean = mean_post[ii], 
+             sd= sqrt(Sigma_post[ii,ii]))
+  return(pi) 
+}
+```
+## Question 5{#Solution5}
+```{r, echo = T, eval = FALSE}
+for(j in 1:length(theta))
+  eta_val[,j] = eta_val[,j] * dens[j] * Delta
+
+
+# plot the weighted densities     
+p1 = data.frame(x = xval, eta_val) %>%
+  pivot_longer(-x) %>%
+  ggplot() + geom_line(aes(x,value, group = name)) +
+  ggtitle("weighted marginal full conditionals")
+p1
+
+dens_eta = apply(eta_val,1,sum)
+norm_cons = sum(dens_eta * diff(xval)[1])
+dens_eta = dens_eta/norm_cons
+
+sol = data.frame(eta = xval, dens = dens_eta)
+p2 = ggplot() + geom_line(data = sol, aes(eta, dens), color = "red") + ggtitle("posterior distribution")
+p2
+```
+
+## Question 6{#Solution6}
+Inverting the precision matrix $Q(\theta)$ in order to find the posterior means and variance can be computationally very intensity when $x$ is a large vector.
+
+The way INLA does this is to exploit the fact that  $Q(\theta)$  is sparse and means and variances can be computed using a smart algorithm [@Rue_martino_2007] that avoids having to invert the precision matrix.
+
+---
+# References

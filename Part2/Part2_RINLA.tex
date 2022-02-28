@@ -192,7 +192,11 @@
 
 \pause
 
-*..you have even implemented it yourself! :-)
+\begin{itemize}
+\tightlist
+\item
+  ..you have even implemented it yourself! :-)
+\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{Good News!}
@@ -694,11 +698,11 @@ for example
 
 \begin{verbatim}
 ##                 mean         sd 0.025quant 0.5quant 0.975quant     mode
-## (Intercept) 1.006556 0.01678705  0.9735303 1.006555   1.039553 1.006556
-## x           1.981128 0.03881546  1.9047647 1.981126   2.057424 1.981128
-##                     kld
-## (Intercept) 3.08322e-06
-## x           3.08333e-06
+## (Intercept) 1.002781 0.01981293  0.9638022 1.002780   1.041726 1.002781
+## x           1.974175 0.03346575  1.9083371 1.974174   2.039957 1.974175
+##                      kld
+## (Intercept) 3.086520e-06
+## x           3.086389e-06
 \end{verbatim}
 
 \normalsize
@@ -730,12 +734,12 @@ Each object is thereby a list. Get the marginal for intercept:
 
 \begin{verbatim}
 ##              x            y
-## [1,] 0.8383904 2.535015e-17
-## [2,] 0.8720235 4.073441e-11
-## [3,] 0.9056566 2.294869e-06
-## [4,] 0.9144923 2.703357e-05
-## [5,] 0.9224731 2.172120e-04
-## [6,] 0.9231681 2.587286e-04
+## [1,] 0.8043030 2.146677e-17
+## [2,] 0.8439985 3.450320e-11
+## [3,] 0.8836940 1.944195e-06
+## [4,] 0.8941229 2.290543e-05
+## [5,] 0.9035418 1.840298e-04
+## [6,] 0.9043623 2.192137e-04
 \end{verbatim}
 
 \normalsize
@@ -765,10 +769,10 @@ Further general information
 \end{Shaded}
 
 \begin{verbatim}
-##             x         y
-## 1 0.003393484 0.9627981
-## 2 0.115929286 1.2044419
-## 3 0.203226526 1.6256426
+##           x        y
+## 1 0.8051767 2.617140
+## 2 0.7827668 2.542227
+## 3 0.1807834 1.157771
 \end{verbatim}
 
 \begin{Shaded}
@@ -828,7 +832,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.9789007
+## [1] 0.9701406
 \end{verbatim}
 
 \begin{Shaded}
@@ -839,7 +843,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.03046564
+## [1] 0.08047574
 \end{verbatim}
 
 \begin{Shaded}
@@ -850,7 +854,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 22.13279
+## [1] 20.07664
 \end{verbatim}
 
 \begin{Shaded}
@@ -861,7 +865,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.988493 1.022675 1.015211 1.035757
+## [1] 0.9969020 1.0146015 1.0341315 0.9967547
 \end{verbatim}
 
 \normalsize
@@ -1756,6 +1760,193 @@ Running time of INLA \(<0.5\) seconds \normalsize
 \end{itemize}
 
 \normalsize
+\end{frame}
+
+\hypertarget{model-comparison}{%
+\section{Model Comparison}\label{model-comparison}}
+
+\begin{frame}[fragile]{Model choice/checking}
+\protect\hypertarget{model-choicechecking}{}
+There is a need to compare and choose between various models. This is a
+difficult problem, but \texttt{R-INLA} has some options available:
+
+\begin{itemize}
+\item
+  Marginal likelihood \(\Rightarrow\) Bayes factors
+\item
+  Deviance information criterion (DIC)
+\item
+  Widely applicable information criterion (WAIC)\\
+  \strut \\
+  There are also some predictive checks for the model:
+\item
+  Conditional predictive ordinate (CPO)
+\item
+  Probability integral transform (PIT)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Marginal likelihood}
+\protect\hypertarget{marginal-likelihood}{}
+\small
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
+              \AttributeTok{data =}\NormalTok{ data,}
+              \AttributeTok{control.compute=}\FunctionTok{list}\NormalTok{(}\AttributeTok{mlik=}\ConstantTok{TRUE}\NormalTok{))}
+\CommentTok{\# See result}
+\NormalTok{result}\SpecialCharTok{$}\NormalTok{mlik}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+\begin{itemize}
+\item
+  Calculates \(\log(\pi(\boldsymbol{y}))\)
+\item
+  Can calculate Bayes factors through differences in value
+\item
+  \textbf{NB:} Problematic for intrinsic models
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Deviance information criterion}
+\protect\hypertarget{deviance-information-criterion}{}
+\small
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
+              \AttributeTok{data =}\NormalTok{ data,}
+              \AttributeTok{control.compute=}\FunctionTok{list}\NormalTok{(}\AttributeTok{dic=}\ConstantTok{TRUE}\NormalTok{))}
+
+\CommentTok{\# See result}
+\NormalTok{result}\SpecialCharTok{$}\NormalTok{dic}\SpecialCharTok{$}\NormalTok{dic}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+\hfill\break
+\hfill\break
+DIC is a measure of complexity and fit. It is used to compare complex
+hierarchical models and is defined as:
+
+\[
+\text{DIC} = \overline{D} + p_D
+\]
+
+where \(\overline{D}\) is the posterior mean of the deviance and \(p_D\)
+is the effective number of parameters. Smaller values of the DIC
+indicate a better trade-off between complexity and fit of the model.
+\end{frame}
+
+\begin{frame}[fragile]{Widely applicable information criterion (WAIC)}
+\protect\hypertarget{widely-applicable-information-criterion-waic}{}
+\small
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
+              \AttributeTok{data =}\NormalTok{ data,}
+              \AttributeTok{control.compute=}\FunctionTok{list}\NormalTok{(}\AttributeTok{waic=}\ConstantTok{TRUE}\NormalTok{))}
+
+\CommentTok{\# See result}
+\NormalTok{result}\SpecialCharTok{$}\NormalTok{waic}\SpecialCharTok{$}\NormalTok{waic}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+\begin{itemize}
+\item
+  WAIC is like DIC just newer, and perhaps better
+\item
+  See \emph{``Understanding predictive information criteria for Bayesian
+  models''} (2013) by Andrew Gelman, Jessica Hwang, and Aki Vehtari
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Conditional predictive ordinate}
+\protect\hypertarget{conditional-predictive-ordinate}{}
+\small
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
+              \AttributeTok{data =}\NormalTok{ data,}
+              \AttributeTok{control.compute=}\FunctionTok{list}\NormalTok{(}\AttributeTok{cpo=}\ConstantTok{TRUE}\NormalTok{))}
+
+\CommentTok{\# See result}
+\NormalTok{result}\SpecialCharTok{$}\NormalTok{cpo}\SpecialCharTok{$}\NormalTok{cpo}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+\begin{itemize}
+\item
+  Measures fit through the predictive density
+  \(\pi(y_i^{obs}\mid\boldsymbol{y}_{-i})\)
+\item
+  Basically, Bayesian hold-one out
+\item
+  Easy to compute in the INLA-approach
+\item
+  Possible failure (\$cpo\$failure)
+\item
+  See \emph{Posterior and Cross-validatory Predictive Checks: A
+  Comparison of MCMC and INLA} (2009) by Held, Schr\{"o\}dle and Rue
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Probability integral transform}
+\protect\hypertarget{probability-integral-transform}{}
+\small
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
+              \AttributeTok{data =}\NormalTok{ data,}
+              \AttributeTok{control.compute=}\FunctionTok{list}\NormalTok{(}\AttributeTok{cpo=}\ConstantTok{TRUE}\NormalTok{))}
+
+\CommentTok{\# See result}
+\NormalTok{result}\SpecialCharTok{$}\NormalTok{cpo}\SpecialCharTok{$}\NormalTok{pit}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+\begin{itemize}
+\tightlist
+\item
+  Given by
+\end{itemize}
+
+\[
+\text{Prob}(Y_i \leq y_i^{obs} \mid \boldsymbol{y}_{-i})
+\]
+
+\begin{itemize}
+\item
+  Detects outliers
+\item
+  Should look out for unusually small or large values
+\item
+  PIT histograms should be uniform
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Model choice: Recap}
+\protect\hypertarget{model-choice-recap}{}
+\begin{itemize}
+\item
+  Information Criteria or predictive checks essentially for free
+\item
+  But they may not be appropriate
+\end{itemize}
 \end{frame}
 
 \begin{frame}{}

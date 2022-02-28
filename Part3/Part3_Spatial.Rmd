@@ -1123,7 +1123,9 @@ p2 = data.frame(x = coordinates(pxl_time)[,1],
 p1+p2
 ```
 
-## Some concluding remarks
+## Some concluding remark
+
+*  The functions `predict()` and `generate()` in `inlabru` use the `INLA` function `inla.posterior.sample()` internally.
 
 * `inlabru` is a wrapper around `INLA` so all the internal computations are identical!
 

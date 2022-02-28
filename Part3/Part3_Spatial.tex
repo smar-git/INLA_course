@@ -5,6 +5,12 @@
 \documentclass[
   ignorenonframetext,
 ]{beamer}
+\title{Spatial modeling with \texttt{INLA} and \texttt{inlabru}}
+\subtitle{University of Zurich, March, 2022}
+\author{Instructor: Sara Martino}
+\date{}
+\institute{Department of Mathematical Science (NTNU)}
+
 \usepackage{pgfpages}
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -163,12 +169,6 @@
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
-
-\title{Spatial modeling with \texttt{INLA} and \texttt{inlabru}}
-\subtitle{University of Zurich, March, 2022}
-\author{Instructor: Sara Martino}
-\date{}
-\institute{Department of Mathematical Science (NTNU)}
 
 \begin{document}
 \frame{\titlepage}
@@ -1117,10 +1117,10 @@ A first order autoregressive process with spatially colored innovations
 Fixed effects: \tiny
 
 \begin{verbatim}
-##                    mean          sd    0.025quant   0.975quant
-## Intercept -1.423798e+01 9.239174843 -32.044976546 4.2200399366
-## dem       -7.325875e-04 0.000848502  -0.002412883 0.0009407159
-## temp       6.201066e-02 0.032147609  -0.002213166 0.1240807909
+##                    mean           sd   0.025quant  0.975quant
+## Intercept -1.438049e+01 9.2184286118 -32.13870144 4.048280505
+## dem       -7.283542e-04 0.0008432266  -0.00239864 0.000935377
+## temp       6.250714e-02 0.0320763923  -0.00168185 0.124370511
 \end{verbatim}
 
 \normalsize
@@ -1129,15 +1129,15 @@ Hyperparameters of the random field: \tiny
 
 \begin{verbatim}
 ##                                                mean          sd  0.025quant
-## Precision for the Gaussian observations  41.8713331  7.25687492  29.3067659
-## Range for SPDE                          129.1540467 16.98526430 100.9451768
-## Stdev for SPDE                            0.7509040  0.09949155   0.5911108
-## GroupRho for SPDE                         0.9104849  0.02596461   0.8555418
+## Precision for the Gaussian observations  41.8618738  7.23316236  29.3259934
+## Range for SPDE                          129.1743804 16.95258105 101.0603416
+## Stdev for SPDE                            0.7512039  0.09966426   0.5914011
+## GroupRho for SPDE                         0.9105342  0.02594714   0.8555936
 ##                                          0.975quant
-## Precision for the Gaussian observations  57.7250561
-## Range for SPDE                          167.2734455
-## Stdev for SPDE                            0.9790161
-## GroupRho for SPDE                         0.9557306
+## Precision for the Gaussian observations  57.6623693
+## Range for SPDE                          167.2435983
+## Stdev for SPDE                            0.9798284
+## GroupRho for SPDE                         0.9557901
 \end{verbatim}
 \end{frame}
 
@@ -1264,9 +1264,13 @@ This can be usefull as the posterior means are always smoother than the
 \begin{center}\includegraphics[width=0.9\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-39-1} \end{center}
 \end{frame}
 
-\begin{frame}[fragile]{Some concluding remarks}
-\protect\hypertarget{some-concluding-remarks}{}
+\begin{frame}[fragile]{Some concluding remark}
+\protect\hypertarget{some-concluding-remark}{}
 \begin{itemize}
+\item
+  The functions \texttt{predict()} and \texttt{generate()} in
+  \texttt{inlabru} use the \texttt{INLA} function
+  \texttt{inla.posterior.sample()} internally.
 \item
   \texttt{inlabru} is a wrapper around \texttt{INLA} so all the internal
   computations are identical!
