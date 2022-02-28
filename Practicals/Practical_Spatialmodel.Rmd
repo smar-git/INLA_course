@@ -1,6 +1,6 @@
 ---
-title: "Fitting very simple models with R-INLA"
-subtitle: 'Day 1, Afternoon'
+title: "Fitting  a Spatial model with `inlabru`"
+subtitle: 'Day 2, Morning'
 author: "Instructor: Sara Martino"
 #date: "`r format(Sys.time(), '%d %B, %Y')`"
 bibliography: biblio.bib  
@@ -38,9 +38,21 @@ klippy::klippy(position = c('top', 'right'),
 ```
 
 ---
+
+
 \
 \
 \
+
+In this practical we are going to fit  a spatial model for the montly mean maximim temperature in Italy.
+
+The goals of this practical are:
+
+* Learn how to fit a spatial model in `inlabru`
+
+* Learn how to do predictions 
+
+* Learn how to simulate from the fitted model
 
 
 
@@ -50,79 +62,261 @@ Start by loading usefull libraries:
 library(INLA)
 library(ggplot2)
 library(patchwork)
-library(spam)     
 # load some libraries to generate nice map plots
-library(fields)
-library(colorspace)
 library(inlabru)
+library(tidyverse)
+library(sp)
+library(sf)
+library(viridis)
 library(raster)
-
 ```
 
 
+# The data
+We are going to look at the montly mean maximum temperatures in Italy in January 2020.
 
+Load the data and a shapefile for the italian territory.
 
-
-
-Load the data
 ```{r}
-# read shape of Italy
-italy = readRDS("Data/Temp_Italia/italia")
-# Read temperatures
-temp = read.table("Data/Temp_Italia/tmax_january_sara_1961_2020.csv", sep = ";",
-                  header = T)
-# select only data for 2020
-temp = temp[temp$yy==2020,]
+italy = st_read("Data/Temp_Italia/italia_km.shp")
+# remove the crs information
+# This is not necessary but we want to keep things simple here!
+st_crs(italy) = "NA"
+temp = read.table("Data/Temp_Italia/Temp_italia_january2020.dat")
 
-# plot the data
-ggplot() + geom_point(data = temp, aes(x,y,col = Tmax)) +
-  scale_color_viridis_b() +
-  gg(italy) +
-  coord_equal() + xlab("")+ylab("")
+#transform the coordinated from meter to Km
+temp$x = temp$x/1000
+temp$y = temp$y/1000
 
+# add latitude as a own column
+temp$lat = temp$y
+
+# create a spatilPoligonDataframe
+italy_sp = as(italy,"Spatial")
 ```
 
-Create the mesh
+We can have a look at the data:
 ```{r}
-mesh = inla.mesh.2d(loc = cbind(temp$x, temp$y),
-                    offset = c(70,300),
-                    cutoff = 25,
-                    max.edge = c(50,200))
+ggplot() + geom_point(data = temp, aes(x,y,color = Tmax)) +
+  geom_sf(data = italy, alpha = 0) +
+  scale_color_viridis() + xlab("") + ylab("")
+```
 
-ggplot() + 
-  gg(mesh) +
-  geom_point(data = temp, aes(x,y)) +
-  coord_equal() + xlab("")+ylab("")
+The dataset also contains information about the altitude of the measuring stations.
+
+We are going to use both elevation and latitude as covariates
+
+<font size="3"> **Exercise  1:** </font> Explore the dataset. Is a Gaussian likelihood reasonable? Do we have reason to believe that elevation and latitude explain (part) of the variability in the Tmax variable?
 
 
-spde = inla.spde2.pcmatern(mesh = mesh,
-                           prior.range=c(300,0.5), 
-                           prior.sigma=c(1,0.1))
 
-temp$lat = temp$x
-coordinates(temp) =c("x","y")
-cmp = ~ Intercept(1) + dem(Elevation, model = "linear") +
-  lat(lat, model = "linear") + SPDE(coordinates, model = spde)
+# The model
+
+We are going to fit the following model
+
+$$
+\begin{aligned}
+Y(s) &\sim \mathcal{N}(\eta(s),\sigma^2_y)\\
+\eta(s)& = \alpha + \beta_1\ x_1(s) + \beta_2x_2(s) + u(s)\\
+\end{aligned}
+$$
+Where
+
+ * $Y(s)$ is the temperature at location $s$
   
-lik = like(formula = Tmax ~ Intercept + dem + lat + SPDE,
+ * $x_1(s)$ and $x_2(s)$ are altitude and latitude at location $s$  
+ 
+ * $\beta_1$ and $\beta_2$ are parameters
+ 
+ * $\alpha$ is a common intercept
+
+ * $u(s)$ is a Matern field with range $\rho$ and standard deviation $\sigma_u$
+
+ * $\sigma^2_y$ is the observation error.
+ 
+#   Create the mesh
+
+We can create the mesh starting from the observation points as:
+```{r}
+mesh1 = inla.mesh.2d(loc = cbind(temp$x, temp$y),
+                     offset = c(100,300),
+                     max.edge = c(80,400))
+ggplot() + geom_sf(data = italy) + gg(mesh1)
+```
+
+This will create a mesh vertex in each station. Many stations are very close to each other thus creating a lot of small triangles.
+
+We can avoid this by using the option `cutoff = K`. This will make the mesh builder consider all points closer that `K` as one:
+
+```{r}
+# create the mesh
+mesh2 = inla.mesh.2d(loc = cbind(temp$x, temp$y),
+                    cutoff = 50,
+                     offset = c(100,300),
+                     max.edge = c(80,400))
+ggplot() + geom_sf(data = italy) + gg(mesh2)
+```
+
+
+# The SPDE model
+
+To create the SPDE representation of the GAussian field we need to specify the priors for the range $\rho$ and the standard deviation $\sigma_u$.
+
+Below are some possibilities:
+
+```{r, eval = F}
+# spde model
+spde1 = inla.spde2.pcmatern(mesh = mesh2,
+                           prior.range=c(10,0.5), 
+                           prior.sigma=c(20,0.1)) 
+
+spde2 = inla.spde2.pcmatern(mesh = mesh2,
+                           prior.range=c(1500,0.5), 
+                           prior.sigma=c(0.1,0.1)) 
+
+spde3 = inla.spde2.pcmatern(mesh = mesh2,
+                           prior.range=c(150,0.5), 
+                           prior.sigma=c(2,0.1)) 
+
+```
+
+<font size="3"> **Exercise  2:** </font> Check the sd of the `Tmax` variable  the data set, which of the 3 priors above seems to be reasonable? 
+
+```{r, echo = F}
+# spde model
+
+spde = inla.spde2.pcmatern(mesh = mesh2,
+                           prior.range=c(150,0.5), 
+                           prior.sigma=c(2,0.1)) 
+
+```
+
+# Running the model
+
+
+To run the model we need to make our dataset a spatial object (we need to define where our coordinates are!)
+
+We want to use both `Elevation` and `lat` as linear covariates.
+These are already present in the `temp` dataset so we can use them directly in the model.
+
+
+The model is then defined as:
+
+```{r, cache = TRUE}
+# define the coordinates
+coordinates(temp) = c("x","y")
+# model component
+cmp  = ~ Intercept(1) + 
+  SPDE(coordinates, model = spde) +
+  Elevation(Elevation, model = "linear") +
+  lat(lat, model = "linear")
+# likelihood
+lik = like(formula = Tmax ~ Intercept + SPDE + Elevation + lat  ,
            family = "gaussian",
            data = temp)
 
-fit = bru(cmp, lik)
-
+# fit the model
+fit = bru(cmp, lik,
+          options = list(verbose = F,
+                         bru_max_iter = 1,
+                         inla.mode  = "experimental"))
 ```
 
+<font size="3"> **Exercise  3:** </font> Check the model results. Are the covariate significant? what are the posterior for the range $\rho$ and the standard deviation $\sigma_u$?
+
+# Spatial prediction
+
+We now want to predict the mean montly maximum temperature over Italy.
+
+To do this we need, of course, the value of the elevation and latitude over the whole area of interest.
+
+The can be read as:
+```{r}
+dem_sp = readRDS("Data/Temp_Italia/dem.RDS")
+```
+
+```{r, echo = F}
+ggplot() + gg(dem_sp) +
+  scale_fill_viridis() +
+  geom_sf(data = italy, alpha = 0) +
+  xlab("") + ylab("")
+```
+
+First thing to do is to define the area taht we want to predict over. For this we can use the function `pixels()`
 
 ```{r}
-dem = raster("Data/Temp_Italia/dem_italia.tif")
-dem <- projectRaster(dem,
-                                       crs = mycrs)
-lat = raster("Data/Temp_Italia/latitudine.tif")
+pxl = pixels(mesh2, nx = 400, ny = 400, mask = italy_sp)
+```
 
+This creates a grid covering the whole mesh with dimension 400x400. The option `mask = italy_sp` removes all points that are outside of the italian border:
 
-pxl  = pixels(mesh, nx = 300, ny = 300, mask = as(italy, "Spatial"))
-
+```{r, echo = F}
+ggplot() + geom_point(data = data.frame(coordinates(pxl)), aes(x,y), size = 0.1) +
+  xlab("") + ylab("") + coord_equal()
 
 ```
+
+To compute predictions we need to have the values of covariates on every point in the `pxl` object. There are several ways to do that. Here we use the function `extract()` from the `raster` library:
+
+```{r, cache = TRUE}
+# Create a raster with altitude values
+rast = raster::raster(dem_sp)
+# extract altitude at the points of interest
+val  = raster::extract(rast, coordinates(pxl))
+
+pxl <- cbind(pxl, data.frame(lat = coordinates(pxl)[,2],
+                             Elevation = val))
+
+# use the predict() function to create predictions
+pred_space = predict(fit, pxl,
+                        ~ Intercept + SPDE+ Elevation + lat)
+
+# plot postrior mean and sd
+p1 = ggplot() + gg(pred_space, aes(fill = mean)) +
+  geom_sf(data = italy, alpha = 0) +
+  scale_fill_viridis() + xlab("") + ylab("")
+p2 = ggplot() + gg(pred_space, aes(fill = sd)) +
+  geom_sf(data = italy, alpha = 0) +
+  scale_fill_viridis() + xlab("") + ylab("")
+p1+p2
+```
+
+
+<font size="3"> **Exercise  4:** </font> Use the function `predict()` to look at the posterior mean and standard deviation of the Gaussian field $u$. Use the function `generate()` to generate  samples from the  fitted model.
+
+
+# One alternative formulation
+
+If we are interested in prediction surfaces and we have the covariates over the whole surface we can also use the grdi directly as input for the `bru()` function:
+
+```{r}
+cmp1  = ~ Intercept(1) + 
+  SPDE(coordinates, model = spde) +
+  Elevation(dem_sp, model = "linear") +
+  lat(lat, model = "linear")
+# likelihood
+lik1 = like(formula = Tmax ~ Intercept + SPDE + Elevation + lat  ,
+           family = "gaussian",
+           data = temp)
+
+# fit the model
+fit1 = bru(cmp1, lik1,
+          options = list(verbose = F,
+                         bru_max_iter = 1,
+                         inla.mode  = "experimental"))
+```
+
+Prediction can then be obtained as:
+
+```{r}
+pxl = pixels(mesh2, nx = 400, ny = 400, mask = italy_sp)
+
+pxl <- cbind(pxl, data.frame(lat = coordinates(pxl)[,2]))
+pred_space = predict(fit, pxl,
+                        ~ Intercept + SPDE+ Elevation + lat)
+
+```
+
+
 
 
