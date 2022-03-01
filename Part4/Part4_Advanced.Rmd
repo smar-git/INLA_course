@@ -1,0 +1,48 @@
+---
+title: "Spatial modeling with  `INLA` and `inlabru`"
+subtitle: 'University of Zurich, March, 2022'
+author: "Instructor: Sara Martino"
+#date: "`r format(Sys.time(), '%d %B, %Y')`"
+institute: Department of Mathematical Science (NTNU)
+bibliography: biblio.bib  
+output:
+  beamer_presentation:
+    slide_level: 2
+    toc: true    
+    keep_tex: yes
+    theme: "Singapore"
+    colortheme: "default"
+    font: "serif"
+    includes:
+      in_header: header.tex
+#classoption: "handout"
+---
+
+
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","all",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","html_document",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","pdf_document",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","beamer_presentation",encoding="UTF-8") -->
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/INLA_course/Part4/")
+
+knitr::opts_chunk$set(echo = FALSE,  
+                      message=FALSE, 
+                      warning=FALSE, 
+                      strip.white=TRUE, 
+                      prompt=FALSE,
+                      fig.align="center",
+                       out.width = "60%")
+
+library(knitr)    # For knitting document and include_graphics function
+library(ggplot2)  # For plotting
+library(png) 
+library(tidyverse)
+library(INLA)
+library(patchwork)
+library(viridis)
+library(inlabru)
+```
+
