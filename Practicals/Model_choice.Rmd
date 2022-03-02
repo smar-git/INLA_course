@@ -44,7 +44,7 @@ Start by loading useful libraries:
 library(ggplot2)
 library(INLA)
 library(inlabru)
-library(mgcv)
+#library(mgcv)
 library(viridis)
 ```
 

@@ -323,6 +323,15 @@ for some expectation function $\mu(\cdot)$ and positive definite covariance
 function $R(\cdot, \cdot)$. $\Sigma$ is the covariance matrix for the specific location collection.
 
 
+## Matern covariance function
+
+The Matern covariance function is a popular model in spatial problems:
+$$
+c_{\nu}(d;\sigma,\rho) = \sigma^2\frac{2^{1-\nu}}{\Gamma(\nu)}\left(\sqrt{8\nu}\frac{d}{\rho}\right)^{\nu}K_{\nu}\left(\sqrt{8\nu}\frac{d}{\rho}\right)
+$$
+* $\rho$ and $\sigma$ are the range and the marginal standard deviation
+
+* $K_{\nu}$ modified Bessel function of the second kind, order $\nu$.
 
 
 
@@ -332,7 +341,7 @@ function $R(\cdot, \cdot)$. $\Sigma$ is the covariance matrix for the specific l
 pl01 <- cbind(c(0, 1, 1, 0, 0) * 10, c(0, 0, 1, 1, 0) * 5)
 
 mesh <- inla.mesh.2d(loc.domain = pl01, cutoff = 0.1, 
-  max.edge = c(0.3, 1), offset = c(0.5, 1.5)) 
+  max.edge = c(0.3, 1), offset = c(0.5, 3.5)) 
 
 # SPDE model
 spde <- inla.spde2.pcmatern(mesh,
@@ -345,21 +354,19 @@ sample <- as.vector(inla.qsample(1, Q))
 loc = data.frame(x = runif(30,0,10),
                  y = runif(30,0,5))
 
-# Plot parameters
-par(mfrow = c(2, 1), mar = c(0, 0, 0, 0))
 #Plot Field
 proj <- inla.mesh.projector(mesh, xlim = 0:1 * 10, ylim = 0:1 * 5,
   dims = c(400, 400)) 
 xy = expand.grid(proj$x, proj$y)
-data.frame(x = xy[,1],
+p1 = data.frame(x = xy[,1],
            y = xy[,2],
            z = as.vector(inla.mesh.project(proj, sample))) %>%
   ggplot() + geom_tile(aes(x,y,fill = z)) +
   geom_point(data = loc, aes(x,y)) +
+  coord_equal() +
   scale_fill_viridis()
 
-
-
+p1
 ```
 
 ## Gaussian Random field
@@ -618,6 +625,41 @@ PC-priors for the range $\rho$ and the standard deviarion $\sigma$
 * Define the prior for the range `prior.sigma  = (sigma0,Psigma)` $\text{Prob}(\sigma>\sigma_0) = p_{\sigma}$
 
 
+
+```{r}
+
+dens_prior_range = function(rho_0, alpha_1)
+{
+  rho = seq(0, rho_0*10, length.out =100)
+  alpha1_tilde = -log(alpha_1) * rho_0
+  dens_rho =  alpha1_tilde / rho^2 * exp(-alpha1_tilde / rho)
+  return(data.frame(x = rho, y = dens_rho))
+}
+
+dens_prior_sd = function(sigma_0, alpha_2)
+{
+  sigma = seq(0, sigma_0*10, length.out =100)
+  alpha2_tilde = -log(alpha_2)/sigma_0
+  dens_sigma = alpha2_tilde* exp(-alpha2_tilde * sigma) 
+  return(data.frame(x = sigma, y = dens_sigma))
+}
+
+```
+
+
+## Prior for range $\rho$ and sd $\sigma$
+
+```{r}
+
+p1 =ggplot(data = dens_prior_range(1000,0.5)) + geom_line(aes(x,y)) +ggtitle("Prior for the range") +
+  ylab("") + xlab("range")
+p2 =ggplot(data = dens_prior_sd(1,0.1)) + geom_line(aes(x,y)) +ggtitle("Prior for sd")+
+  ylab("") + xlab("sd")
+p1+p2
+
+```
+
+
 ## Run the model `inlabru`
 \tiny
 ```{r, echo = T, eval = F, cache  = T}
@@ -698,6 +740,26 @@ pred = predict(fit, pix, ~ data.frame(
                                       naturalscale = exp(Intercept + dist + spde)))
 
 ```
+
+
+## Estimation: Posterior for the hyperparameters
+
+```{r}
+p1 =ggplot() + geom_line(data = dens_prior_range(1000,0.5), aes(x,y), linetype = "dashed") +
+  ggtitle("Posterior for the range") +
+  ylab("") + xlab("range") +
+  geom_line(data = data.frame(fit$marginals.hyperpar$`Range for spde`), aes(x,y), color = "red")  +
+  xlim(0,5000)
+
+p2 =ggplot() + geom_line(data = dens_prior_sd(1,0.1), aes(x,y), linetype = "dashed") +
+  ggtitle("Posterior for sd")+
+    geom_line(data = data.frame(fit$marginals.hyperpar$`Stdev for spde`), aes(x,y), color = "red")  +
+  ylab("") + xlab("sd") +
+  xlim(0,2.5)
+
+p1+p2
+```
+
 
 ```{r}
 p1 = ggplot() + gg(data = pred$spde, aes(fill = mean))  +
@@ -910,7 +972,7 @@ spde = inla.spde2.pcmatern(mesh = mesh,
 * $\text{Prob}(\sigma>1)  = 0.1$
 
 ## Implement the model
-\small
+\tiny
 ```{r, echo =T, cache = TRUE}
 # make the data a spatial object
 coordinates(df) = c("x","y")

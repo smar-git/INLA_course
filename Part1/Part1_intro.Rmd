@@ -27,6 +27,8 @@ output:
 # knit: (function(inputFile, encoding) {
 #   rmarkdown::render(inputFile, encoding = encoding,
 #   output_dir = "output", output_format = "all") })
+#classoption: "handout"
+
 ---
 
 
@@ -37,7 +39,7 @@ output:
 
 
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "~/INLA_course/Day1.1/")
+knitr::opts_knit$set(root.dir = "~/INLA_course/Part1/")
 
 knitr::opts_chunk$set(echo = FALSE,  
                       message=FALSE, 
@@ -73,12 +75,12 @@ library(patchwork)
 ## Plan for this 2-day course
 **Tomorrow**
 
-* **9:00-10:45**??
+* **9:00-10:45** Space time models with `inlabru`
 * **11:00-12:30** Practical session III
 
  **\textcolor{red}{Lunch}**
 
-* **13:30-15:00** ??
+* **13:30-15:00** Advanced topic
 * **15:15-16:00** Practical session IV
 
 # Introduction

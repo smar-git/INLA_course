@@ -102,17 +102,17 @@ inla.upgrade(testing = TRUE)
 
 \textcolor{red}{**NB** You need R version 4.1 or newer!!}
 
-## `INLA` runs in parallel!
+<!-- ## `INLA` runs in parallel! -->
 
-`INLA` can run in parallel for faster computations with large models.
+<!-- `INLA` can run in parallel for faster computations with large models. -->
 
-It uses the `PARDISO 7.2 Solver Project ` and you need to get a license to use it!
-```{r, echo = TRUE, eval = FALSE}
-library(INLA)
-inla.pardiso()
-```
+<!-- It uses the `PARDISO 7.2 Solver Project ` and you need to get a license to use it! -->
+<!-- ```{r, echo = TRUE, eval = FALSE} -->
+<!-- library(INLA) -->
+<!-- inla.pardiso() -->
+<!-- ``` -->
 
-..and follow the instruction there!
+<!-- ..and follow the instruction there! -->
 
 ## Which `INLA` version do I have?
 ```{r, echo = T}
@@ -215,6 +215,7 @@ res = inla(formula,
 There are essentially four parts to an `INLA`-program:
 \
 \
+
 1. \textcolor{red}{Data organisation}: Make an object to store response, covariates,
 ```{r,echo=TRUE, eval=FALSE}
 data = data.fame(y = y, x = x)

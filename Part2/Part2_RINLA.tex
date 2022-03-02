@@ -5,6 +5,12 @@
 \documentclass[
   ignorenonframetext,
 ]{beamer}
+\title{Bayesian Statistics with R-INLA}
+\subtitle{University of Zurich, March, 2022}
+\author{Instructor: Sara Martino}
+\date{}
+\institute{Department of Mathematical Science (NTNU)}
+
 \usepackage{pgfpages}
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -164,12 +170,6 @@
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 
-\title{Bayesian Statistics with R-INLA}
-\subtitle{University of Zurich, March, 2022}
-\author{Instructor: Sara Martino}
-\date{}
-\institute{Department of Mathematical Science (NTNU)}
-
 \begin{document}
 \frame{\titlepage}
 
@@ -260,24 +260,6 @@ and then upgraded in R as:
 \end{Shaded}
 
 \textcolor{red}{**NB** You need R version 4.1 or newer!!}
-\end{frame}
-
-\begin{frame}[fragile]{\texttt{INLA} runs in parallel!}
-\protect\hypertarget{inla-runs-in-parallel}{}
-\texttt{INLA} can run in parallel for faster computations with large
-models.
-
-It uses the \texttt{PARDISO\ 7.2\ Solver\ Project} and you need to get a
-license to use it!
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(INLA)}
-\FunctionTok{inla.pardiso}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-..and follow the instruction there!
 \end{frame}
 
 \begin{frame}[fragile]{Which \texttt{INLA} version do I have?}
@@ -415,8 +397,13 @@ to achieve a good speed; easier to implement a slow version of INLA.
 \protect\hypertarget{how-to-use-inla-1}{}
 There are essentially four parts to an \texttt{INLA}-program:\\
 \strut \\
-1. \textcolor{red}{Data organisation}: Make an object to store response,
-covariates,
+
+\begin{enumerate}
+\tightlist
+\item
+  \textcolor{red}{Data organisation}: Make an object to store response,
+  covariates,
+\end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -697,12 +684,12 @@ for example
 \end{Shaded}
 
 \begin{verbatim}
-##                 mean         sd 0.025quant 0.5quant 0.975quant     mode
-## (Intercept) 1.002781 0.01981293  0.9638022 1.002780   1.041726 1.002781
-## x           1.974175 0.03346575  1.9083371 1.974174   2.039957 1.974175
+##                  mean         sd 0.025quant  0.5quant 0.975quant      mode
+## (Intercept) 0.9792256 0.02529260  0.9294668 0.9792248   1.028942 0.9792255
+## x           2.0208929 0.03944581  1.9432900 2.0208917   2.098429 2.0208929
 ##                      kld
-## (Intercept) 3.086520e-06
-## x           3.086389e-06
+## (Intercept) 3.089110e-06
+## x           3.089167e-06
 \end{verbatim}
 
 \normalsize
@@ -734,12 +721,12 @@ Each object is thereby a list. Get the marginal for intercept:
 
 \begin{verbatim}
 ##              x            y
-## [1,] 0.8043030 2.146677e-17
-## [2,] 0.8439985 3.450320e-11
-## [3,] 0.8836940 1.944195e-06
-## [4,] 0.8941229 2.290543e-05
-## [5,] 0.9035418 1.840298e-04
-## [6,] 0.9043623 2.192137e-04
+## [1,] 0.7258546 1.680766e-17
+## [2,] 0.7765288 2.702053e-11
+## [3,] 0.8272030 1.522818e-06
+## [4,] 0.8405167 1.794336e-05
+## [5,] 0.8525401 1.441510e-04
+## [6,] 0.8535878 1.717194e-04
 \end{verbatim}
 
 \normalsize
@@ -770,9 +757,9 @@ Further general information
 
 \begin{verbatim}
 ##           x        y
-## 1 0.8051767 2.617140
-## 2 0.7827668 2.542227
-## 3 0.1807834 1.157771
+## 1 0.4444978 1.944043
+## 2 0.8966812 2.845822
+## 3 0.5178038 1.929968
 \end{verbatim}
 
 \begin{Shaded}
@@ -798,7 +785,7 @@ and \(y\)-values \small
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-25-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-24-1} \end{center}
 \normalsize
 \end{frame}
 
@@ -814,7 +801,7 @@ The rough shape can be interpolated to higher resolution using the
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-26-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-25-1} \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{Marginal posterior densities}
@@ -832,7 +819,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.9701406
+## [1] 0.9375583
 \end{verbatim}
 
 \begin{Shaded}
@@ -843,7 +830,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.08047574
+## [1] 0.4347315
 \end{verbatim}
 
 \begin{Shaded}
@@ -854,7 +841,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 20.07664
+## [1] 11.24
 \end{verbatim}
 
 \begin{Shaded}
@@ -865,7 +852,7 @@ Manipulation of the computed posterior marginals is possible through the
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.9969020 1.0146015 1.0341315 0.9967547
+## [1] 0.9571780 0.9465501 0.9755172 0.9990279
 \end{verbatim}
 
 \normalsize
@@ -1013,7 +1000,7 @@ Estimates of the random effect \small
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-33-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-32-1} \end{center}
 \normalsize
 \end{frame}
 
@@ -1036,7 +1023,7 @@ Estimates of the hyperparameters \footnotesize
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.4\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-34-1} \end{center}
+\begin{center}\includegraphics[width=0.4\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-33-1} \end{center}
 \end{frame}
 
 \hypertarget{prediction}{%
@@ -1101,7 +1088,7 @@ Predicted marginal of the linear predictor \(\eta_{101}\)
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-36-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-35-1} \end{center}
 \end{frame}
 
 \begin{frame}{Prediction}
@@ -1146,7 +1133,7 @@ sampling from the posterior distribution.
 \protect\hypertarget{prediction-5}{}
 Comparing \(\pi(y_{101}|\bf{y})\) and \(\pi(\eta_{101}|\bf{y})\)
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-37-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-36-1} \end{center}
 \normalsize
 \end{frame}
 
@@ -1160,7 +1147,7 @@ The data set \texttt{Tokyo} is available in the \texttt{INLA} package
 and consists of the number of days in Tokyo with rainfall above 1 mm in
 1983--1984.
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-38-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-37-1} \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{Observations}
@@ -1262,7 +1249,7 @@ Each observation consists of
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-42-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-41-1} \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{Transform to probability}
@@ -1280,7 +1267,7 @@ Each observation consists of
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-43-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-42-1} \end{center}
 \normalsize
 \end{frame}
 
@@ -1317,7 +1304,7 @@ Germany from 1986 to 1990 and want to make a model.
 
 \begin{col}{0.4\textwidth}
 
-\begin{center}\includegraphics[width=1.1\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-44-1} \end{center}
+\begin{center}\includegraphics[width=1.1\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-43-1} \end{center}
 
 \end{col}
 
@@ -1383,7 +1370,7 @@ The structure matrix \(\mathbf{R}\) defines the neighborhood structure.
 
 }
 
-\caption{Adjacency matrix}\label{fig:unnamed-chunk-45}
+\caption{Adjacency matrix}\label{fig:unnamed-chunk-44}
 \end{figure}
 
 \end{col}
@@ -1438,7 +1425,7 @@ allows to do many computations very efficient.
 \protect\hypertarget{median-of-u-on-exp-scale}{}
 \small
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-47-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part2_RINLA_files/figure-beamer/unnamed-chunk-46-1} \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{Other choices for \texttt{f}-terms}
@@ -1760,193 +1747,6 @@ Running time of INLA \(<0.5\) seconds \normalsize
 \end{itemize}
 
 \normalsize
-\end{frame}
-
-\hypertarget{model-comparison}{%
-\section{Model Comparison}\label{model-comparison}}
-
-\begin{frame}[fragile]{Model choice/checking}
-\protect\hypertarget{model-choicechecking}{}
-There is a need to compare and choose between various models. This is a
-difficult problem, but \texttt{R-INLA} has some options available:
-
-\begin{itemize}
-\item
-  Marginal likelihood \(\Rightarrow\) Bayes factors
-\item
-  Deviance information criterion (DIC)
-\item
-  Widely applicable information criterion (WAIC)\\
-  \strut \\
-  There are also some predictive checks for the model:
-\item
-  Conditional predictive ordinate (CPO)
-\item
-  Probability integral transform (PIT)
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{Marginal likelihood}
-\protect\hypertarget{marginal-likelihood}{}
-\small
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
-              \AttributeTok{data =}\NormalTok{ data,}
-              \AttributeTok{control.compute=}\FunctionTok{list}\NormalTok{(}\AttributeTok{mlik=}\ConstantTok{TRUE}\NormalTok{))}
-\CommentTok{\# See result}
-\NormalTok{result}\SpecialCharTok{$}\NormalTok{mlik}
-\end{Highlighting}
-\end{Shaded}
-
-\normalsize
-
-\begin{itemize}
-\item
-  Calculates \(\log(\pi(\boldsymbol{y}))\)
-\item
-  Can calculate Bayes factors through differences in value
-\item
-  \textbf{NB:} Problematic for intrinsic models
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{Deviance information criterion}
-\protect\hypertarget{deviance-information-criterion}{}
-\small
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
-              \AttributeTok{data =}\NormalTok{ data,}
-              \AttributeTok{control.compute=}\FunctionTok{list}\NormalTok{(}\AttributeTok{dic=}\ConstantTok{TRUE}\NormalTok{))}
-
-\CommentTok{\# See result}
-\NormalTok{result}\SpecialCharTok{$}\NormalTok{dic}\SpecialCharTok{$}\NormalTok{dic}
-\end{Highlighting}
-\end{Shaded}
-
-\normalsize
-
-\hfill\break
-\hfill\break
-DIC is a measure of complexity and fit. It is used to compare complex
-hierarchical models and is defined as:
-
-\[
-\text{DIC} = \overline{D} + p_D
-\]
-
-where \(\overline{D}\) is the posterior mean of the deviance and \(p_D\)
-is the effective number of parameters. Smaller values of the DIC
-indicate a better trade-off between complexity and fit of the model.
-\end{frame}
-
-\begin{frame}[fragile]{Widely applicable information criterion (WAIC)}
-\protect\hypertarget{widely-applicable-information-criterion-waic}{}
-\small
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
-              \AttributeTok{data =}\NormalTok{ data,}
-              \AttributeTok{control.compute=}\FunctionTok{list}\NormalTok{(}\AttributeTok{waic=}\ConstantTok{TRUE}\NormalTok{))}
-
-\CommentTok{\# See result}
-\NormalTok{result}\SpecialCharTok{$}\NormalTok{waic}\SpecialCharTok{$}\NormalTok{waic}
-\end{Highlighting}
-\end{Shaded}
-
-\normalsize
-
-\begin{itemize}
-\item
-  WAIC is like DIC just newer, and perhaps better
-\item
-  See \emph{``Understanding predictive information criteria for Bayesian
-  models''} (2013) by Andrew Gelman, Jessica Hwang, and Aki Vehtari
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{Conditional predictive ordinate}
-\protect\hypertarget{conditional-predictive-ordinate}{}
-\small
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
-              \AttributeTok{data =}\NormalTok{ data,}
-              \AttributeTok{control.compute=}\FunctionTok{list}\NormalTok{(}\AttributeTok{cpo=}\ConstantTok{TRUE}\NormalTok{))}
-
-\CommentTok{\# See result}
-\NormalTok{result}\SpecialCharTok{$}\NormalTok{cpo}\SpecialCharTok{$}\NormalTok{cpo}
-\end{Highlighting}
-\end{Shaded}
-
-\normalsize
-
-\begin{itemize}
-\item
-  Measures fit through the predictive density
-  \(\pi(y_i^{obs}\mid\boldsymbol{y}_{-i})\)
-\item
-  Basically, Bayesian hold-one out
-\item
-  Easy to compute in the INLA-approach
-\item
-  Possible failure (\$cpo\$failure)
-\item
-  See \emph{Posterior and Cross-validatory Predictive Checks: A
-  Comparison of MCMC and INLA} (2009) by Held, Schr\{"o\}dle and Rue
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{Probability integral transform}
-\protect\hypertarget{probability-integral-transform}{}
-\small
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}
-              \AttributeTok{data =}\NormalTok{ data,}
-              \AttributeTok{control.compute=}\FunctionTok{list}\NormalTok{(}\AttributeTok{cpo=}\ConstantTok{TRUE}\NormalTok{))}
-
-\CommentTok{\# See result}
-\NormalTok{result}\SpecialCharTok{$}\NormalTok{cpo}\SpecialCharTok{$}\NormalTok{pit}
-\end{Highlighting}
-\end{Shaded}
-
-\normalsize
-
-\begin{itemize}
-\tightlist
-\item
-  Given by
-\end{itemize}
-
-\[
-\text{Prob}(Y_i \leq y_i^{obs} \mid \boldsymbol{y}_{-i})
-\]
-
-\begin{itemize}
-\item
-  Detects outliers
-\item
-  Should look out for unusually small or large values
-\item
-  PIT histograms should be uniform
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Model choice: Recap}
-\protect\hypertarget{model-choice-recap}{}
-\begin{itemize}
-\item
-  Information Criteria or predictive checks essentially for free
-\item
-  But they may not be appropriate
-\end{itemize}
 \end{frame}
 
 \begin{frame}{}

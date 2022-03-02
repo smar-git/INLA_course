@@ -4,8 +4,8 @@
 %
 \documentclass[
   ignorenonframetext,
-]{beamer}
-\title{Spatial modeling with \texttt{INLA} and \texttt{inlabru}}
+  handout]{beamer}
+\title{\texttt{INLA} and \texttt{inlabru} advanced features}
 \subtitle{University of Zurich, March, 2022}
 \author{Instructor: Sara Martino}
 \date{}
@@ -83,7 +83,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={Spatial modeling with INLA and inlabru},
+  pdftitle={INLA and inlabru advanced features},
   pdfauthor={Instructor: Sara Martino},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
@@ -129,6 +129,19 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -136,7 +149,7 @@
 % handouts
 \usepackage{handoutWithNotes} 
 % put 3 slides on 1 page with space for notes
-%\pgfpagesuselayout{3 on 1 with notes}[a4paper, border shrink=5mm]
+\pgfpagesuselayout{3 on 1 with notes}[a4paper, border shrink=5mm]
 
 
 % smaller space in between lines in toc
@@ -187,9 +200,9 @@ assessment/validation}\label{model-choice-and-model-assessmentvalidation}}
 \protect\hypertarget{introduction}{}
 We have now seen some fancy modelling approaches
 
-\pause
-
 How can we assess the models and choose between them?
+
+\pause
 
 \begin{itemize}
 \tightlist
@@ -484,6 +497,84 @@ is a strictly proper scoring rule.
 \end{itemize}
 \end{frame}
 
+\hypertarget{remote-computing}{%
+\section{Remote computing}\label{remote-computing}}
+
+\begin{frame}[fragile]{Remote computing}
+\protect\hypertarget{remote-computing-1}{}
+\textbf{Very useful} for large models. The \texttt{R}-session runs
+locally, but the computations are done on a remote (Linux/Mac) server.\\
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{inla}\NormalTok{(..., }\AttributeTok{inla.call=}\StringTok{"remote"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+using \texttt{ssh.}\\
+\strut \\
+\{\scriptsize (Initial set up required, see \texttt{inla.remote} and FAQ
+entry on this issue on \texttt{r-inla.org})\}
+
+**Example: \tiny
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(Seeds)}
+\NormalTok{formula }\OtherTok{=}\NormalTok{ r }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x1}\SpecialCharTok{*}\NormalTok{x2}\SpecialCharTok{+}\FunctionTok{f}\NormalTok{(plate,}\AttributeTok{model=}\StringTok{"iid"}\NormalTok{)}
+\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}\AttributeTok{data=}\NormalTok{Seeds,}\AttributeTok{family=}\StringTok{"binomial"}\NormalTok{,}\AttributeTok{Ntrials=}\NormalTok{n, }\AttributeTok{inla.call=}\StringTok{"remote"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+\end{frame}
+
+\begin{frame}[fragile]{Submit and retrieve jobs}
+\protect\hypertarget{submit-and-retrieve-jobs}{}
+Commands: \small
+
+\begin{Shaded}
+\begin{Highlighting}[]
+  \FunctionTok{inla.qget}\NormalTok{(id, }\AttributeTok{remove =} \ConstantTok{TRUE}\NormalTok{)}
+  \FunctionTok{inla.qdel}\NormalTok{(id)}
+  \FunctionTok{inla.qstat}\NormalTok{(id)}
+  \FunctionTok{inla.qnuke}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+
+Example: \small
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data}\NormalTok{(Seeds)}
+\NormalTok{formula }\OtherTok{=}\NormalTok{ r }\SpecialCharTok{\textasciitilde{}}\NormalTok{ x1}\SpecialCharTok{*}\NormalTok{x2}\SpecialCharTok{+}\FunctionTok{f}\NormalTok{(plate,}\AttributeTok{model=}\StringTok{"iid"}\NormalTok{)}
+\NormalTok{result }\OtherTok{=} \FunctionTok{inla}\NormalTok{(formula,}\AttributeTok{data=}\NormalTok{Seeds,}\AttributeTok{family=}\StringTok{"binomial"}\NormalTok{,}\AttributeTok{Ntrials=}\NormalTok{n, }\AttributeTok{inla.call=}\StringTok{"submit"}\NormalTok{)}
+\FunctionTok{inla.qstat}\NormalTok{()}
+\NormalTok{result}\OtherTok{=} \FunctionTok{inla.qget}\NormalTok{(result, }\AttributeTok{remove=}\ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\normalsize
+\end{frame}
+
+\begin{frame}{Submit and retrieve jobs}
+\protect\hypertarget{submit-and-retrieve-jobs-1}{}
+Tips
+
+\begin{itemize}
+\item
+  Save the temporary result object to a file
+\item
+  Use this functionality when doing Cross-Validation!
+\item
+  CV is perfectly parallelizable
+\item
+  You can work on two projects at once
+\end{itemize}
+\end{frame}
+
 \hypertarget{advanced-features}{%
 \section{Advanced features}\label{advanced-features}}
 
@@ -516,11 +607,12 @@ models in \texttt{R-INLA} (and \texttt{inlabru})
 \end{itemize}
 \end{frame}
 
-\hypertarget{featurereplicate}{%
-\section{Feature:Replicate}\label{featurereplicate}}
+\hypertarget{feature-replicate}{%
+\section{\texorpdfstring{Feature:
+\texttt{replicate}}{Feature: replicate}}\label{feature-replicate}}
 
 \begin{frame}[fragile]{Feature: \texttt{replicate}}
-\protect\hypertarget{feature-replicate}{}
+\protect\hypertarget{feature-replicate-1}{}
 \texttt{replicate} generates iid replicates from the same f\(()\)-model
 with the same hyperparameters.\\
 \strut \\
@@ -579,7 +671,7 @@ AR1 model (they share the same parameters)
 
 \begin{frame}{Example : simulate data}
 \protect\hypertarget{example-simulate-data-1}{}
-\begin{center}\includegraphics[width=0.6\linewidth]{Part4_Advanced_files/figure-beamer/unnamed-chunk-8-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part4_Advanced_files/figure-beamer/unnamed-chunk-12-1} \end{center}
 \normalsize
 \end{frame}
 
@@ -596,19 +688,20 @@ AR1 model (they share the same parameters)
 
 \begin{frame}{Example: Results - Latent field}
 \protect\hypertarget{example-results---latent-field}{}
-\begin{center}\includegraphics[width=0.8\linewidth]{Part4_Advanced_files/figure-beamer/unnamed-chunk-10-1} \end{center}
+\begin{center}\includegraphics[width=0.8\linewidth]{Part4_Advanced_files/figure-beamer/unnamed-chunk-14-1} \end{center}
 \end{frame}
 
 \begin{frame}{Example: Results - Hyperparameters}
 \protect\hypertarget{example-results---hyperparameters}{}
-\begin{center}\includegraphics[width=0.6\linewidth]{Part4_Advanced_files/figure-beamer/unnamed-chunk-11-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part4_Advanced_files/figure-beamer/unnamed-chunk-15-1} \end{center}
 \end{frame}
 
-\hypertarget{featuregroup}{%
-\section{Feature:Group}\label{featuregroup}}
+\hypertarget{feature-group}{%
+\section{\texorpdfstring{Feature:
+\texttt{group}}{Feature: group}}\label{feature-group}}
 
 \begin{frame}[fragile]{Feature: \texttt{group}}
-\protect\hypertarget{feature-group}{}
+\protect\hypertarget{feature-group-1}{}
 \begin{itemize}
 \item
   Similar concept as replicate, but with a dependence structure on the
@@ -631,12 +724,12 @@ AR1 model (they share the same parameters)
 where replicate are integers \(1, 2, \ldots,\) etc
 \end{frame}
 
-\hypertarget{featuremultiple-likelihoods}{%
-\section{Feature:Multiple
-likelihoods}\label{featuremultiple-likelihoods}}
+\hypertarget{feature-multiple-likelihoods}{%
+\section{Feature: Multiple
+likelihoods}\label{feature-multiple-likelihoods}}
 
-\begin{frame}{Feature:Multiple likelihood}
-\protect\hypertarget{featuremultiple-likelihood}{}
+\begin{frame}{Feature: Multiple likelihood}
+\protect\hypertarget{feature-multiple-likelihood}{}
 There is no constraint in INLA that the type of likelihood must be the
 same for all observations. In fact, every observation could have its own
 likelihood.
@@ -786,7 +879,7 @@ y^2_j & \sim \text{Poisson}(\lambda_j),& j = 1,\dots,50\\
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part4_Advanced_files/figure-beamer/unnamed-chunk-18-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part4_Advanced_files/figure-beamer/unnamed-chunk-22-1} \end{center}
 \normalsize
 \end{frame}
 
@@ -824,7 +917,134 @@ y^2_j & \sim \text{Poisson}(\lambda_j),& j = 1,\dots,50\\
 
 \begin{frame}{Example: Results}
 \protect\hypertarget{example-results}{}
-\begin{center}\includegraphics[width=0.6\linewidth]{Part4_Advanced_files/figure-beamer/unnamed-chunk-20-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part4_Advanced_files/figure-beamer/unnamed-chunk-24-1} \end{center}
+\end{frame}
+
+\hypertarget{feature-rgeneric}{%
+\section{\texorpdfstring{Feature:
+\texttt{rgeneric}}{Feature: rgeneric}}\label{feature-rgeneric}}
+
+\begin{frame}[fragile]{Generic precision matrices}
+\protect\hypertarget{generic-precision-matrices}{}
+Commands:
+
+\begin{itemize}
+\item
+  \texttt{generic0},
+  \texttt{generic1},\texttt{generic2},\texttt{generic3}
+\item
+  \texttt{rgeneric}, \texttt{cgeneric}
+\end{itemize}
+
+For \texttt{rgeneric} the \emph{user} must specify a function, along the
+lines of
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ComputePrecisionMatrix }\OtherTok{=} \ControlFlowTok{function}\NormalTok{ (theta) \{}
+  \CommentTok{\# theta is the vector of hyper{-}parameters}
+  \CommentTok{\# your code here}
+  \FunctionTok{return}\NormalTok{(Q)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+together with priors and some additional details.
+
+Examples in
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{vignette}\NormalTok{(}\StringTok{"rgeneric"}\NormalTok{, }\AttributeTok{package=}\StringTok{"INLA"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+\end{frame}
+
+\hypertarget{conclusion}{%
+\section{Conclusion}\label{conclusion}}
+
+\begin{frame}[fragile]{Summary}
+\protect\hypertarget{summary}{}
+\begin{itemize}
+\item
+  INLA is a fast method to do Bayesian inference with latent Gaussian
+  models and INLA is an R-package that implements this method with a
+  flexible and simple interface
+\item
+  The INLA approach is \emph{not} a rival/competitor/replacement to/of
+  MCMC, just a better option for the class of LGMs.
+\item
+  The basic idea behind the INLA procedure is simple and it is very easy
+  to use for simple problems, but for more complex problems it may
+  happen that you have to struggle a bit.
+\item
+  Ask for help to the INLA team through the \texttt{r-inla.org}
+  discussion forum or through e-mail (see \texttt{inla.version()}) for a
+  list of e-mails.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{INLA is a widespread tool}
+\protect\hypertarget{inla-is-a-widespread-tool}{}
+\tiny
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{my.cran.inla }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{() \{}
+     \FunctionTok{library}\NormalTok{(}\StringTok{"cranly"}\NormalTok{)}
+     \FunctionTok{library}\NormalTok{(}\StringTok{"tools"}\NormalTok{)}
+\NormalTok{     p }\OtherTok{=} \FunctionTok{clean\_CRAN\_db}\NormalTok{(}\FunctionTok{CRAN\_package\_db}\NormalTok{())}
+\NormalTok{     m }\OtherTok{=} \FunctionTok{length}\NormalTok{(p}\SpecialCharTok{$}\NormalTok{package)}
+\NormalTok{     idx.s }\OtherTok{=} \FunctionTok{which}\NormalTok{(}\FunctionTok{unlist}\NormalTok{(}\FunctionTok{lapply}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{m, }\ControlFlowTok{function}\NormalTok{(ii) }\FunctionTok{any}\NormalTok{(p}\SpecialCharTok{$}\NormalTok{suggests[[ii]] }\SpecialCharTok{\%in\%} \StringTok{"INLA"}\NormalTok{))))}
+\NormalTok{     idx.d }\OtherTok{=} \FunctionTok{which}\NormalTok{(}\FunctionTok{unlist}\NormalTok{(}\FunctionTok{lapply}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{m, }\ControlFlowTok{function}\NormalTok{(ii) }\FunctionTok{any}\NormalTok{(p}\SpecialCharTok{$}\NormalTok{depends[[ii]] }\SpecialCharTok{\%in\%} \StringTok{"INLA"}\NormalTok{))))}
+     \FunctionTok{return}\NormalTok{(}\FunctionTok{list}\NormalTok{(}\AttributeTok{suggests =}\NormalTok{ p}\SpecialCharTok{$}\NormalTok{package[idx.s], }\AttributeTok{depends =}\NormalTok{ p}\SpecialCharTok{$}\NormalTok{package[idx.d]))}
+\NormalTok{ \}}
+
+\FunctionTok{my.cran.inla}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $suggests
+##  [1] "abn"            "AGPRIS"         "BCEA"           "bigDM"         
+##  [5] "DClusterm"      "disaggregation" "eCAR"           "excursions"    
+##  [9] "FRK"            "highriskzone"   "INLABMA"        "inlabru"       
+## [13] "makemyprior"    "meta4diag"      "nmaINLA"        "phyr"          
+## [17] "PrevMap"        "rSPDE"          "SimSurvey"      "spatialfusion" 
+## [21] "SUMMER"         "surveillance"   "survHE"        
+## 
+## $depends
+## character(0)
+\end{verbatim}
+
+\normalsize
+\end{frame}
+
+\begin{frame}{INLA is an active project}
+\protect\hypertarget{inla-is-an-active-project}{}
+\begin{itemize}
+\item
+  A big push into including more general likelihoods and larger problems
+\item
+  New features for detecting prior sensitivity and specifying priors for
+  parame- ters (PC priors)
+\item
+  Extensions beyond the basic LGM framework
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Acknowledgement}
+\protect\hypertarget{acknowledgement}{}
+\begin{itemize}
+\item
+  Andrea Riebler
+  \includegraphics[width=0.12\textwidth,height=\textheight]{graphics/andrerie.jpg}
+\item
+  The whole INLA group, especially Finn and Håvard
+  \includegraphics[width=0.45\textwidth,height=\textheight]{graphics/Finn_Havard.png}
+\item
+  \textbf{All of you!!}
+\end{itemize}
 \end{frame}
 
 \end{document}

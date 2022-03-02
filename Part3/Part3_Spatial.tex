@@ -549,6 +549,22 @@ covariance function \(R(\cdot, \cdot)\). \(\Sigma\) is the covariance
 matrix for the specific location collection.
 \end{frame}
 
+\begin{frame}{Matern covariance function}
+\protect\hypertarget{matern-covariance-function}{}
+The Matern covariance function is a popular model in spatial problems:
+\[
+c_{\nu}(d;\sigma,\rho) = \sigma^2\frac{2^{1-\nu}}{\Gamma(\nu)}\left(\sqrt{8\nu}\frac{d}{\rho}\right)^{\nu}K_{\nu}\left(\sqrt{8\nu}\frac{d}{\rho}\right)
+\] * \(\rho\) and \(\sigma\) are the range and the marginal standard
+deviation
+
+\begin{itemize}
+\tightlist
+\item
+  \(K_{\nu}\) modified Bessel function of the second kind, order
+  \(\nu\).
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Example}
 \protect\hypertarget{example}{}
 \begin{center}\includegraphics[width=0.6\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-6-1} \end{center}
@@ -824,6 +840,11 @@ PC-priors for the range \(\rho\) and the standard deviarion \(\sigma\)
 \end{itemize}
 \end{frame}
 
+\begin{frame}{Prior for range \(\rho\) and sd \(\sigma\)}
+\protect\hypertarget{prior-for-range-rho-and-sd-sigma}{}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-16-1} \end{center}
+\end{frame}
+
 \begin{frame}[fragile]{Run the model \texttt{inlabru}}
 \protect\hypertarget{run-the-model-inlabru}{}
 \tiny
@@ -866,19 +887,24 @@ PC-priors for the range \(\rho\) and the standard deviarion \(\sigma\)
 \end{itemize}
 \end{frame}
 
+\begin{frame}{Estimation: Posterior for the hyperparameters}
+\protect\hypertarget{estimation-posterior-for-the-hyperparameters}{}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-20-1} \end{center}
+\end{frame}
+
 \begin{frame}{Predictions: The SPDE field}
 \protect\hypertarget{predictions-the-spde-field}{}
-\begin{center}\includegraphics[width=0.8\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-19-1} \end{center}
+\begin{center}\includegraphics[width=0.8\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-22-1} \end{center}
 \end{frame}
 
 \begin{frame}{Predictions: The log concentrations}
 \protect\hypertarget{predictions-the-log-concentrations}{}
-\begin{center}\includegraphics[width=0.8\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-20-1} \end{center}
+\begin{center}\includegraphics[width=0.8\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-23-1} \end{center}
 \end{frame}
 
 \begin{frame}{Predictions: The concentrations}
 \protect\hypertarget{predictions-the-concentrations}{}
-\begin{center}\includegraphics[width=0.8\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-21-1} \end{center}
+\begin{center}\includegraphics[width=0.8\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-24-1} \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{Same in plain \texttt{INLA} (1)}
@@ -981,7 +1007,7 @@ What cannot (at the moment ) be done with \texttt{inlabru}
 
 \begin{frame}{Modeling PM10 concentration in Piemonte (Italy)}
 \protect\hypertarget{modeling-pm10-concentration-in-piemonte-italy}{}
-\begin{center}\includegraphics[width=0.9\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-24-1} \end{center}
+\begin{center}\includegraphics[width=0.9\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-27-1} \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{Modeling PM10 concentration in Piemonte (Italy)}
@@ -1057,7 +1083,7 @@ A first order autoregressive process with spatially colored innovations
 
 \begin{frame}{Building the model: mesh}
 \protect\hypertarget{building-the-model-mesh}{}
-\begin{center}\includegraphics[width=0.6\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-26-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-29-1} \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{Building the model: Prior for the spde model}
@@ -1084,7 +1110,7 @@ A first order autoregressive process with spatially colored innovations
 
 \begin{frame}[fragile]{Implement the model}
 \protect\hypertarget{implement-the-model}{}
-\small
+\tiny
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1117,10 +1143,10 @@ A first order autoregressive process with spatially colored innovations
 Fixed effects: \tiny
 
 \begin{verbatim}
-##                    mean           sd   0.025quant  0.975quant
-## Intercept -1.438049e+01 9.2184286118 -32.13870144 4.048280505
-## dem       -7.283542e-04 0.0008432266  -0.00239864 0.000935377
-## temp       6.250714e-02 0.0320763923  -0.00168185 0.124370511
+##                    mean           sd    0.025quant   0.975quant
+## Intercept -1.438103e+01 9.2183351517 -32.139029373 4.0476156436
+## dem       -7.283307e-04 0.0008432533  -0.002398673 0.0009354501
+## temp       6.250902e-02 0.0320760645  -0.001679595 0.1243716481
 \end{verbatim}
 
 \normalsize
@@ -1129,15 +1155,15 @@ Hyperparameters of the random field: \tiny
 
 \begin{verbatim}
 ##                                                mean          sd  0.025quant
-## Precision for the Gaussian observations  41.8618738  7.23316236  29.3259934
-## Range for SPDE                          129.1743804 16.95258105 101.0603416
-## Stdev for SPDE                            0.7512039  0.09966426   0.5914011
-## GroupRho for SPDE                         0.9105342  0.02594714   0.8555936
+## Precision for the Gaussian observations  41.8579575  7.23518895  29.3185249
+## Range for SPDE                          129.1799687 16.96397904 101.0510932
+## Stdev for SPDE                            0.7511733  0.09963733   0.5913784
+## GroupRho for SPDE                         0.9105294  0.02594638   0.8555876
 ##                                          0.975quant
-## Precision for the Gaussian observations  57.6623693
-## Range for SPDE                          167.2435983
-## Stdev for SPDE                            0.9798284
-## GroupRho for SPDE                         0.9557901
+## Precision for the Gaussian observations  57.6625010
+## Range for SPDE                          167.2757328
+## Stdev for SPDE                            0.9796968
+## GroupRho for SPDE                         0.9557794
 \end{verbatim}
 \end{frame}
 
@@ -1154,7 +1180,7 @@ Hyperparameters of the random field: \tiny
 
 \normalsize
 
-\begin{center}\includegraphics[width=0.7\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-32-1} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-35-1} \end{center}
 \end{frame}
 
 \begin{frame}{Prediction is space}
@@ -1200,7 +1226,7 @@ Hyperparameters of the random field: \tiny
 
 \begin{frame}{Expanding the covariates: the \texttt{bru\_fill\_missing}}
 \protect\hypertarget{expanding-the-covariates-the-bru_fill_missing-1}{}
-\begin{center}\includegraphics[width=0.7\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-34-1} \end{center}
+\begin{center}\includegraphics[width=0.7\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-37-1} \end{center}
 
 Note: You can do this with your favourite method!
 \end{frame}
@@ -1233,7 +1259,7 @@ Note: You can do this with your favourite method!
 
 \begin{frame}{Prediction in space}
 \protect\hypertarget{prediction-in-space-1}{}
-\begin{center}\includegraphics[width=0.9\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-37-1} \end{center}
+\begin{center}\includegraphics[width=0.9\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-40-1} \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{Samples form the fitted model}
@@ -1261,7 +1287,7 @@ This can be usefull as the posterior means are always smoother than the
 
 \begin{frame}{Samples form the fitted model}
 \protect\hypertarget{samples-form-the-fitted-model-1}{}
-\begin{center}\includegraphics[width=0.9\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-39-1} \end{center}
+\begin{center}\includegraphics[width=0.9\linewidth]{Part3_Spatial_files/figure-beamer/unnamed-chunk-42-1} \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{Some concluding remark}

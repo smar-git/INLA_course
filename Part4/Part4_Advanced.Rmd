@@ -1,5 +1,5 @@
 ---
-title: "Spatial modeling with  `INLA` and `inlabru`"
+title: "`INLA` and `inlabru` advanced features"
 subtitle: 'University of Zurich, March, 2022'
 author: "Instructor: Sara Martino"
 #date: "`r format(Sys.time(), '%d %B, %Y')`"
@@ -15,7 +15,7 @@ output:
     font: "serif"
     includes:
       in_header: header.tex
-#classoption: "handout"
+classoption: "handout"
 ---
 
 
@@ -55,8 +55,10 @@ library(inlabru)
 
 We have now seen some fancy modelling approaches
 
-\pause 
 How can we assess the models and choose between them?
+
+\pause 
+
 
 * Rather underdeveloped in statistical literature;
 Many suggestions; no clear "yes, this is how it should be done"  
@@ -270,6 +272,67 @@ is that under the true model, each $PIT_i$ value is a sample of a uniform distri
 
 * Unfortunately, that doesn’t necessarily imply that overfitting and oversmoothing can be detected and/or correctly diagnosed.
 
+# Remote computing
+
+
+## Remote computing
+
+**Very useful** for large models. The `R`-session runs
+	locally, but the computations are done on a remote (Linux/Mac)
+	server.
+\
+```{r, echo = T, eval = F}
+inla(..., inla.call="remote")
+```
+using `ssh.`
+\
+\
+{\scriptsize (Initial set up required, see `inla.remote` and
+	FAQ entry on this issue on `r-inla.org`)}
+
+**Example:
+\tiny
+```{r, echo = T, eval = F}
+data(Seeds)
+formula = r ~ x1*x2+f(plate,model="iid")
+result = inla(formula,data=Seeds,family="binomial",Ntrials=n, inla.call="remote")
+```
+\normalsize
+
+## Submit and retrieve jobs
+Commands:
+\small
+```{r, echo = T, eval = F}
+  inla.qget(id, remove = TRUE)
+  inla.qdel(id)
+  inla.qstat(id)
+  inla.qnuke()
+```
+\normalsize
+
+Example:
+\small
+```{r, echo = T, eval = F}
+data(Seeds)
+formula = r ~ x1*x2+f(plate,model="iid")
+result = inla(formula,data=Seeds,family="binomial",Ntrials=n, inla.call="submit")
+inla.qstat()
+result= inla.qget(result, remove=FALSE)
+```
+\normalsize
+
+## Submit and retrieve jobs
+Tips
+
+*  Save the temporary result object to a file
+
+*  Use this functionality when doing Cross-Validation!
+
+*  CV is perfectly parallelizable
+
+*  You can work on two projects at once
+
+
 
 # Advanced features
 
@@ -293,7 +356,7 @@ in `R-INLA` (and `inlabru`)
 * know about the features 
 * be exposed to the ideas
 
-# Feature:Replicate
+# Feature: `replicate`
 
 ## Feature: `replicate`
 
@@ -400,7 +463,7 @@ p1+p2
 
 
 
-# Feature:Group
+# Feature: `group`
 
 ## Feature: `group`
 
@@ -420,9 +483,9 @@ p1+p2
 where replicate are integers $1, 2, \ldots,$ etc
 
 
-# Feature:Multiple likelihoods
+# Feature: Multiple likelihoods
 
-## Feature:Multiple likelihood
+## Feature: Multiple likelihood
 
 There is no constraint in INLA that the type of likelihood must be the same for all observations. In fact, every observation could have its own likelihood. 
 
@@ -605,3 +668,83 @@ fit = bru(cmp,
 fit$summary.random$field %>% ggplot() + geom_ribbon(aes(ID, ymin = `0.025quant`, ymax = `0.975quant`), alpha = 0.5) + geom_line(aes(ID,mean))
 ```
 
+# Feature: `rgeneric`
+
+## Generic precision matrices
+Commands:
+
+*  `generic0`, `generic1`,`generic2`,`generic3`
+
+*   `rgeneric`, `cgeneric`
+
+For `rgeneric` the *user* must specify a function, along the lines of
+```{r, echo = T, eval = F}
+ComputePrecisionMatrix = function (theta) {
+  # theta is the vector of hyper-parameters
+  # your code here
+  return(Q)
+}
+```
+together with priors and some additional details.
+
+Examples in
+```{r, echo = T, eval =F}
+vignette("rgeneric", package="INLA")
+```
+
+# Conclusion
+
+## Summary
+
+* INLA is a fast method to do Bayesian inference with latent Gaussian models
+and INLA is an R-package that implements this method with a flexible and
+simple interface
+
+* The INLA approach is *not* a rival/competitor/replacement to/of MCMC,
+just a better option for the class of LGMs.
+
+* The basic idea behind the INLA procedure is simple and it is very easy to
+use for simple problems, but for more complex problems it may happen that
+you have to struggle a bit.
+
+* Ask for help to the INLA team through the `r-inla.org` discussion forum
+or through e-mail (see `inla.version()`) for a list of e-mails.
+
+
+## INLA is a widespread tool
+
+\tiny
+```{r, echo = T}
+my.cran.inla <- function() {
+     library("cranly")
+     library("tools")
+     p = clean_CRAN_db(CRAN_package_db())
+     m = length(p$package)
+     idx.s = which(unlist(lapply(1:m, function(ii) any(p$suggests[[ii]] %in% "INLA"))))
+     idx.d = which(unlist(lapply(1:m, function(ii) any(p$depends[[ii]] %in% "INLA"))))
+     return(list(suggests = p$package[idx.s], depends = p$package[idx.d]))
+ }
+
+my.cran.inla()
+```
+\normalsize
+
+## INLA is an active project
+
+* A big push into including more general likelihoods and larger problems
+
+* New features for detecting prior sensitivity and specifying priors for parame-
+ters (PC priors)
+
+* Extensions beyond the basic LGM framework
+
+
+## Acknowledgement
+
+* Andrea Riebler
+![](graphics/andrerie.jpg){width=12%}
+
+* The whole INLA group, especially Finn and Håvard
+![](graphics/Finn_Havard.png){width=45%}
+
+* **All of you!!**
