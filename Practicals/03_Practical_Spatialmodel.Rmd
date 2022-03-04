@@ -11,7 +11,6 @@ output:
     #code_download: yes
     toc_depth: 3
     number_sections: true
-
 ---
 
 
@@ -60,10 +59,10 @@ The goals of this practical are:
 Start by loading usefull libraries:
 ```{r}
 library(INLA)
+library(inlabru)
+
 library(ggplot2)
 library(patchwork)
-# load some libraries to generate nice map plots
-library(inlabru)
 library(tidyverse)
 library(sp)
 library(sf)
@@ -182,6 +181,37 @@ spde3 = inla.spde2.pcmatern(mesh = mesh2,
 
 <font size="3"> **Exercise  2:** </font> Check the sd of the `Tmax` variable  the data set, which of the 3 priors above seems to be reasonable? 
 
+You can use the following function to compute and plot the prior distributions for the range and sd of the Matern field. Details on the derivation of the PC priors for the Gaussian Random field can be found in [@Fuglstad2018ConstructingPT]. 
+
+```{r, echo = T}
+dens_prior_range = function(rho_0, alpha_1)
+{
+  # compute the density of the PC prior for the
+  # range rho of the Matern field
+  # rho_0 and alpha_1 are defined such that
+  # P(rho<rho_0) = alpha_1
+  rho = seq(0, rho_0*10, length.out =100)
+  alpha1_tilde = -log(alpha_1) * rho_0
+  dens_rho =  alpha1_tilde / rho^2 * exp(-alpha1_tilde / rho)
+  return(data.frame(x = rho, y = dens_rho))
+}
+
+dens_prior_sd = function(sigma_0, alpha_2)
+{
+  # compute the density of the PC prior for the
+  # sd sigma of the Matern field
+  # sigma_0 and alpha_2 are defined such that
+  # P(sigma>sigma_0) = alpha_2
+  sigma = seq(0, sigma_0*10, length.out =100)
+  alpha2_tilde = -log(alpha_2)/sigma_0
+  dens_sigma = alpha2_tilde* exp(-alpha2_tilde * sigma) 
+  return(data.frame(x = sigma, y = dens_sigma))
+}
+```
+
+
+
+
 ```{r, echo = F}
 # spde model
 
@@ -222,7 +252,9 @@ fit = bru(cmp, lik,
                          inla.mode  = "experimental"))
 ```
 
-<font size="3"> **Exercise  3:** </font> Check the model results. Are the covariate significant? what are the posterior for the range $\rho$ and the standard deviation $\sigma_u$?
+<font size="3"> **Exercise  3:** </font> Check the model results. Are the covariate significant? 
+
+<font size="3"> **Exercise  4:** </font> What are the posterior for the range $\rho$ and the standard deviation $\sigma_u$? Plot the posterior together with the prior for both parameters. 
 
 # Spatial prediction
 
@@ -282,7 +314,7 @@ p1+p2
 ```
 
 
-<font size="3"> **Exercise  4:** </font> Use the function `predict()` to look at the posterior mean and standard deviation of the Gaussian field $u$. Use the function `generate()` to generate  samples from the  fitted model.
+<font size="3"> **Exercise  5:** </font> Use the function `predict()` to look at the posterior mean and standard deviation of the Gaussian field $u$. Use the function `generate()` to generate  samples from the  fitted model.
 
 
 # One alternative formulation
@@ -317,6 +349,6 @@ pred_space = predict(fit, pxl,
 
 ```
 
-
+---
 
 

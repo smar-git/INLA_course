@@ -15,7 +15,7 @@ output:
     font: "serif"
     includes:
       in_header: header.tex
-classoption: "handout"
+#classoption: "handout"
 ---
 
 

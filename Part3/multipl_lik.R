@@ -1,11 +1,6 @@
 library(tidyverse)
-data  = read.table("Practicals/Data/tmax_january_sara_1961_2020.csv", 
-                   sep = ";", header = T) %>%
-  dplyr::filter(yy == 2020)
-
-data %>% ggplot()  + geom_point(aes(x,y,color = Tmax)) +
-  scale_color_viridis()
-
+library(INLA)
+library(inlabru)
 
 
 
@@ -13,17 +8,16 @@ data %>% ggplot()  + geom_point(aes(x,y,color = Tmax)) +
 
 ## Example: Coregionalization model
 
-$$
-  \begin{aligned}
-y_1(s) & =\alpha_1 + u(s) +e_1(s)\\
-y_2(s) & =\alpha_2+\lambda u(s) + e_2(s)
-\end{aligned}
-$$
-  
-  where the $\alpha_k$  are intercepts, $u(s)$ is the  spatial effect, $\lambda$ is a weights for  spatial effects and $e_k(s)$ are uncorrelated error terms, with $k=1,2,3$.
+# $$
+#   \begin{aligned}
+# y_1(s) & =\alpha_1 + u(s) +e_1(s)\\
+# y_2(s) & =\alpha_2+\lambda u(s) + e_2(s)
+# \end{aligned}
+# $$
+#   
+#   where the $\alpha_k$  are intercepts, $u(s)$ is the  spatial effect, $\lambda$ is a weights for  spatial effects and $e_k(s)$ are uncorrelated error terms, with $k=1,2,3$.
 
 
-```{r, eval = F}
 
 # Intercept on reparametrized model
 alpha <- c(-5, 3) 
@@ -64,11 +58,10 @@ y1 <- alpha[1] + u[1:n1] + rnorm(n1, 0, e.sd[1])
 y2 <- alpha[2] + beta * u[n1 + 1:n2] + 
   rnorm(n2, 0, e.sd[2])
 
-```
-
-```{r, eval = F}
 mesh <- inla.mesh.2d(rbind(loc1, loc2), 
                      max.edge = c(0.5, 1.25), offset = c(0.1, 1.5), cutoff = 0.1)
+
+plot(mesh)
 
 spde <- inla.spde2.pcmatern(
   mesh = mesh,
@@ -99,4 +92,5 @@ lik2 = like(formula = z ~ Intercept2 + u1_copy,
 
 
 res = bru(cmp, lik1, lik2)
-```
+
+
