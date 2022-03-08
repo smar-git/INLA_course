@@ -83,6 +83,36 @@ library(patchwork)
 * **13:30-15:00** Advanced topic
 * **15:15-16:00** Practical session IV
 
+
+
+
+##
+
+
+:::::: {.cols data-latex=""}
+
+::: {.col data-latex="{0.5\textwidth}"}
+```{r,  out.width = "95%"}
+include_graphics("graphics/tronheimMap.png")
+
+```
+:::
+
+
+
+::: {.col data-latex="{0.5\textwidth}"}
+\tiny
+```{r,  out.width = "110%"}
+include_graphics("graphics/trondheim.jpg")
+include_graphics("graphics/nordlys3.JPG")
+
+```
+\normalsize
+:::
+::::::
+
+
+
 # Introduction
 
 ## What is inla?
@@ -126,6 +156,9 @@ include_graphics("graphics/rinla.png")
 
 >To give proper answers to these questions, we 
 need to start at the very beginning
+
+
+
 
 ## The core
 * We have observed something.

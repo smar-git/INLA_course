@@ -231,6 +231,30 @@
 \end{itemize}
 \end{frame}
 
+\begin{frame}{}
+\protect\hypertarget{section}{}
+\begin{cols}
+
+\begin{col}{0.5\textwidth}
+
+\begin{center}\includegraphics[width=0.95\linewidth]{graphics/tronheimMap} \end{center}
+
+\end{col}
+
+\begin{col}{0.5\textwidth}
+
+\tiny
+
+\begin{center}\includegraphics[width=1.1\linewidth]{graphics/trondheim} \end{center}
+
+\begin{center}\includegraphics[width=1.1\linewidth]{graphics/nordlys3} \end{center}
+\normalsize
+
+\end{col}
+
+\end{cols}
+\end{frame}
+
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
@@ -313,7 +337,7 @@ beginning
   We have observed something.
 \end{itemize}
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-2-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-4-1} \end{center}
 \end{frame}
 
 \begin{frame}{The core}
@@ -326,7 +350,7 @@ beginning
   We have questions.
 \end{itemize}
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-3-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-5-1} \end{center}
 \end{frame}
 
 \begin{frame}{The core}
@@ -372,7 +396,7 @@ Assume a simple linear regression model with Gaussian observations
 
 \begin{col}{0.55\textwidth}
 
-\begin{center}\includegraphics[width=0.9\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-4-1} \end{center}
+\begin{center}\includegraphics[width=0.9\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-6-1} \end{center}
 
 \end{col}
 
@@ -442,7 +466,7 @@ From this we can compute the \textcolor{red}{posterior distribution} \[
   Use Bayes theorem to compute posterior distributions
 \end{itemize}
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-7-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-9-1} \end{center}
 \end{frame}
 
 \hypertarget{bayesian-hierarchical-models}{%
@@ -599,7 +623,7 @@ include:
 Rainfall over 1 mm in the Tokyo area for each calendar day during two
 years (1983-84) are registered.
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-8-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-10-1} \end{center}
 \end{frame}
 
 \begin{frame}{Tokyo rainfall data}
@@ -607,7 +631,7 @@ years (1983-84) are registered.
 Rainfall over 1 mm in the Tokyo area for each calendar day during two
 years (1983-84) are registered.
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-9-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-11-1} \end{center}
 \end{frame}
 
 \begin{frame}{Stage 1: The data}
@@ -867,7 +891,7 @@ Germany from 1986 to 1990 and want to make a model.
 
 \begin{col}{0.4\textwidth}
 
-\begin{center}\includegraphics[width=1.1\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-10-1} \end{center}
+\begin{center}\includegraphics[width=1.1\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-12-1} \end{center}
 
 \end{col}
 
@@ -1091,7 +1115,7 @@ Smoothing noisy observations - Data
 We observe some smooth function but our measures are noisy (but we know
 the size of such noise!)
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-11-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-13-1} \end{center}
 
 \textbf{Goal:} Recover the smooth function observed with noise!
 \end{frame}
@@ -1180,7 +1204,7 @@ also Gaussian. We have then:
 \protect\hypertarget{posterior-marginal-for-the-hyperparameter}{}
 Select a grid of points to represent the density \(\pi(\theta|\bf{x})\)
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-12-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-14-1} \end{center}
 \end{frame}
 
 \begin{frame}{Approximating \(\pi(x_i|y,\theta)\)}
@@ -1202,7 +1226,7 @@ weights
 Compute the conditional posterior marginal for \(x_i\) given each
 \(\theta_k\)\\
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-13-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-15-1} \end{center}
 \end{frame}
 
 \begin{frame}{Posterior marginals for latent field II}
@@ -1210,14 +1234,14 @@ Compute the conditional posterior marginal for \(x_i\) given each
 Weight the conditional posterior marginal for
 \(\pi(x_i|\theta_k, \bf{y})\) by \(\pi(\theta_k|\bf{y})\Delta_k\)
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-14-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-16-1} \end{center}
 \end{frame}
 
 \begin{frame}{Posterior marginals for latent field III}
 \protect\hypertarget{posterior-marginals-for-latent-field-iii}{}
 Sum to get the posterior marginal for \(x_i|\bf{y}\)
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-15-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-17-1} \end{center}
 \end{frame}
 
 \begin{frame}{Fitted Spline}
@@ -1225,7 +1249,7 @@ Sum to get the posterior marginal for \(x_i|\bf{y}\)
 The posterior marginals are used to calculate summary statistics, like
 means, variances and credible intervals:
 
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-16-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-18-1} \end{center}
 \end{frame}
 
 \begin{frame}[fragile]{\texttt{R-INLA} code}
@@ -1414,7 +1438,7 @@ Assume \[
 
 \begin{frame}{The GMRF approximation}
 \protect\hypertarget{the-gmrf-approximation}{}
-\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-18-1} \end{center}
+\begin{center}\includegraphics[width=0.6\linewidth]{Part1_intro_files/figure-beamer/unnamed-chunk-20-1} \end{center}
 
 \textcolor{red}{If $\bf{y} \mid \bf{x}, \bf{\theta}$ is Gaussian "the approximation" is exact!}
 \}
@@ -1607,7 +1631,7 @@ hyperparameters \(\Rightarrow\) tool for full Bayesian inference
 \end{frame}
 
 \begin{frame}{}
-\protect\hypertarget{section}{}
+\protect\hypertarget{section-1}{}
 \Large
 
 Thank you for your attention!
