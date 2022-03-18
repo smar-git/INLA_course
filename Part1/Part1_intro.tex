@@ -5,11 +5,6 @@
 \documentclass[
   ignorenonframetext,
 ]{beamer}
-\title{Bayesian Statistics with R-INLA}
-\subtitle{University of Zurich, March, 2022}
-\author{Instructor: Sara Martino}
-\date{}
-
 \usepackage{pgfpages}
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -144,6 +139,8 @@
 % put 3 slides on 1 page with space for notes
 %\pgfpagesuselayout{3 on 1 with notes}[a4paper, border shrink=5mm]
 
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[page number]
 
 % smaller space in between lines in toc
 \makeatletter
@@ -175,6 +172,11 @@
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
+
+\title{Bayesian Statistics with R-INLA}
+\subtitle{University of Zurich, March, 2022}
+\author{Instructor: Sara Martino}
+\date{}
 
 \begin{document}
 \frame{\titlepage}
@@ -1276,7 +1278,12 @@ This is the basic idea behind INLA. It is quite simple.
 
 However, we need to extend this basic idea so we can deal with
 
-1 Non-Gaussian observations 2 More than one hyperparameter
+\begin{enumerate}
+\item
+  Non-Gaussian observations
+\item
+  More than one hyperparameter
+\end{enumerate}
 \end{frame}
 
 \begin{frame}{1. More than one hyperparameter}
@@ -1451,11 +1458,18 @@ Assume \[
            \pi(\bf{x}, \bf{y}\mid \bf{\theta})
         \; \pi(\bf{\theta})}{\widetilde{\pi}_G(\bf{x} \mid \bf{y},
             \bf{\theta})} \: \Bigg|_{\bf{x} = \bf{x}^\star(\bf{\theta})}
-\] * find the mode of \(\widetilde{\pi}(\bf{\theta}\mid \bf{y})\)
-(optimization) * explore \(\widetilde{\pi}(\bf{\theta}\mid \bf{y})\) to
-find grid points \(t_k\) for numerical integration.\\
-\strut \\
-\strut \\
+\]
+
+\begin{itemize}
+\item
+  find the mode of \(\widetilde{\pi}(\bf{\theta}\mid \bf{y})\)
+  (optimization)
+\item
+  explore \(\widetilde{\pi}(\bf{\theta}\mid \bf{y})\) to find grid
+  points \(t_k\) for numerical integration.\\
+  \strut \\
+  \strut \\
+\end{itemize}
 
 \pause
 

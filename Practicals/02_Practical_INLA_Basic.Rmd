@@ -545,7 +545,7 @@ output3 = inla(formula,
                family="gaussian", 
                data=my.data,
                     control.family=list(hyper=list(
-                      prec=list(prior="gaussian",param=c(0,1)))))
+                      prec=list(prior="loggamma",param=c(0,0.01)))))
 ```
 
 ## Exercise 4{#Solution4}

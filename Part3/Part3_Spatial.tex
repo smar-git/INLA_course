@@ -5,12 +5,6 @@
 \documentclass[
   ignorenonframetext,
 ]{beamer}
-\title{Spatial modeling with \texttt{INLA} and \texttt{inlabru}}
-\subtitle{University of Zurich, March, 2022}
-\author{Instructor: Sara Martino}
-\date{}
-\institute{Department of Mathematical Science (NTNU)}
-
 \usepackage{pgfpages}
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -170,6 +164,12 @@
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 
+\title{Spatial modeling with \texttt{INLA} and \texttt{inlabru}}
+\subtitle{University of Zurich, March, 2022}
+\author{Instructor: Sara Martino}
+\date{}
+\institute{Department of Mathematical Science (NTNU)}
+
 \begin{document}
 \frame{\titlepage}
 
@@ -245,7 +245,7 @@ Bayesian inference
 \bf{x}|\bf{\theta} & \sim \exp \left(-\frac{1}{2}\bf{x}^T\bf{Q}(\theta)\bf{x}^T \right)& \text{Latent field (GMRF)}\\
 \bf{\theta} & \sim \pi(\theta) & \text{Hyperparameter}
 \end{aligned}
-\]
+\] \footnotesize
 
 \begin{itemize}[<+->]
 \tightlist

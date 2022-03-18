@@ -1096,8 +1096,9 @@ This is the basic idea behind INLA. It is quite simple.
 
 However, we need to extend this basic idea so we can deal with
   
-1 Non-Gaussian observations
-2 More than one hyperparameter
+1. Non-Gaussian observations
+
+2. More than one hyperparameter
 
 ## 1. More than one hyperparameter
 
@@ -1281,8 +1282,10 @@ $$
         \; \pi(\bf{\theta})}{\widetilde{\pi}_G(\bf{x} \mid \bf{y},
             \bf{\theta})} \: \Bigg|_{\bf{x} = \bf{x}^\star(\bf{\theta})}
 $$
+
 * find the mode of $\widetilde{\pi}(\bf{\theta}\mid \bf{y})$
         (optimization)
+
 * explore $\widetilde{\pi}(\bf{\theta}\mid \bf{y})$ to find
         grid points $t_k$ for numerical integration.\
 \

@@ -94,6 +94,7 @@ $$
 \bf{\theta} & \sim \pi(\theta) & \text{Hyperparameter}
 \end{aligned}
 $$
+\footnotesize
 
 >-  Each data point depends on only one of the elements in the latent Gaussian field $\bf{x}$.
 
@@ -908,7 +909,7 @@ We model the log PM10 concentration:
 
 $$
 \begin{aligned}
-y_{it}&\sim\mathcal{N}(\eta_it, \sigma^2_e)\\
+y_{it}&\sim\mathcal{N}(\eta_{it}, \sigma^2_e)\\
 \eta_{it}& = \alpha + \beta_1\text{dem}_i + \beta_2\text{temp}_{it} + \omega_{it}
 \end{aligned}
 $$

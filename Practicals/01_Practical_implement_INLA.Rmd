@@ -147,7 +147,7 @@ $$
 
 We want to compute
 $$
-\pi({\theta}|y) \propto \frac{\pi(y|x)\pi(x|\theta)}{\pi(x|y,\theta)}
+\pi({\theta}|y) \propto \frac{\pi(y|x)\pi(x|\theta)\pi(\theta)}{\pi(x|y,\theta)}
 $$
 
 for each value of $\theta$ in the grid
@@ -181,13 +181,13 @@ llik = function(y, x )
 # for the latent field x
 # x is the latent field
 # theta the gridded values for the hyperpar
-lprior_latent = function(x,theta)
+lpriorX = function(x,theta)
   ???
 
 # function that computes the log prior
 # for the hyperpar
 # a,b are the parameters in the Gamma hyperprior
-lprior_theta = function(theta,a=1,b=1)
+lpriorTheta = function(theta,a,b)
   ???
 
 # function that computes the log 
@@ -225,7 +225,7 @@ for(i in 2:n)
   R[i-1,i] =R[i,i-1] = -1
 
 llik = function(y,x)
-  return(0.5*(y-x)^2)
+  return(-0.5*(y-x)^2)
 
 lpriorX = function(x,theta)
   return(-theta/2*t(x)%*%R%*%x)
@@ -451,7 +451,7 @@ for(i in 2:n)
 
 # function that computes the log-likelihood
 llik = function(y,x)
-  return(sum(0.5*(y-x)^2))
+  return(-sum(0.5*(y-x)^2))
 
 # function that computes the log prior
 # for the latent field x
