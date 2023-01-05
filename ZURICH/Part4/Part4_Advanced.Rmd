@@ -1,0 +1,750 @@
+---
+title: "`INLA` and `inlabru` advanced features"
+subtitle: 'University of Zurich, March, 2022'
+author: "Instructor: Sara Martino"
+#date: "`r format(Sys.time(), '%d %B, %Y')`"
+institute: Department of Mathematical Science (NTNU)
+bibliography: biblio.bib  
+output:
+  beamer_presentation:
+    slide_level: 2
+    toc: true    
+    keep_tex: yes
+    theme: "Singapore"
+    colortheme: "default"
+    font: "serif"
+    includes:
+      in_header: header.tex
+#classoption: "handout"
+---
+
+
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","all",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","html_document",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","pdf_document",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","beamer_presentation",encoding="UTF-8") -->
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/INLA_course/Part4/")
+
+knitr::opts_chunk$set(echo = FALSE,  
+                      message=FALSE, 
+                      warning=FALSE, 
+                      strip.white=TRUE, 
+                      prompt=FALSE,
+                      fig.align="center",
+                       out.width = "60%")
+
+library(knitr)    # For knitting document and include_graphics function
+library(ggplot2)  # For plotting
+library(png) 
+library(tidyverse)
+library(INLA)
+library(patchwork)
+library(viridis)
+library(inlabru)
+```
+
+
+
+#  Model choice and model assessment/validation
+
+
+## Introduction
+
+We have now seen some fancy modelling approaches
+
+How can we assess the models and choose between them?
+
+\pause 
+
+
+* Rather underdeveloped in statistical literature;
+Many suggestions; no clear "yes, this is how it should be done"  
+
+
+
+## Model choice and assessment
+
+* **Model assessment** is the art and science of evaluating how well a model and/or estimate agrees with observed reality, and of how useful it for specific purposes
+  - Simple models -summary characteristics
+  - Complex models - assessing variability in space
+  - All models - prediction ability; calibrated uncertainty
+  
+* **Model choice** - which covariate and random effects to include 
+
+* **Model comparison** - which model is "better"?
+
+
+
+
+## Model choice 
+INLA can compute the following quantities:
+
+* Marginal likelihood $\Rightarrow$ Bayes factors
+
+* Deviance information criterion (DIC)
+
+* Widely applicable information criterion (WAIC)
+
+
+
+ 
+## General advice
+
+
+* We have little experience with practical usage of them for complex spatial models
+
+* It is not clear what they actually mean in the context of the models we look at here
+
+* Advice: use them cautiously
+
+* Less adventurous if you are comparing models with only different numbers of covariates - and “the rest” is the same: 
+
+     - Use the same mesh in the models you compare (do not treat
+the mesh resolution as a model choice!)
+
+
+
+
+
+
+## Marginal likelihood
+\small
+```{r, echo = T, eval = F}
+result = inla(...,
+              control.compute=list(mlik=TRUE))
+
+result = bru(...,options = list(control.compute = 
+                                  list(mlik = TRUE)))
+```
+\normalsize
+
+* Calculates \(\log(\pi(\boldsymbol{y}))\)
+
+* Can calculate Bayes factors through differences in value
+
+* **NB:** Problematic for intrinsic models
+
+## Deviance information criterion
+
+\small
+```{r, echo = T, eval = F}
+result = inla(...,
+              control.compute=list(dic=TRUE))
+
+result = bru(...,options = list(control.compute = 
+                                  list(dic = TRUE)))
+```
+\normalsize
+\
+DIC is a measure of complexity and fit. It is
+	used to compare complex hierarchical models and is defined as:
+	
+$$
+\text{DIC} = \overline{D} + p_D
+$$
+
+where $\overline{D}$ is the posterior mean of the deviance and $p_D$ is the effective
+	number of parameters. Smaller values of the DIC indicate a better trade-off between
+	complexity and fit of the model.
+
+## Widely applicable information criterion (WAIC)
+
+\small
+```{r, echo = T, eval = F}
+result = inla(...,
+              control.compute=list(waic=TRUE))
+
+result = bru(...,options = list(control.compute = 
+                                  list(waic = TRUE)))
+```
+\normalsize
+
+* WAIC is like DIC just newer, and perhaps better
+
+* 	See *"Understanding predictive information criteria for Bayesian models"*
+				(2013) by
+				Andrew Gelman, Jessica Hwang, and Aki Vehtari
+
+
+
+## Model assessment with cross-validated scores
+ 
+Posterior predictive distributions can be used for model assessment and model selection.
+
+Full cross-validation or out-of-sample validation is expensive.
+
+`R-INLA` provides two leave-one-out crossvalidation quantities:
+
+* **Conditional predictive ordinate**
+
+* **Probability integral transform**
+
+## Conditional predictive ordinate
+
+\small
+```{r, echo = T, eval = F}
+result = inla(...,
+              control.compute=list(cpo=TRUE))
+
+result = bru(...,options = list(control.compute = 
+                                  list(cpo = TRUE)))
+```
+\normalsize
+
+* Measures fit through the predictive density $\pi(y_i^{obs}\mid\boldsymbol{y}_{-i})$
+
+* Basically, Bayesian hold-one out
+
+* Easy to compute in the INLA-approach
+
+* Possible failure (\$cpo\$failure)
+
+* See *Posterior and Cross-validatory Predictive
+		Checks: A Comparison of MCMC and INLA* (2009) by
+		Held, Schr{\"o}dle and Rue
+
+
+## Proper scoring rule based on CPO
+A predictive score is proper if its expected value is minimised under the true distribution.
+
+
+* The **log-CPO-score**
+$$
+\text{logCPO} = -\sum_{i = 1}^n\log(\text{CPO}_i)  = -\sum_{i = 1}^n\log[p(y_i^{\text{obs}}|y_j^\text{obs}, j\neq i)]
+$$
+
+is a strictly proper scoring rule.
+
+* The logCPO score encourages appropriate prediction uncertainty; bias, overconfidence, and underconfidence all increase the score. 
+
+* $2\text{logCPO}$ is similar in scale to DIC and WAIC but has a clear cross validation prediction interpretation.
+
+
+## Pairwise observasion CPO scores
+ 
+* The aggregated logCPO score hides information
+
+* Model comparison for predictions is a pairwise comparison problem for each individual observation!
+
+* Compute the collection of pairwise logCPO differences for two models
+
+* Inspect the empirical score difference distribution; is it consitently positive/negative?
+
+* Inspect the spatial pattern of the score differences
+
+
+
+## Probability integral transform
+\small
+```{r, echo = T, eval = F}
+result = inla(...,
+              control.compute=list(pit=TRUE))
+
+result = bru(...,options = list(control.compute = 
+                                  list(pit = TRUE)))
+```
+\normalsize
+
+* Given by
+
+$$
+\text{Prob}(Y_i \leq y_i^{obs} \mid \boldsymbol{y}_{-i})
+$$
+
+
+
+
+## PIT: assessing prediction bias, scale and shape
+ 
+* A direct consequence of the PIT definition
+is that under the true model, each $PIT_i$ value is a sample of a uniform distribution on [0, 1].
+
+* The usual plotting method for PIT is a histogram.
+
+* For models with too small predictive variance, the histogram tends to increase toward 0 and 1.
+
+* For models with too large predictive variance, the histogram tends to have peak in the middle.
+
+* For incorrectly skewed predictions, the PIT histogram will tend to be skewed.
+
+* Unfortunately, that doesn’t necessarily imply that overfitting and oversmoothing can be detected and/or correctly diagnosed.
+
+# Remote computing
+
+
+## Remote computing
+
+**Very useful** for large models. The `R`-session runs
+	locally, but the computations are done on a remote (Linux/Mac)
+	server.
+\
+```{r, echo = T, eval = F}
+inla(..., inla.call="remote")
+```
+using `ssh.`
+\
+\
+{\scriptsize (Initial set up required, see `inla.remote` and
+	FAQ entry on this issue on `r-inla.org`)}
+
+**Example:
+\tiny
+```{r, echo = T, eval = F}
+data(Seeds)
+formula = r ~ x1*x2+f(plate,model="iid")
+result = inla(formula,data=Seeds,family="binomial",Ntrials=n, inla.call="remote")
+```
+\normalsize
+
+## Submit and retrieve jobs
+Commands:
+\small
+```{r, echo = T, eval = F}
+  inla.qget(id, remove = TRUE)
+  inla.qdel(id)
+  inla.qstat(id)
+  inla.qnuke()
+```
+\normalsize
+
+Example:
+\small
+```{r, echo = T, eval = F}
+data(Seeds)
+formula = r ~ x1*x2+f(plate,model="iid")
+result = inla(formula,data=Seeds,family="binomial",Ntrials=n, inla.call="submit")
+inla.qstat()
+result= inla.qget(result, remove=FALSE)
+```
+\normalsize
+
+## Submit and retrieve jobs
+Tips
+
+*  Save the temporary result object to a file
+
+*  Use this functionality when doing Cross-Validation!
+
+*  CV is perfectly parallelizable
+
+*  You can work on two projects at once
+
+
+
+# Advanced features
+
+## Useful features
+There are several features that can be used to extend the standard models
+in `R-INLA` (and `inlabru`)
+
+* Replicate 
+
+* Group
+
+* Copy
+
+* Multiple likelihoods
+
+* Generic precision matrices (`rgeneric`)
+
+
+**Main goals**
+
+* know about the features 
+* be exposed to the ideas
+
+# Feature: `replicate`
+
+## Feature: `replicate`
+
+`replicate` generates iid replicates from the same f$()$-model with the same hyperparameters.
+\
+\
+If $\bf{x}\mid\bf{\theta} \sim \text{AR}(1)$, then \text{nrep=3},
+    makes
+$$
+\bf{x} = ({\bf x}_{1}, {\bf x}_{2}, {\bf x}_{3})
+$$
+with mutually independent $\bf{x}_{i}$'s from AR$(1)$ with the
+    same $\bf{\theta}$
+
+
+```{r, echo =T, eval = F}
+    f(..., replicate = r [, nrep = nr ])
+```
+where replicate are integers $1, 2, \ldots,$ etc
+
+## Example
+
+$$
+\begin{aligned}
+y^1_i & \sim\text{Poisson}(\lambda^1_i), & i = 1,\dots,n_1\\
+y^2_i & \sim\text{Poisson}(\lambda^2_i), & i = 1,\dots,n_2\\
+\\
+\log(\lambda^1_i) & = \mu_1 + u^1_i\\
+\log(\lambda^2_i)  & = \mu_2 + u^2_i\\
+\end{aligned}
+$$
+and ${\bf u}^1$ and ${\bf u}^2$ are two replicates of the same AR1 model (they share the same parameters)
+
+
+## Example : simulate data
+\footnotesize
+```{r, echo = T, out.height="40%"}
+# Simulate data - 2 groups with same AR1 param
+n = 100
+rho <- 0.8
+mu = c(1,-1)
+x1 = arima.sim(n=n, model=list(ar=c(rho))) + mu[1]
+x2 = arima.sim(n=n, model=list(ar=c(rho))) + mu[2]
+# generate Poisson observations
+y1 = rpois(n, lambda = exp(x1))
+y2 = rpois(n, lambda = exp(x2))
+
+df_groups <- data.frame(y = c(y1, y2),
+                        t = rep(1:n, 2),
+                        repl = rep(1:2, each = n),
+                        int = rep(0:1, each = n))
+
+```
+
+## Example : simulate data
+
+```{r}
+ggplot() + geom_point(data = df_groups, 
+                     aes(t,y, group = repl,
+                         color = factor(repl)), size = 2)
+```
+\normalsize
+
+## Example: fit the model
+
+
+```{r, echo = T}
+cmp <- y ~  -1 + int(int,  model = "factor_full") +
+  myar1(t, model = "ar1", replicate = repl)
+fit <- bru(cmp, family = "poisson", data = df_groups)
+```
+
+
+## Example: Results  - Latent field
+
+```{r, out.width="80%"}
+p1 = ggplot() + geom_errorbar(data = fit$summary.random$int,
+                         aes(ID, ymin = `0.025quant`, ymax = `0.975quant`)) +
+  geom_point(data = fit$summary.random$int,
+                         aes(ID,mean)) +
+  geom_point(data = data.frame(ID =c(1,2), y = c(1,-1)), aes(ID, y), color = "red", size = 2) + ggtitle("Intercepts")
+
+dd = fit$summary.random$myar %>% mutate(repl = rep(1:2, each = n))
+p2 = ggplot() + geom_ribbon(data = dd, aes(ID, ymin = `0.025quant`,
+                                                           ymax = `0.975quant`, group = repl,
+                                      fill = factor(repl)), alpha = 0.5) +
+  geom_line(data = dd, aes(ID, mean, color = factor(repl), group = repl)) +
+  ggtitle("Ar1 components")
+p1+p2
+
+```
+
+## Example: Results - Hyperparameters
+
+```{r}
+p1 = ggplot() + geom_line(data = data.frame(fit$marginals.hyperpar$`Precision for myar1`), aes(x,y)) +
+  xlim(0,1.5) + ggtitle("Precision for the AR1")
+
+p2 = ggplot() + geom_line(data = data.frame(fit$marginals.hyperpar$`Rho for myar1`), aes(x,y)) +
+  xlim(0,1)+ ggtitle("")
+
+p1+p2
+```
+
+
+
+# Feature: `group`
+
+## Feature: `group`
+
+* Similar concept as replicate, but with a dependence structure
+			on the replicates. E.g.~rw1, rw2, ar1, exchangeable
+
+* Implemented as a Kronecker product (often space and time)
+
+* It's possible to use both replicate and group! This will be replications
+			of the grouped model
+
+
+* Usage 
+```{r, echo =T, eval = F}
+    f(..., group = g [, ngroup = ng])
+```
+where replicate are integers $1, 2, \ldots,$ etc
+
+
+# Feature: Multiple likelihoods
+
+## Feature: Multiple likelihood
+
+There is no constraint in INLA that the type of likelihood must be the same for all observations. In fact, every observation could have its own likelihood. 
+
+* Coregionalization model
+
+* Marked point process
+
+* Joint models of various kinds
+
+
+## Example: Simulate data
+
+We fit a simple model where we imagine that some data come from a Gaussian and some from a Poisson likelihood:
+\tiny
+```{r}
+# Gaussian data
+n1 = 50
+x1 = runif(n1)
+eta1 = 1 + 2 * x1
+d1 <- data.frame(y1 = rnorm(n1, mean = eta1), x1 = x1)
+# Poisson data
+n2 = 100
+x2= runif(n2)
+eta2 = 0.5 + 1 * x1
+d2 <- data.frame(y2 = rpois(n2, lambda = exp(eta2)))
+```
+\normalsize
+
+
+
+## Example: Fit the model
+
+```{r, echo = T}
+cmp = ~ Intercept_1(1) + Intercept_2(1) +
+  x1(x1, model = "linear") + x2(x2, model = "linear")
+
+lik1 = like(formula = y1~Intercept_1 + x1,
+            family = "gaussian",
+            exclude = c("Intercept_2","x2"),
+            data = d1)
+
+lik2 = like(formula = y2~Intercept_2 + x2,
+            family = "poisson",
+            exclude = c("Intercept_1","x1"),
+            data = d2)
+
+fit = bru(cmp, lik1,lik2)
+
+```
+
+
+
+
+
+# Feature: `copy`
+
+
+## Feature: `copy`
+
+	Allows different elements of the same `f(...)` to be
+	in the the same linear predictor.
+\
+
+	Without copy we can not (directly) specify the model
+$$
+		\eta_i = u_i + u_{i+1} + \dots
+$$
+
+\
+Sometimes this is necessary
+
+## Feature: `copy`
+	The linear predictor
+$$
+\eta_i = u_i + u_{i+1} + \ldots
+$$
+can be coded as
+
+```{r, echo = T, eval = F}
+   formula = y ~ f(i, model = "iid")
+                 + f(i.plus, copy="i") + ...
+```
+
+
+* The copy-feature, creates internally an additional sub-model
+			which is $\epsilon$-close to the target
+
+*	Many copies allowed, and copies of copies
+
+## Feature: `copy`
+	It is also possible to include scaled copies
+
+$$
+		\eta_i = u_i + \beta u_{i+1} + \ldots
+$$
+
+\
+```{r, echo = T, eval = F}
+   formula = y ~ f(i, model="iid") +
+                 f(i.plus, copy="i",
+                   hyper = list(beta=list(fixed=FALSE)))
+                 + ...
+```
+
+
+This introduces another hyperparameter in the model ( which is fixed to 1 by default).
+
+
+## Feature: `copy`
+
+
+$$
+\begin{aligned}
+y^1_i & \sim \mathcal{N}(\mu_i,\tau)\\
+\mu_i &= f(i)\\
+\\
+y^2_j & \sim \text{Poisson}(\lambda_j),& j = 1,\dots,50\\
+\log(\lambda_j) &= f(i)\\
+\end{aligned}
+$$
+
+## Example : simulate data
+\footnotesize
+```{r, echo = T}
+n = 50
+idx = 1:n
+x = idx
+func = 10 * ((idx-n/2)/n)^3
+
+y1 = rnorm(50, mean = func, sd = 0.2)
+y2 = rpois(50, lambda  = exp(func))
+```
+
+```{r}
+df1 = data.frame(y1 = y1, idx1 =  1:n)
+df2 = data.frame(y2 = y2, idx2 =  1:n)
+
+p1 = ggplot() + geom_line(data = data.frame(i = 1:n, func  = func), aes(i,func)) +
+  ggtitle("Smooth function")+ xlab("") + ylab("")
+
+p2 = ggplot() + geom_point(data = df1, aes(idx1, y1)) + xlab("") + ylab("") +
+  ggtitle("Gaussian observations")
+p3 = ggplot() + geom_point(data = df2, aes(idx2, y2))+ xlab("") + ylab("")+
+  ggtitle("Poisson observations")
+
+p1 + p2 + p3
+```
+\normalsize
+
+
+## Example : fit the model
+
+\footnotesize
+```{r, echo = TRUE}
+df1 = data.frame(y1 = y1, idx1 =  1:n)
+df2 = data.frame(y2 = y2, idx2 =  1:n)
+
+cmp = ~ -1 + 
+  field(idx1, model = "rw1") + 
+  field_copy(idx2, copy = "field")
+
+lik1 = like(formula  = y1~ field,
+            family = "gaussian",
+            exclude = c("field_copy"),
+            data = df1)
+
+lik2 = like(formula  = y2~ field_copy,
+            family = "poisson",
+            exclude = c("field"),
+            data = df2)
+
+fit = bru(cmp, 
+          lik1,
+          lik2)
+```
+\normalsize
+
+## Example: Results
+```{r}
+fit$summary.random$field %>% ggplot() + geom_ribbon(aes(ID, ymin = `0.025quant`, ymax = `0.975quant`), alpha = 0.5) + geom_line(aes(ID,mean))
+```
+
+# Feature: `rgeneric`
+
+## Generic precision matrices
+Commands:
+
+*  `generic0`, `generic1`,`generic2`,`generic3`
+
+*   `rgeneric`, `cgeneric`
+
+For `rgeneric` the *user* must specify a function, along the lines of
+```{r, echo = T, eval = F}
+ComputePrecisionMatrix = function (theta) {
+  # theta is the vector of hyper-parameters
+  # your code here
+  return(Q)
+}
+```
+together with priors and some additional details.
+
+Examples in
+```{r, echo = T, eval =F}
+vignette("rgeneric", package="INLA")
+```
+
+# Conclusion
+
+## Summary
+
+* INLA is a fast method to do Bayesian inference with latent Gaussian models
+and INLA is an R-package that implements this method with a flexible and
+simple interface
+
+* The INLA approach is *not* a rival/competitor/replacement to/of MCMC,
+just a better option for the class of LGMs.
+
+* The basic idea behind the INLA procedure is simple and it is very easy to
+use for simple problems, but for more complex problems it may happen that
+you have to struggle a bit.
+
+* Ask for help to the INLA team through the `r-inla.org` discussion forum
+or through e-mail (see `inla.version()`) for a list of e-mails.
+
+
+## INLA is a widespread tool
+
+\tiny
+```{r, echo = T}
+my.cran.inla <- function() {
+     library("cranly")
+     library("tools")
+     p = clean_CRAN_db(CRAN_package_db())
+     m = length(p$package)
+     idx.s = which(unlist(lapply(1:m, function(ii) any(p$suggests[[ii]] %in% "INLA"))))
+     idx.d = which(unlist(lapply(1:m, function(ii) any(p$depends[[ii]] %in% "INLA"))))
+     return(list(suggests = p$package[idx.s], depends = p$package[idx.d]))
+ }
+
+my.cran.inla()
+```
+\normalsize
+
+## INLA is an active project
+
+* A big push into including more general likelihoods and larger problems
+
+* New features for detecting prior sensitivity and specifying priors for parame-
+ters (PC priors)
+
+* Extensions beyond the basic LGM framework
+
+
+## Acknowledgement
+
+* Andrea Riebler
+![](graphics/andrerie.jpg){width=12%}
+
+* The whole INLA group, especially Finn and Håvard
+![](graphics/Finn_Havard.png){width=45%}
+
+* **All of you!!**

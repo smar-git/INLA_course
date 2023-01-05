@@ -1,0 +1,1213 @@
+---
+title: "Bayesian Statistics with R-INLA"
+subtitle: 'University of Zurich, March, 2022'
+author: "Instructor: Sara Martino"
+#date: "`r format(Sys.time(), '%d %B, %Y')`"
+institute: Department of Mathematical Science (NTNU)
+output:
+  beamer_presentation:
+    slide_level: 2
+    toc: true
+    keep_tex: yes
+    theme: "Singapore"
+    colortheme: "default"
+    font: "serif"
+    includes:
+      in_header: header.tex
+#classoption: "handout"
+  # pdf_document
+  #   keep_tex: yes
+  #   toc: yes
+  #   toc_depth: 2
+  #   number_sections: true
+  #   includes:
+  #     in_header: header.tex
+---
+
+
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","all",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","html_document",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","pdf_document",encoding="UTF-8") -->
+<!-- rmarkdown::render("1Intro/1Intro.Rmd","beamer_presentation",encoding="UTF-8") -->
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/INLA_course/Part2/")
+
+knitr::opts_chunk$set(echo = FALSE,  
+                      message=FALSE, 
+                      warning=FALSE, 
+                      strip.white=TRUE, 
+                      prompt=FALSE,
+                      fig.align="center",
+                       out.width = "60%")
+
+library(knitr)    # For knitting document and include_graphics function
+library(ggplot2)  # For plotting
+library(png) 
+library(tidyverse)
+library(INLA)
+library(patchwork)
+
+```
+## What have we learned in the morning...
+
+* What is a LGM
+
+* Which kind of models are amenable to INLA
+
+* How does INLA work....
+
+\pause
+
+* ..you have even implemented it yourself! :-)
+
+##  Good News!
+\
+\
+\centering
+ All the theory we have seen is wrapped up in the R-package 
+    `INLA` which is easy to use.
+
+# Getting `INLA`
+
+## Getting `INLA`
+
+* The web page \textcolor{red}{\url{www.r-inla.org}} contains source-code, worked-through examples,	reports and instructions for installing the package. 
+
+## Getting `INLA`
+
+* The R-package `INLA` works on Linux,  Windows and Mac and can be installed within R  by
+
+\footnotesize
+```{r, echo = T, eval=FALSE}
+# stable version
+install.packages("INLA",
+          repos=c(getOption("repos"),
+          INLA="https://inla.r-inla-download.org/R/stable"),
+          dep=TRUE)
+
+# devel version 
+install.packages("INLA",
+        repos=c(getOption("repos"),
+        INLA="https://inla.r-inla-download.org/R/testing"),
+        dep=TRUE)
+```
+\normalsize
+
+and then upgraded in R as:
+```{r, echo = T, eval=FALSE}
+inla.upgrade(testing = TRUE)
+```
+
+\textcolor{red}{**NB** You need R version 4.1 or newer!!}
+
+<!-- ## `INLA` runs in parallel! -->
+
+<!-- `INLA` can run in parallel for faster computations with large models. -->
+
+<!-- It uses the `PARDISO 7.2 Solver Project ` and you need to get a license to use it! -->
+<!-- ```{r, echo = TRUE, eval = FALSE} -->
+<!-- library(INLA) -->
+<!-- inla.pardiso() -->
+<!-- ``` -->
+
+<!-- ..and follow the instruction there! -->
+
+## Which `INLA` version do I have?
+```{r, echo = T}
+inla.version()
+```
+
+
+# Implementing the INLA algorithm
+
+
+## The `INLA` package for `R`
+
+```{r, out.width = "100%"}
+include_graphics("graphics/inla-structure.pdf")
+```
+
+
+## What  happens in the black box?
+
+The implementation of the INLA method consists
+	of three parts:
+\
+\
+
+* **GMRFLib-Library:**
+			A library for GMRFs written in `C`
+			
+* **`inla`-program:** The implementation of INLA written in `C`
+
+* **`INLA` package for `R`:**
+			An `R`-interface to the `inla`-program
+\
+\
+The first two are *not* particularly user-friendly.
+They are used in the background by the `INLA` package.
+
+
+## Implementing INLA
+
+All procedures required to perform INLA need to be carefully
+implemented to achieve a good speed; easier to implement a slow
+version of INLA.
+
+\pause
+
+* **The `GMRFLib`-library** 
+
+  -  Basic library written in `C`, user friendly
+                for programmers
+                
+## Implementing INLA
+
+All procedures required to perform INLA need to be carefully
+implemented to achieve a good speed; easier to implement a slow
+version of INLA.
+
+* **The `GMRFLib`-library** 
+
+* **The `inla`-program**
+
+  -  Define *latent Gaussian models* and interface
+                with the  `GMRFLib`-library
+  -  Avoids the need for `C`-programming
+  -  Models are defined using `.ini`-files
+  - Requires to write input files in a special format
+  - `inla`-program write all the results
+                (E/Var/marginals) to files
+
+
+## Implementing INLA
+
+All procedures required to perform INLA need to be carefully
+implemented to achieve a good speed; easier to implement a slow
+version of INLA.
+
+* **The `GMRFLib`-library** 
+
+* **The `inla`-program**
+
+* **The `INLA` package for `R`**
+
+  - `R`-interface to the `inla`-program.  (That's why its not on CRAN.)
+  -  Convert `formula`-statements into `.ini`-files
+                definitions
+  - It also does much more (for example for survival models or when using `inlabru`)
+
+
+```{r, echo = FALSE, eval = TRUE}
+cars = data.frame(cars)
+formula = speed ~ dist
+res = inla(formula,
+           data  = cars)
+```
+
+# How to use `INLA`
+
+
+## How to use `INLA`
+	
+There are essentially four parts to an `INLA`-program:
+\
+\
+
+1. \textcolor{red}{Data organisation}: Make an object to store response, covariates,
+```{r,echo=TRUE, eval=FALSE}
+data = data.fame(y = y, x = x)
+```
+
+2. \textcolor{red}{Use the `formula`-notation} to specify the model (similar to
+			`lm` and `glm` functions)
+```{r,echo=TRUE, eval=FALSE}
+formula = y~x
+```
+			
+3. \textcolor{red}{Call the `inla`-program}
+```{r,echo=TRUE, eval=FALSE}
+res = inla(formula, data=data, family="gaussian")
+```
+
+4. \textcolor{red}{Extract posterior information}, e.g.for a first overview use
+
+```{r,echo=TRUE, eval=FALSE}
+summary(res)
+```
+
+
+
+
+## Data organization
+
+The responses and covariates are collected in a \textcolor{red}{list or data frame}.
+	Assume response `y`, covariates `x1` and `x2`, and
+	time index `t`. Then they can be organized with:
+	
+```{r, echo = TRUE, eval = FALSE}
+# Option 1
+
+data = list(y = y, x1 = x1, x2 = x2, t = t)
+
+# Option 2
+
+data = data.frame(y = y, x1 = x1, x2 = x2, t = t)
+
+
+```
+
+
+## `formula`: specifying the linear predictor
+\textcolor{red}{The model is specified through a `formula`} similar to
+	`glm`:
+	
+```{r, echo = TRUE, eval = FALSE}
+formula = y ~ x1 + x2 + f(t, ...)
+```
+
+
+* `y` is the name of the response in the `data` object
+
+* The fixed effects are given i.i.d. Gaussian priors 
+
+* The `f()` function specifies random effects (e.g. temporal, 
+			spatial, smooth effect of covariates and Besag model)
+			
+* Use `-1` in the formula if you don't want an automatic
+			intercept
+		
+		
+## The `inla()` function
+\small
+```{r, echo = TRUE, eval = FALSE}
+result = inla(
+  # Description of linear predictor
+  formula,
+  # Likelihood
+  family = "gaussian",
+  # List or data frame with response, 
+  # covariates, etc. 
+  data = data,
+  ## This is all that is needed for a basic call 
+
+  ## # check what happens
+  verbose = TRUE,
+  # ,..., there are also some "control statements"
+  # to customize things
+  # This you need if you later want to sample from the
+  # fitted model
+  control.compute=list(config = TRUE)
+  )
+```
+\normalsize
+	
+## Likelihood functions
+
+* `gaussian`
+		
+* `T`
+		
+* `poisson`
+		
+* `nbinomial`
+		
+* `binomial`
+		
+* `exponential`
+		
+* `weibull`
+		
+* `gev`
+		
+* `coxph`
+
+For a complete list type
+```{r, echo = T, eval = F}
+names(inla.models()$likelihood)
+```
+
+<!-- ## What comes out? -->
+<!-- \tiny -->
+<!-- ```{r, echo = FALSE, eval = TRUE} -->
+<!-- lout <- capture.output(summary(res)) -->
+
+<!-- print(lout[-c(1:15)]) -->
+<!-- ``` -->
+<!-- \normalsize -->
+
+
+## Posterior inference
+
+Main functions:
+
+```{r, echo =T, eval = F}
+# look at a  first summary
+summary(result)
+# plot the main results
+# (does not use ggplot...)
+plot(result)
+# rerun the model to get better
+# estimate of the hyperparemeters
+result2 = inla.hyperpar(result)
+# sample from the fitted model
+# this can be very useful sometimes!
+sample = inla.posterior.sample(results)
+```
+
+# Simple example
+
+## Example: Simple linear regression
+
+* **Stage 1:**
+  Gaussian likelihood
+$$
+y_i | \eta_i \sim \mathcal{N}(\eta_i, \sigma^2)
+$$
+
+* **Stage 2:**
+	Covariates are connected to likelihood by
+$$
+\eta_i = \beta_0 + \beta_1 x_i
+$$
+
+* **Stage 3:** $\sigma^2$: variance of observation noise
+
+
+## Example: Simple linear regression
+```{r, echo = T}
+# Generate data
+x = runif(10)
+y = 1 + 2*x + rnorm(n = 100, sd = 0.1)
+
+# Run inla
+formula = y ~ 1 + x
+result = inla(formula,
+              data = data.frame(x = x, y = y),
+              family = "gaussian")
+```
+
+## Organization of the `inla`-object
+\tiny
+```{r, echo = T}
+names(result)
+```
+\normalsize
+
+## Organization of the `inla`-object
+You can find summary information in 
+\small
+```{r}
+names(result)[grep("summary", names(result))]
+```
+\normalsize
+
+for example
+
+\scriptsize
+```{r, echo=TRUE}
+result$summary.fixed
+```
+\normalsize
+
+## Organization of the `inla`-object
+You can find estimated posterior marginals in 
+\small
+```{r}
+names(result)[grep("marginal", names(result))]
+```
+\normalsize
+
+Each object is thereby a list. Get the marginal for intercept:
+
+\scriptsize
+```{r, echo=TRUE}
+   head(result$marginals.fixed[[1]])
+```
+\normalsize
+
+## Organization of the `inla`-object
+
+Further general information
+
+```{r, echo = T}
+# formula used
+result$.args$formula
+```
+
+```{r, echo = T}
+# data used
+result$.args$data[1:3,]
+```
+
+```{r, echo = T, eval = FALSE}
+# log-file including information of INLA approximations
+result$logfile
+```
+
+## Marginal posterior densities
+
+The marginal posterior densities are stored as a matrices with $x$- and $y$-values
+\small
+```{r, echo =T}
+intercept = data.frame(result$marginals.fixed$`(Intercept)`)
+x = data.frame(result$marginals.fixed$x)
+p1 = ggplot(data = intercept) + geom_point(aes(x,y))
+p2 = ggplot(data = x) + geom_point(aes(x,y))
+p1+p2
+```
+\normalsize
+
+## Marginal posterior densities
+
+The rough shape can be interpolated to higher resolution using the `inla.smarginal()` function:
+
+```{r, echo =T}
+smoother_dens = data.frame(inla.smarginal(intercept))
+ggplot(data = smoother_dens) + geom_point(aes(x,y))
+```
+
+## Marginal posterior densities
+Manipulation of the computed posterior marginals is possible through the `inla.*marginal()` functions:
+
+\small
+```{r, echo =T}
+# compute the 0.05 quantile
+inla.qmarginal(0.05, intercept)
+```
+
+```{r, echo =T}
+# Distribution function
+inla.pmarginal(0.975, intercept)
+```
+
+```{r, echo =T}
+# Density function
+inla.dmarginal(1, intercept)
+```
+
+```{r, echo =T}
+# Generate realizations
+inla.rmarginal(4, intercept)
+```
+\normalsize
+
+## Other `inla.*marginal()` functions.
+
+\scriptsize
+\begin{table}[h]
+\centering
+    \begin{tabular}{l|p{6cm}}
+     \bf{Function Name} & \bf{Usage}\\\hline\hline
+      \tt{inla.dmarginal(x, marginal, $\dots$)} & Density at a vector of
+      evaluation  \\
+      & points $x$ \\
+      \tt{inla.pmarginal(q, marginal, $\dots$)} & Distribution function at a vector  \\
+      &  of
+      quantiles $q$ \\
+      \tt{inla.qmarginal(p, marginal, $\dots$)} & Quantile function at a vector \\
+      & of
+      probabilities $p$.\\
+      \tt{inla.rmarginal(n, marginal)} & Generate $n$ random deviates \\
+      \tt{inla.hpdmarginal(p, marginal, $\dots$)} & Compute the highest posterior \\
+      & density
+      interval at level $p$\\
+      \tt{inla.emarginal(fun, marginal, $\dots$)} & Compute the expected value \\
+      & of the
+      marginal assuming the transformation given by fun\\
+      \tt{inla.mmarginal(marginal)} & Compute the mode\\
+      \tt{inla.smarginal(marginal, $\dots$)} & Smoothed density in
+      form of a list of length two. The first entry contains the x-values, the second
+      entry includes the interpolated y-values\\
+      \tt{inla.tmarginal(fun, marginal, $\dots$)} & Transform the marginal using the
+      function fun.\\
+      \tt{inla.zmarginal(marginal)} & Summary statistics for the marginal\\
+    \end{tabular}
+\end{table}
+\normalsize
+
+# Add random effects
+
+## Add random effects
+
+```{r, echo = T, eval = F}
+f(name, model="...", hyper=...,
+                 constr=FALSE, cyclic=FALSE, ...)
+```
+
+- `name` -- the index of the effect (\textcolor{red}{each f-function needs its own!})
+- `model` -- the type of latent model. E.g.`iid`, `rw2`, `ar1`, `besag`, and so on
+- `hyper` -- specify the prior on the	hyperparameters
+- `constr` -- sum-to-zero constraint?
+- `cyclic` -- are you cyclic?
+- `...`
+
+## Example: Add random effect
+
+Add an AR(1) random effect to the linear predictor.
+
+* **Stage 1:**
+$$
+	y_i|\eta_i \sim \mathcal{N}(\eta_i, \sigma^2)
+$$
+
+*  **Stage 2:** Covariates and AR(1) component connected to likelihood by
+
+$$
+	\eta_i = \beta_0 + \beta_1 x_i + a_i
+$$
+
+*  **Stage 3:**
+
+    -  $\sigma^2$: variance of observation noise
+  
+	  -  $\rho$: dependence in AR(1) process
+	
+	  -  $\sigma^2$: variance of the innovations in AR(1) process
+	  
+## 	  Example: Add random effect
+
+\small
+```{r, echo = TRUE}
+# Generate AR(1) sequence
+set.seed(580258)
+t = 1:100
+rho = 0.8
+sd_ar1 = 0.1
+ar = rep(0,100)
+for(i in 2:100)
+  ar[i] = rho * ar[i-1] + rnorm(n = 1, sd = sd_ar1)
+# Generate data with AR(1) component
+x = runif(100)
+y = 1 + 2*x + ar + rnorm(n = 100, sd = 0.2)
+
+# Run inla
+formula = y ~ 1 + x + f(t, model="ar1")
+
+result = inla(formula,
+     data = data.frame(x = x, y = y, t = t),
+     family = "gaussian")
+```
+\normalsize
+
+## Example
+
+Estimates of the random effect
+\small
+```{r, echo = TRUE}
+result$summary.random$t %>% ggplot() +
+  geom_line(aes(ID, mean)) + 
+  geom_ribbon(aes(ID, ymin = `0.025quant`, ymax = `0.975quant`), alpha = 0.3) +
+  geom_point(data = data.frame(t =t , ar = ar), aes(t,ar), color = "red")
+```
+\normalsize
+
+## Example
+
+Estimates of the hyperparameters
+\footnotesize
+```{r, echo = TRUE,out.width = "40%" }
+# rho 
+p1 = ggplot() + geom_line(data = data.frame(result$marginals.hyperpar$`Rho for t`), 
+                          aes(x,y)) +
+  geom_vline(xintercept = rho) + ggtitle("rho")
+# sd of the ar1 effect
+prec = result$marginals.hyperpar$`Precision for t`
+sd = inla.tmarginal(function(x) 1/sqrt(x), prec)
+p2 = ggplot() + geom_line(data = data.frame(sd), aes(x,y)) +
+  geom_vline(xintercept =sd_ar1 ) + ggtitle("sd of ar1")
+p1+p2
+```
+
+# Prediction
+
+## The interpretation of `NA`
+
+`R-INLA` uses `NA` differently than other packages
+
+* `NA` in the **response** means no likelihood contribution,
+			i.e.response is unobserved
+* `NA` in a **fixed effect** means no contribution to the
+			linear predictor, i.e. the covariate is set equal to zero
+
+* `NA` in a **random effect** `f(...)` means no
+			contribution to the linear predictor
+
+
+## Prediction
+The distribution of the linear predictor at an unobserved location can be computed by specifying the value of the covariate $x$ and the desired time index $t$ and set $y$ to `NA`.
+\small
+```{r, echo = TRUE}
+# Add one new location
+n = 1
+x = c(x, runif(n))
+t = c(t, 101:(100+n))
+y = c(y, rep(NA,n))
+
+# Re-compute
+result.pred = inla(formula,
+    data = data.frame(x = x, t = t, y = y),
+    family="gaussian",
+    control.inla = list(int.strategy = "grid"),
+    control.compute = list(config = TRUE, 
+                           return.marginals.predictor=TRUE), 
+    # tell inla to return the marginals for eta!  
+    control.predictor = list(compute = TRUE))
+
+```
+\normalsize
+## Prediction
+
+Predicted marginal of the linear predictor $\eta_{101}$
+
+
+```{r, echo = TRUE}
+pred = result.pred$marginals.linear.predictor[[100+n]]
+pred = inla.smarginal(pred)
+ggplot() +
+  geom_line(data = data.frame(pred), aes(x, y)) 
+
+```
+
+## Prediction
+
+
+\textcolor{red}{Caution}: This is **not** yet the predictive distribution, as the observation noise is missing.
+
+The predictive distribution is 
+$$
+\pi(y_{101}|\bf{y})
+$$
+what we got is
+$$
+\pi(\eta_{101}|\bf{y})
+$$
+
+## Prediction
+
+One way to add the observation noise to the linear predictor 
+is by sampling from the posterior distribution.
+
+\small
+```{r sampling,cache = TRUE,  echo = TRUE}
+n = 1000
+x = inla.posterior.sample(n, result.pred)
+
+func = function(...)
+{
+  eta = Predictor
+  eta = eta[101]
+  sd = 1/sqrt(theta[1])
+  out = rnorm(1, mean = eta, sd =sd)
+  return(out)
+}
+
+samples = inla.posterior.sample.eval(func, x)[1,]
+```
+
+## Prediction
+
+Comparing $\pi(y_{101}|\bf{y})$  and $\pi(\eta_{101}|\bf{y})$
+```{r}
+ggplot() + 
+  geom_histogram(data = data.frame(x = samples), aes(x, y = ..density..), n = 100)+
+  geom_line(data = data.frame(pred), aes(x, y)) 
+```
+\normalsize
+
+# Smoothing binary time series
+
+## Example: Smoothing binary time series
+
+The data set `Tokyo` is available in the `INLA` package and consists of the number of days in Tokyo with rainfall above 1 mm in 1983–1984.
+
+```{r}
+data(Tokio)
+ggplot(data = Tokyo) + geom_point(aes(time, y))
+
+```
+
+## Observations
+
+Each observation consists of
+
+* $t$:	Day of year; $t\in\{1,2,\ldots, 366\}$
+
+* $n_t$:	Number of observations for day $t$ in 1983--1984; $n_t\in\{1,2\}$
+
+* $y_t$:	Number of days with rain out of $n_t$ days for day $t$;
+			$y_t \in \{0, 1, 2\}$
+
+\footnotesize
+```{r, echo = T}
+ data(Tokyo)
+head(Tokyo,3)
+```	
+
+```{r, echo = T}
+Tokyo[60,]
+```	
+\normalsize
+
+## Hierarchical model
+
+* **Stage 1:** We have binomial responses with known $n_t$, but unknown probabilities
+$$
+y_t \sim \text{Binomial}(n_t, p_t)
+$$
+
+* **Stage 2:** A cyclic second order random walk (CRW2) is connected to 	the likelihood by
+$$
+p_t = \frac{\exp{(\eta_t})}{1+\exp(\eta_t)}\, \text{with linear predictor}\,\eta_t = \mathrm{CRW2}_t
+$$
+
+* **Stage 3:**
+
+  - $\tau$: Scale parameter in CRW2 with prior
+$$
+		\pi(\tau) \sim \text{Gamma}(1, 5\cdot 10^{-5})
+$$
+
+
+## `INLA` implementation
+```{r, echo = TRUE}
+# Read data
+data(Tokyo)
+# Specify linear predictor
+formula = y ~ -1 + f(time, model="rw2", cyclic=TRUE)
+# Run model
+result = inla(formula,
+              family = "binomial",
+              Ntrials = n,
+              data = Tokyo)
+```
+
+## Marginal posterior of CRW2
+
+```{r, echo = T}
+
+ggplot(data = result$summary.random$t) + 
+  geom_line(aes(ID, mean)) +
+  geom_ribbon(aes(ID, ymin = `0.025quant`, ymax = `0.975quant` ),
+              alpha = 0.5)
+```
+## Transform to probability
+\small
+```{r, echo = T}
+pred = result$summary.fitted.values
+pred$ID = 1:dim(Tokyo)[1]
+ggplot(data = pred) + 
+  geom_line(aes(ID, mean)) +
+  geom_ribbon(aes(ID, ymin = `0.025quant`, ymax = `0.975quant` ),
+              alpha = 0.5)
+```
+\normalsize
+# Disease Mapping
+
+
+## Example: disease mapping
+
+We observed larynx cancer mortality counts for males
+in 544 district of Germany from 1986 to 1990
+and want to make a model. 
+
+:::::: {.cols data-latex=""}
+
+::: {.col data-latex="{0.55\textwidth}"}
+* \(y_i\):	The count at location \(i\).
+* \(E_i\): An offset; expected number of cases in district $i$.
+*	\(c_i\): A covariate (level of smoking consumption) at  \(i\)
+* \(\boldsymbol{s}_i\):	spatial location \(i\) .
+:::
+
+::: {.col data-latex="{0.05\textwidth}"}
+\ 
+<!-- an empty Div (with a white space), serving as
+a column separator -->
+:::
+
+::: {.col data-latex="{0.4\textwidth}"}
+```{r, out.width = "110%"}
+source(system.file("demodata/Bym-map.R", package="INLA"))
+source("../Rfunctions.R")
+data(Germany)
+# Load data
+Germany$region.struct = Germany$region
+g <- system.file("demodata/germany.graph" , package = "INLA")
+my.germany.map(Germany$Y/Germany$E, autoscale = F)
+```
+:::
+::::::
+
+
+## Disease mapping
+
+Assume
+$$
+Y_i \mid \eta_i \sim \text{Poisson}(E_i \exp(\eta_i))
+$$
+where the log relative risk is decomposed into
+$$
+\eta_i = \mu + u_i + v_i
+$$
+\
+\
+
+* $\mu$ is the overall level (intercept).
+
+* $v_i \sim \mathcal{N}(0, \tau_v^{-1})$ represents non-spatial overdispersion.
+
+* $u_i$ are random effects with spatial structure.
+
+
+
+
+
+## A spatially structured effect
+
+To incorporate a spatial structure into a model, the so called \textcolor{red}{Besag
+model} is often used.
+$$
+\begin{aligned}
+  p( \bf{u} \mid \kappa_u)& \propto \kappa_u^{(n-1)/2} \exp\left( -
+  \frac{\kappa_u}{2} \sum_{i\sim j} (u_i -u_j)^2\right)\\
+  & = \kappa_u^{(n-1)/2} \exp\left( -
+  \frac{\kappa_u}{2} \bf{u}^T \mathbf{R} \bf{u} \right).
+\end{aligned}
+$$
+
+where $R$ is called structure matrix and defined as
+$$
+R_{ij} =  \begin{cases}
+			n_i & i=j\\
+			-1 & i \sim j\\
+			0 & \text{otherwise}.
+		\end{cases}
+$$
+Here, $i \sim j$ denotes that $i$ and $j$ are neighbouring regions.
+
+
+## What does this mean?
+
+Example: Five counties of the US state Rhode Island
+
+The structure matrix $\mathbf{R}$ defines the  neighborhood structure.
+
+:::::: {.cols data-latex=""}
+
+::: {.col data-latex="{0.55\textwidth}"}
+```{r, out.width = "100%", fig.cap="Adjacency matrix"}
+include_graphics("graphics/01fig-009.pdf")
+```
+:::
+
+::: {.col data-latex="{0.05\textwidth}"}
+\ 
+<!-- an empty Div (with a white space), serving as
+a column separator -->
+:::
+
+::: {.col data-latex="{0.4\textwidth}"}
+\begin{table}
+\begin{tabular}{ccccc}
+ \textcolor{red}{3} & -1 & -1 & - 1 & 0 \\
+ -1 & \textcolor{red}{4} & -1 & -1 & -1 \\
+ -1 & -1 &  \textcolor{red}{3}  & 0 &-1\\
+  -1 & -1 & 0 & \textcolor{red}{2} & 0 \\
+  0 & -1 & -1 & 0 & \textcolor{red}{2} \\
+\end{tabular}
+\caption{Structure matrix \textbf{R}}
+\end{table}
+:::
+::::::
+
+
+
+With increasing number of regions $\mathbf{R}$ will be sparse, which allows to
+do many computations very efficient.
+
+
+## INLA code
+```{r, echo = TRUE, cache = TRUE}
+library(spam)
+# load the dataset
+data(Oral)
+# load the file including neighbourhood information
+g = system.file("demodata/germany.graph", package="INLA")
+# add one column 
+Oral = cbind(Oral, region = 1:544, region.unstruc= 1:544)
+# define formula
+formula = Y ~ f(region, model="besag", graph=g) +
+                           f(region.unstruc, model="iid")
+# run the model
+result = inla(formula, family="poisson", E=E, data=Oral)
+```
+
+
+## Median of $u$ on exp-scale
+\small
+```{r}
+my.germany.map(result$summary.random$region$"0.5quant", autoscale = F)
+
+```
+
+## Other choices for `f`-terms
+\small
+```{r}
+ names(inla.models()$latent)
+```
+
+# Changing the prior
+
+## Changing the prior: Internal scale
+
+* Hyperparameters are represented internally with more well-behaved
+		transformations, e.g. correlation $\rho$ and precision $\tau$ are internally
+		
+$$
+\begin{aligned}
+  \theta_1 &= \log(\tau)\\
+	\theta_2 &= \log\left(\frac{1+\rho}{1-\rho}\right)
+\end{aligned}
+$$
+
+* The prior must be set on the parameter in **internal scale**
+
+* Initial values for the mode-search must be set in **internal scale**
+
+* The functions `to.theta()` and `from.theta()` can be used
+			to map back and forth.
+
+## Changing the prior: Code
+
+```{r, echo =T, eval = F}
+hyper = list(prec = list(prior = "loggamma",
+                         param = c(1, 0.1),
+                         initial = 4,
+                         fixed = FALSE))
+
+formula = y ~ f(idx, model = "iid", hyper = hyper) + ...
+```
+
+```{r, echo =T, eval = F}
+# For the iid model, default options can be seen with
+inla.doc("iid")
+```
+\normalsize
+
+# Repeated Poisson counts
+
+## EPIL example
+
+Seizure counts in a randomised trial of anti-convulsant therapy in
+    epilepsy. From `WinBUGS` manual.
+\small
+```{r}
+data(Epil)
+
+Epil1 = Epil %>% dplyr::select(Ind, y) %>%
+  mutate(repl = rep(paste("Repl",1:4,sep = ""),59))  %>%
+  pivot_wider(names_from = repl, values_from = y)
+Epil2 = Epil %>% dplyr::select(-c(y, rand, V4))  %>%
+  distinct()
+ee = left_join(Epil1, Epil2)
+head(ee)
+```
+\normalsize
+Covariates are treatment (0,1), 8-week baseline seizure counts, and age in years.
+    
+## Repeated Poisson counts
+
+$$
+\begin{aligned}
+  y_{jk} & \sim  \text{Poisson}(\mu_{jk});\mbox{  }
+        j=1,\dots,59;\; k=1,\dots,4\\
+  \log(\mu_{jk})  &= \alpha_0 + \alpha_1
+        \log(\text{Base}_j / 4) + \alpha_2\text{Trt}_j\\
+    &+ \alpha_3\text{Trt}_j \log(\text{Base}_j / 4) +
+        \alpha_4\log(\text{Age}_j) \\
+        &+ \alpha_5 V4 + \text{Ind}_j + \beta_{jk}\\
+        \alpha_i & \sim  \mathcal{N}(0, \tau_{\alpha})\mbox{   }
+        \qquad\tau_{\alpha}\ \  \text{known (0.001)}\\
+        \text{Ind}_j & \sim  \mathcal{N}(0, \tau_{\text{Ind}})\quad\tau_{\text{Ind}}\sim\text{Gamma}(1, 0.01)\\
+        \beta_{jk} & \sim  \mathcal{N}(0, \tau_{\beta})\mbox{   }
+        \qquad\tau_{\beta}\sim\text{Gamma}(1, 0.01)
+\end{aligned}
+$$
+
+Here, `V4` is an indicator variable for the 4th visit.
+
+
+## Model specification in INLA
+The data:
+\tiny
+```{r}
+Epil[1:6, ]
+```
+\normalsize
+The formula:
+\footnotesize
+```{r, echo = T, eval = F}
+formula = y ~ ClBase4*CTrt + ClAge + CV4 +
+              f(Ind, model="iid",
+                 hyper = list(prec = list(prior = "loggamma",
+                 param = c(1,0.01)))) +
+              f(rand, model="iid",
+                hyper = list(prec = list(prior = "loggamma", 
+                                         param = c(1,0.01))))
+
+```
+
+\normalsize
+Run the model:
+\footnotesize
+```{r, echo = T, eval = F}
+result = inla(formula, family="poisson", data = Epil,
+              control.fixed = list(prec.intercept = 0.001,
+                                   prec = 0.001))
+```
+\normalsize
+
+## Comparing results with MCMC
+
+>-  When comparing the results of `R-INLA` with MCMC, it is 
+important to use the \textcolor{red}{same model}.
+
+That means, same data, same priors, same constraints on parameters,
+intercept included or not, \ldots.
+
+>- Here we have compared the results with those obtained using
+        ``JAGS` via the `rjags` package
+
+## 
+```{r, out.width = "70%"}
+include_graphics("graphics/results-0125.pdf")
+```
+\scriptsize 
+Running time of INLA $<0.5$ seconds
+\normalsize 
+
+## 
+```{r, out.width = "70%"}
+include_graphics("graphics/results-025.pdf")
+```
+\scriptsize 
+Running time of INLA $<0.5$ seconds
+\normalsize 
+
+## 
+```{r, out.width = "70%"}
+include_graphics("graphics/results-05.pdf")
+```
+\scriptsize 
+Running time of INLA $<0.5$ seconds
+\normalsize 
+
+## 
+```{r, out.width = "70%"}
+include_graphics("graphics/results-2.pdf")
+```
+\scriptsize 
+Running time of INLA $<0.5$ seconds
+\normalsize 
+
+## 
+```{r, out.width = "70%"}
+include_graphics("graphics/results-4.pdf")
+```
+\scriptsize 
+Running time of INLA $<0.5$ seconds
+\normalsize 
+
+## 
+```{r, out.width = "70%"}
+include_graphics("graphics/results-8.pdf")
+```
+\scriptsize 
+Running time of INLA $<0.5$ seconds
+\normalsize 
+
+## 
+```{r, out.width = "70%"}
+include_graphics("graphics/results-16.pdf")
+```
+\scriptsize 
+Running time of INLA $<0.5$ seconds
+\normalsize 
+
+## 
+```{r, out.width = "70%"}
+include_graphics("graphics/results-32.pdf")
+```
+\scriptsize 
+Running time of INLA $<0.5$ seconds
+\normalsize 
+
+
+## 
+```{r, out.width = "70%"}
+include_graphics("graphics/results-64.pdf")
+```
+\scriptsize 
+Running time of INLA $<0.5$ seconds
+\normalsize 
+
+## 
+```{r, out.width = "70%"}
+include_graphics("graphics/results-120.pdf")
+```
+\scriptsize 
+Running time of INLA $<0.5$ seconds
+\normalsize 
+
+# Control statements
+
+
+## Control statements
+\small
+`control.xxx` statements control computations
+
+* `control.fixed`
+
+    - `prec`: Default precision for all fixed effects except the intercept.
+    - `prec.intercept`: Precision for intercept (Default: 0.0)
+
+* `control.predictor
+   
+   - `compute`: Compute posterior marginals of linear predictors
+
+*	`control.compute`
+
+    - `dic`, `mlik`, `cpo`: Compute measures of fit?
+		
+		- `config`: Save internal GMRF approximations? (needed to use `inla.posterior.sample()`)
+
+* `control.inla`
+
+     `strategy` and `int.strategy` contain useful advanced features
+     
+* 	There are various others as well; see help.
+
+\normalsize
+
+
+
+##
+
+\Large
+Thank you for your attention!
+
+\normalsize
+If you have any doubts or questions, please write :
+	\url{sara.martino@math.ntnu.no} 
+
+	
+```{r, out.width = "30%"}
+# All defaults
+include_graphics("graphics/smiley_small.jpg")
+```
+
+	
+

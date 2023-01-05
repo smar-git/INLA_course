@@ -1,0 +1,561 @@
+---
+title: "Space-time coregionalization model"
+subtitle: 'Day 2, Afternoon'
+author: "Instructor: Sara Martino"
+#date: "`r format(Sys.time(), '%d %B, %Y')`"
+bibliography: biblio.bib  
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    #code_download: yes
+    toc_depth: 3
+    number_sections: true
+
+---
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/INLA_course/Practicals/")
+
+knitr::opts_chunk$set(echo = TRUE,  
+                      message=FALSE, 
+                      warning=FALSE, 
+                      strip.white=TRUE, 
+                      prompt=FALSE,
+                      fig.align="center",
+                       out.width = "60%")
+
+library(knitr)    # For knitting document and include_graphics function
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(position = c('top', 'right'),
+               color = 'darkred',
+               tooltip_message = 'Click to copy', tooltip_success = 'Done')
+```
+
+---
+
+Start by loading useful libraries:
+```{r}
+library(ggplot2)
+library(INLA)
+library(inlabru)
+library(viridis)
+library(tidyverse)
+library(patchwork)
+```
+
+In this practical we are going to implement a space-time coregionalization model. This is the same example in Chapter 8.1 of [@SPDE_book] but here we implement it using `inlabru`.
+
+# The model
+
+We assume that we observe 3 variables $y_1(s,t)$, $y_2(s,t)$ and $y_3(s,t)$ over the same space domain $\s\in\mathcal{S}$ and over $t = 1,\dots,k$ time points. 
+
+The model is as following:
+
+$$
+\begin{aligned}
+y_1(s,t)&=\alpha_1+z_1(s,t) + e_1(s,t)\\
+y_2(s,t)&=\alpha_2+\lambda_1\ z_1(s,t) + z_2(s,t)+ e_2(s,t)\\
+y_3(s,t) &= \alpha_3+\lambda_2\ z_1(s,t)+\lambda_3\ z_2(s,t) + z_3(s,t) + e_3(s,t)
+\end{aligned}
+$$
+
+Where $\alpha_i$ are intercepts,  $e_i(s,t)$ are uncorrelated noise with variances $\sigma^2_i$ and $\lambda_i$ are scaling factors.
+
+Moreover, $z_i(s,t)$ are space-time Gaussian processes which change over time with first order autoregressive dynamics and spatially correlated innovations:
+$$
+z_i(s,t) = \rho_i\ z_i(s,t-1) + \xi_i(s,t);\ 
+$$
+with $t = 2,\dots,k$, $|\rho|<1$ and $z_i(s,1)\sim\mathcal{N}(0,\sigma^2_i/(1-\rho_i))$. The field $\xi_i(s,t)$ has mean 0 and is assumed to be temporally independent and with the covariance function
+$$
+\text{Cov}(\xi_i(s,t), \xi_i(s',t')) = 
+\begin{cases}
+0 & \text{if  } & t\neq t'\\
+\text{Cov}(\xi_i(s,t), \xi_i(s',t))& \text{if  } & t= t'\\
+\end{cases}
+$$
+where $\text{Cov}(\xi_i(s,t), \xi_i(s',t))$ is a Matern spatial covariance function.
+
+
+
+
+
+# Data simulation
+We use simulated data. You can think of the different observations as different measurements taken from the same measuring station. For example PM10, CO2 and NO2.
+
+We define a function ti simulate a Matern field at given points:
+```{r}
+rMatern <- function(n, coords, sigma=1, range, 
+                    kappa = sqrt(8*nu)/range, 
+                    variance = sigma^2, 
+                    nu=1) {
+  m <- as.matrix(dist(coords))
+  m <- exp((1-nu)*log(2) + nu*log(kappa*m)-
+             lgamma(nu))*besselK(m*kappa, nu)
+  diag(m) <- 1
+  return(drop(crossprod(chol(variance*m),
+                        matrix(rnorm(nrow(coords)*n), ncol=n))))
+}
+```
+
+
+We then define the area of interest and the parameters of the model
+```{r}
+# define the area of interest
+p = Polygon(cbind(c(0,1,1,0,0),c(0,0,1,1,0)))
+ps = Polygons(list(p),1)
+space = SpatialPolygons(list(ps))
+
+## ----param---------------------------------------------------------------
+alpha <- c(-5, 3, 10) # intercept on reparametrized model
+z.sigma = c(0.5, 0.6, 0.7) # random field marginal std
+range = c(0.4, 0.6, 0.8) # GRF scales: range parameters
+beta <- c(0.7, 0.5, -0.5) # copy par.: reparam. coreg. par.
+rho <- c(0.7, 0.8, 0.9) # temporal correlations
+n <- 50 # number of spatial locations
+k <- 4  # number of time points
+e.sigma <- c(0.3, 0.2, 0.15) # The measurement error marginal std
+```
+
+
+The next step is to simulate the location $s$. This time we assume that each station observes all 3 variables:
+```{r}
+loc <- cbind(runif(n), runif(n)) 
+ggplot() + gg(space) + 
+  geom_point(data = data.frame(x = loc[,1],y = loc[,2]), 
+             aes(x,y)) + coord_equal( )
+```
+
+Now we simulate the space-time processes $z_i(s,t)$, $i =1,2,3$.
+```{r}
+## ----rfs, results = 'hide'-----------------------------------------------
+x1 <- rMatern(k, loc, range = range[1], sigma = z.sigma[1])
+x2 <- rMatern(k, loc, range = range[2], sigma = z.sigma[2])
+x3 <- rMatern(k, loc, range = range[3], sigma = z.sigma[3])
+
+z1 <- x1
+z2 <- x2
+z3 <- x3
+
+for (j in 2:k) {
+  z1[, j] <- rho[1] * z1[, j - 1] + sqrt(1 - rho[1]^2) * x1[, j]
+  z2[, j] <- rho[2] * z2[, j - 1] + sqrt(1 - rho[2]^2) * x2[, j]
+  z3[, j] <- rho[3] * z3[, j - 1] + sqrt(1 - rho[3]^2) * x3[, j]
+}   
+```
+Finally, we simulate the observations:
+```{r}
+## ----yyy-----------------------------------------------------------------
+y1 <- alpha[1] + z1 + rnorm(n, 0, e.sigma[1])
+y2 <- alpha[2] + beta[1] * z1 + z2 + rnorm(n, 0, e.sigma[2])
+y3 <- alpha[3] + beta[2] * z1 + beta[3] * z2 + z3 +
+  rnorm(n, 0, e.sigma[3])
+```
+
+
+
+```{r}
+df1 = data.frame(x = loc[,1],
+                 y = loc[,2],
+                 z  = y1) %>%
+  pivot_longer(-c(x,y)) %>%
+  mutate(time = rep(1:k, n)) %>%
+  dplyr::select(-name) %>%
+  rename(z = value)
+df2 = data.frame(x = loc[,1],
+                 y = loc[,2],
+                 z  = y2)%>%
+  pivot_longer(-c(x,y)) %>%
+  mutate(time = rep(1:k, n)) %>%
+  dplyr::select(-name)%>%
+  rename(z = value)
+df3 = data.frame(x = loc[,1],
+                 y = loc[,2],
+                 z  = y3)%>%
+  pivot_longer(-c(x,y)) %>%
+  mutate(time = rep(1:k, n)) %>%
+  dplyr::select(-name)%>%
+  rename(z = value)
+```
+
+```{r, echo = FALSE}
+p1 = ggplot() + geom_point(data = df1, aes(x,y,color = z)) +
+  facet_wrap(time~.) + scale_color_viridis() + xlab("") + ylab("") +
+  ggtitle("Y1") + coord_equal()
+p2 = ggplot() + geom_point(data = df2, aes(x,y,color = z)) +
+  facet_wrap(time~.) + scale_color_viridis() + xlab("") + ylab("") +
+  ggtitle("Y2") + coord_equal()
+p3 = ggplot() + geom_point(data = df3, aes(x,y,color = z)) +
+  facet_wrap(time~.) + scale_color_viridis() + xlab("") + ylab("") +
+  ggtitle("Y3") + coord_equal()
+p1
+```
+```{r, echo = FALSE}
+p2
+```
+
+```{r, echo = FALSE}
+p3
+```
+
+# Model implementation
+
+## Build the mesh
+Create the mesh
+```{r}
+## ----mesh----------------------------------------------------------------
+mesh <- inla.mesh.2d(loc, 
+                     boundary = space,
+                     max.edge = c(0.15,0.5), 
+                     offset = c(0.1,0.5),
+  cutoff = 0.1)
+ggplot() + gg(mesh)  + coord_equal()  + xlab("") + ylab("") +
+  geom_point(data= data.frame(loc), aes(X1,X2))
+```
+
+
+## Set up priors
+
+In order to set up the model we need to choose priors for the range and sd of the Gaussian fields $z_i(s,t)$,   for the  parameters $\rho_i$ and for the scaling parameters $\lambda_i$, $i = 1,2,3$.
+
+
+We set the parameters for the range and sd of the Gaussian fields in the SPDE object.
+```{r}
+spde <- inla.spde2.pcmatern(mesh = mesh, 
+  prior.range = c(0.05, 0.01), # P(range < 0.05) = 0.01
+  prior.sigma = c(1, 0.01)) # P(sigma > 1) = 0.01
+```
+We can also plot the chosen priors:
+```{r}
+dens_prior_range = function(rho_0, alpha_1)
+{
+  # compute the density of the PC prior for the
+  # range rho of the Matern field
+  # rho_0 and alpha_1 are defined such that
+  # P(rho<rho_0) = alpha_1
+  rho = seq(0, rho_0*10, length.out =100)
+  alpha1_tilde = -log(alpha_1) * rho_0
+  dens_rho =  alpha1_tilde / rho^2 * exp(-alpha1_tilde / rho)
+  return(data.frame(x = rho, y = dens_rho))
+}
+
+dens_prior_sd = function(sigma_0, alpha_2)
+{
+  # compute the density of the PC prior for the
+  # sd sigma of the Matern field
+  # sigma_0 and alpha_2 are defined such that
+  # P(sigma>sigma_0) = alpha_2
+  sigma = seq(0, sigma_0*10, length.out =100)
+  alpha2_tilde = -log(alpha_2)/sigma_0
+  dens_sigma = alpha2_tilde* exp(-alpha2_tilde * sigma) 
+  return(data.frame(x = sigma, y = dens_sigma))
+}
+
+p1 = ggplot() + geom_line(data =  dens_prior_range(0.05, 0.01),
+                     aes(x,y)) + xlab("")+ ylab("") +
+  ggtitle("Prior for the range")
+p2 = ggplot() + geom_line(data =  dens_prior_sd(1, 0.01),
+                     aes(x,y)) + xlab("")+ ylab("") +
+  ggtitle("Prior for the sd") + xlim(0,3)
+p1+p2
+```
+
+For the parameters $\rho_i$ we use the PC prior called `pccor1` which assumes $rho = 1$ (that is a RW1 model) as the base model. See `inla.doc("pccor1")` for more information. 
+
+Below we set up the prior and plot it.
+```{r}
+rho1p <- list(theta = list(prior = 'pccor1', param = c(0, 0.9))) 
+
+data.frame(x = seq(-1,1,0.01),
+           y = inla.pc.dcor1(seq(-1,1,0.01), u = 0, alpha = 0.9)) %>%
+  ggplot() + geom_line(aes(x,y)) +
+  xlab("") + ylab("") + ggtitle("prior for rho")
+```
+
+Last we need a prior for $\lambda_i$. Here we choose a Gaussian prior with mean 0 and precision 10
+```{r}
+hc1 <- list(theta = list(prior = 'normal', param = c(0, 10)))
+```
+
+
+
+## Define components
+
+<font size="5"> **Exercise 1:** </font>  Fill inn the code to fit the model.
+[Solution](#Solution1)
+```{r, echo = F, eval = F}
+# control group
+ctr.g <- list(model = 'ar1', hyper = rho1p)
+
+cmp = ~ Intercept1(1) + 
+  Intercept2(1) +
+  Intercept3(1) + 
+  z1(coordinates, model = spde, group = time, control.group = ctr.g) +
+  z2(???) +
+  z3(???) +
+  z1_copy(coordinates, group = time, copy = "z1", 
+          fixed = FALSE, hyper = hc1) +
+  z1_copy2(???) +
+  z2_copy(???) 
+
+
+lik1 = like(formula = z ~ Intercept1 + z1 ,
+           family = "gaussian",
+           data = df1)
+lik2 = like(formula = z ~ ??? ,
+           family = "gaussian",
+           data = df2)
+lik3 = like(formula = z ~ ??? ,
+           family = "gaussian",
+           data = df3)
+```
+
+
+```{r, echo = F, eval = T}
+# control group
+ctr.g <- list(model = 'ar1', hyper = rho1p)
+
+cmp = ~ Intercept1(1) + 
+  Intercept2(1) +
+  Intercept3(1) + 
+  z1(coordinates, model = spde, group = time, control.group = ctr.g) +
+  z2(coordinates, model = spde, group = time, control.group = ctr.g) +
+  z3(coordinates, model = spde, group = time, control.group = ctr.g) +
+  z1_copy(coordinates, group = time, copy = "z1", 
+          fixed = FALSE, hyper = hc1) +
+  z1_copy2(coordinates, group = time, copy = "z1",
+           fixed = FALSE, hyper = hc1) +
+  z2_copy(coordinates, group = time, copy = "z2", fixed = FALSE, hyper = hc1) 
+
+
+lik1 = like(formula = z ~ Intercept1 + z1 ,
+           family = "gaussian",
+           data = df1)
+lik2 = like(formula = z ~ Intercept2 + z1_copy + z2 ,
+           family = "gaussian",
+           data = df2)
+lik3 = like(formula = z ~ Intercept3 + z1_copy2 + z2_copy + z3 ,
+           family = "gaussian",
+           data = df3)
+```
+
+## Run the model
+
+This model has 15 hyperparameters. To make the optimization process fast, the parameter values used in the simulation will be used as the initial values:
+
+```{r}
+theta.ini <- c(log(1 / e.sigma^2), 
+  c(log(range), log(z.sigma), 
+  qlogis(rho))[c(1, 4, 7, 2, 5, 8, 3, 6, 9)], beta)
+
+# We jitter the starting values to avoid artificially
+# recovering the true values
+theta.ini = theta.ini + rnorm(length(theta.ini), 0, 0.1)
+```
+
+And finally we need to run the `bru()` function.
+
+<font size="5"> **Exercise 3:** </font>  Fill in the code. [Solution](#Solution2)
+```{r, echo = T, eval = F}
+res = bru(???, 
+          ???,
+           options = list(verbose = F,
+                         bru_max_iter = 1,
+                         bru_verbose = 1,
+                         control.mode = list(theta = theta.ini, 
+                                             restart = TRUE),
+                         control.inla = list(int.strategy = 'eb'), 
+                         inla.mode  = "experimental"))
+```
+
+```{r, echo = F, eval = T}
+res = bru(cmp, 
+          lik1, lik2, lik3,
+           options = list(verbose = F,
+                         bru_max_iter = 1,
+                         bru_verbose = 1,
+                         control.mode = list(theta = theta.ini, restart = TRUE),
+                         control.inla = list(int.strategy = 'eb'), 
+                         inla.mode  = "experimental"))
+```
+
+# Results
+
+
+## Estimated parameters
+
+Let's have a look at the estimated parameters and compare them with the true ones.
+
+```{r, echo = FALSE}
+## ----tabstcoreg0, echo = FALSE-------------------------------------------
+## Intercepts
+tab.stcoreg1 <- cbind(true = alpha, res$summary.fixed[, 1:6])
+## Precision errors
+tab.stcoreg2 <- cbind(true = c(e = e.sigma^-2), res$summary.hyperpar[1:3, ])
+## Temporal correlations
+tab.stcoreg3 <- cbind(true = rho, res$summary.hyperpar[c(6, 9, 12), ])
+## Copy parameters
+tab.stcoreg4 <- cbind(true = beta, res$summary.hyperpar[13:15, ])
+## Range of field
+tab.stcoreg5 <- cbind(true = range,
+  res$summary.hyperpar[c(4, 7, 10), ])
+## St. dev. of field
+tab.stcoreg6 <- cbind(true = z.sigma, res$summary.hyperpar[c(5, 8, 11), ])
+
+## ----label = "tabstcoreg", echo = FALSE----------------------------------
+tab.stcoreg <- rbind(tab.stcoreg1, tab.stcoreg2, tab.stcoreg3, tab.stcoreg4,
+  tab.stcoreg5, tab.stcoreg6)
+
+tab.stcoreg <- cbind(Parameter = rownames(tab.stcoreg), tab.stcoreg)
+
+names(tab.stcoreg) <- c("Parameter", "True", "Mean", "St. Dev.",
+  "2.5\\% quant.", "50\\% quant.", "97.5\\% quant.", "Mode")
+
+knitr::kable(tab.stcoreg[, c(1:5, 7)],
+  digits = 3,            
+  row.names = FALSE,
+  caption = "Summary of the posterior distributions of the parameters in the model.",
+  format = "pandoc")
+
+```
+
+
+## Predictions at observation points
+<font size="5"> **Exercise 3:** </font> Use the function `predict()` to compare the estimated linear predictors $\eta_i(s,t)$ with the observed values $y_i(s,t)$
+
+
+```{r, echo = T, eval = F}
+pred1 = predict(res, ??, ??)
+pred2 = predict(res, ??, ??)
+pred3 = predict(res, ??, ??)
+
+```
+
+
+```{r, echo = F}
+pred1 = predict(res, df1, ~Intercept1 + z1)
+pred2 = predict(res, df2, ~Intercept2 + z1_copy + z2)
+pred3 = predict(res, df3, ~Intercept3 + z1_copy2 + z2_copy + z3 )
+
+p1 = ggplot() + geom_errorbar(data = pred1, aes(z, ymin = q0.025, ymax = q0.975)) + 
+  geom_point(data = pred1, aes(z, mean)) + 
+  facet_wrap(.~time) + geom_abline(slope = 1, intercept = 0) +
+  xlab("predicted") + ylab("Observed") + ggtitle("Y1")
+p2 = ggplot() + geom_errorbar(data = pred2, aes(z, ymin = q0.025, ymax = q0.975)) + facet_wrap(.~time)+ geom_abline(slope = 1, intercept = 0)+
+    geom_point(data = pred2, aes(z, mean)) + 
+  xlab("predicted") + ylab("Observed")+ ggtitle("Y2")
+
+p3 = ggplot() + geom_errorbar(data = pred3, aes(z, ymin = q0.025, ymax = q0.975)) + facet_wrap(.~time)+ geom_abline(slope = 1, intercept = 0)+
+    geom_point(data = pred3, aes(z, mean)) + 
+  xlab("predicted") + ylab("Observed")+ ggtitle("Y3")
+```
+```{r, echo = F}
+p1
+```
+```{r, echo = F}
+p2
+```
+```{r, echo = F}
+p3
+```
+
+## Estimation of the latent fields at the observation points
+
+We can compare the estimated values of the latent fields $z_i(s,t)$ at the observation points with the true values we have simulated. Here is the code for $z_1(s,t)$:
+```{r}
+z1_est = predict(res, df1, ~z1)
+z1_est %>% mutate(z1 = as.vector(t(z1))) %>%
+  ggplot()  + geom_point(aes(z1, mean)) +
+  geom_abline(intercept = 0, slope = 1)
+
+```
+<font size="5"> **Exercise 4:** </font> Check that the estimates are reasonable also for the other two fields.
+
+# Prediction over the whole space
+
+Finally we want to predict over the whole space of interest:
+```{r}
+
+pxl = pixels(mesh, mask = space)
+ips2 <- ipoints(domain = c(1:4), name = "time")
+
+pxl_time <- cbind(cprod(pxl,ips2))
+
+
+aa = predict(res, pxl_time, ~ data.frame(eta1 = Intercept1 + z1,
+                                          eta2 = Intercept2 + z1_copy + z2,
+                                          eta3 = Intercept3 + z1_copy2 + z2_copy + z3 ))
+
+
+# let's look at eta1
+data.frame(x = rep(coordinates(pxl)[,1], each = k),
+           y = rep(coordinates(pxl)[,2], each = k),
+           time = pxl_time$time,
+           z =  aa$eta1$mean) %>%
+  ggplot() + geom_tile(aes(x,y,fill = z)) +
+  facet_wrap(time~.) + scale_fill_viridis() + 
+  xlim(0,1) + ylim(0,1)
+
+```
+<font size="5"> **Exercise 5:** </font>  Do you think the mesh is fine enought for this last goal?
+
+# Solutions
+
+## Exercise 1{#Solution1}
+
+```{r, echo = F, eval = T}
+# control group
+ctr.g <- list(model = 'ar1', hyper = rho1p)
+
+cmp = ~ Intercept1(1) + 
+  Intercept2(1) +
+  Intercept3(1) + 
+  z1(coordinates, model = spde, group = time, control.group = ctr.g) +
+  z2(coordinates, model = spde, group = time, control.group = ctr.g) +
+  z3(coordinates, model = spde, group = time, control.group = ctr.g) +
+  z1_copy(coordinates, group = time, copy = "z1", 
+          fixed = FALSE, hyper = hc1) +
+  z1_copy2(coordinates, group = time, copy = "z1",
+           fixed = FALSE, hyper = hc1) +
+  z2_copy(coordinates, group = time, copy = "z2", fixed = FALSE, hyper = hc1) 
+
+
+lik1 = like(formula = z ~ Intercept1 + z1 ,
+           family = "gaussian",
+           data = df1)
+lik2 = like(formula = z ~ Intercept2 + z1_copy + z2 ,
+           family = "gaussian",
+           data = df2)
+lik3 = like(formula = z ~ Intercept3 + z1_copy2 + z2_copy + z3 ,
+           family = "gaussian",
+           data = df3)
+```
+
+## Exercise 2{#Solution2}
+
+
+```{r, echo = F, eval = T}
+res = bru(cmp, 
+          lik1, lik2, lik3,
+           options = list(verbose = F,
+                         bru_max_iter = 1,
+                         bru_verbose = 1,
+                         control.mode = list(theta = theta.ini, restart = TRUE),
+                         control.inla = list(int.strategy = 'eb'), 
+                         inla.mode  = "experimental"))
+```
+
+## Exercise 3{#Solution3}
+
+```{r, echo = T, eval = F}
+pred1 = predict(res, df1, ~Intercept1 + z1)
+pred2 = predict(res, df2, ~Intercept2 + z1_copy + z2)
+pred3 = predict(res, df3, ~Intercept3 + z1_copy2 + z2_copy + z3 )
+```
+
+---
